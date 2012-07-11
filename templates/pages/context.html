@@ -1,0 +1,427 @@
+{% extends "core/class_context.html" %}
+{% block title %}Context Definition{% endblock %}
+{% block body %}
+{% load formutils %}
+{% load static %}
+<form action="/context/create" method="post">{% csrf_token %}
+<h1>Context template</h1>
+<p>Please fill the following parameters and click create in order to create a new virtual machine context definition</p>
+
+<div id='content-accordion' {% if disabled %}class="cvmo-context-disabled"{% endif %}>
+
+	<div class="accordion-header separator"><h2>General</h2></div>
+	<div class="accordion-content">
+	<table class="plain long-text">
+		<tr>
+			<th width="150"><label for="f_name">Context name:</label></th>
+			<td><input type="text" id="f_name" class="cvmo-validate" maxlength="100" name="values[name]" value="{{ values.name }}" {{disabled|dis}}/></td>			
+		</tr>
+		<tr>
+			<th><label for="f_description">Description:</label></th>
+			<td><textarea id="f_description" class="code" name="values[description]" name="other" {{disabled|dis}}>{{ values.description }}</textarea></td>			
+		</tr>
+		<tr>
+			<th>&nbsp</th>
+			<td><input type="checkbox"  name="values[public]" value="1" id="public" {{values.public|chk}} {{disabled|dis}}><label for="public"> Make this context visible on the public lists</label></td>
+		</tr>
+		<tr>
+			<th>&nbsp</th>
+			<td><input type="checkbox"  name="values[agent]" value="1" id="agent" {{values.agent|chk}} {{disabled|dis}}><label for="agent"> Enable CernVM Agent infrastructure</label></td>
+		</tr>
+		<tr>
+			<th>Secret key:</th>
+			<td><input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>			
+		</tr>
+		<tr>
+			<th>&nbsp</th>
+			<td><input type="checkbox" class="cvmo-disabling" name="values[protect]" value="1" id="protect" {{values.protect|chk}} {{disabled|dis}}><label for="protect"> Protect this context with a secret key</label></td>
+		</tr>
+	</table>
+	</div>
+
+	<div class="accordion-header separator"><h2>Repository</h2></div>
+	<div class="accordion-content">
+		<p class="description">Select the repositories you want your virtual machine to use.</p>
+
+		<table class="plain">
+			<tr>
+				<th width="150"><label for="organisation">Main group:</label></th>
+				<td>
+					<select {{disabled|dis}} id="organisation" name="values[general][organization]" onchange="javascript:CVMO.ContextUI.UpdateGroups(this.value)">   
+						{% for o in cernvm.CERNVM_ORGANISATION_LIST %}
+						<option value="{{ o }}" {{values.general.organization|sel:o}}>{{ o }}</options>
+						{% endfor %}
+			        </select>
+				</td>
+			</tr>
+			<tr>
+				<th>Additional groups:</th>
+				<td>
+
+					<div id="cvmo_proxies">
+
+						<!-- Visual components -->
+						<div class="list-wrapper">
+							<ul id="available_repos">
+								<!-- Populated automatically -->
+							</ul>
+						</div>
+						<div class="list-wrapper">
+							<ul id="active_repos">
+								<!-- Populated automatically -->
+							</ul>
+						</div>
+						<div class="float-clear"></div>
+
+						<!-- INPUT to bind with form -->
+						<input {{disabled|dis}} type="hidden" name="repositories" id="available_repos_text" value="atlas-condb,atlas,geant4,boss,atlas-nightlies,cms,grid,hepsoft,hone,lcd,lhcb,na61,sft" />
+						<input {{disabled|dis}} type="hidden" name="values[general][repositories]" value="{{ values.general.repositories }}" id="active_repos_text" />
+
+					</div>
+						
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	<div class="accordion-header separator"><h2>Users</h2></div>
+	<div class="accordion-content">
+		<p class="description">Define the users your configuration will have</p>
+		<div id="cvmo_users">
+
+			<table id="table_users" class="pad-5">
+				<tr>
+					<th>Username</th>
+					<th>Group</th>
+					<th>Home</th>
+					<th>Password</th>
+					{% if not disabled %}
+					<th>Operations</th>
+					{% endif %}
+				</tr>
+				{% for uid,u in values.general.users.items %}
+				<tr id="user{{uid}}" class="cvmo-user-entry">
+					<td><input type="hidden" name="values[general][users][{{uid}}][name]" value="{{u.name}}" />{{u.name}}</td>
+					<td><input type="hidden" name="values[general][users][{{uid}}][group]" value="{{u.group}}" />{{u.group}}</td>
+					<td><input type="hidden" name="values[general][users][{{uid}}][home]" value="{{u.home}}" />{{u.home}}</td>
+					<td><input type="hidden" name="values[general][users][{{uid}}][password]" value="{{u.password}}" />****</td>
+					{% if not disabled %}
+					<td><a href="javascript:;" onclick="CVMO.ContextUI.RemoveUser({{uid}});" class="softbutton"><img border="0" src="{% static "images/user_delete.png" %}" align="absmiddle"> Remove user</a></td>
+					{% endif %}
+				</tr>
+				{% endfor %}
+				{% if not disabled %}
+				<tr id="newuser_row" class="tr-newuser">
+					<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value);" /></td>			
+					<td><input type="text" id="new_user_group" /></td>
+					<td><input type="text" id="new_user_home" value="/home/user" /></td>
+					<td><input type="password" id="new_user_password" value="" /></td>
+					<td><a href="javascript:;" onclick="CVMO.ContextUI.AddUserFromForm()" class="softbutton"><img border="0" src="{% static "images/user_add.png" %}" align="absmiddle"> Add user</a></td>
+				</tr>
+				{% endif %}
+			</table>
+			<br />
+			<table class="plain long-text">
+				<tr>
+					<th width="150">Default login shell:</th>
+					<td><select {{disabled|dis}} id="new_user_shell" name="values[general][shell]">
+			        	<option value="/bin/bash" {{ values.general.shell|sel:"/bin/bash" }}> /bin/bash </option>
+			        	<option value="/bin/tcsh" {{ values.general.shell|sel:"/bin/tcsh" }}> /bin/tcsh </option>
+			        	<option value="/bin/false" {{ values.general.shell|sel:"/bin/false" }}> /bin/false </option>
+			        </select></td>
+				</tr>
+			</table>
+
+		</div>
+	</div>
+	
+	<div class="accordion-header separator"><h2>Contextualization</h2></div>
+	<div class="accordion-content">
+		<h3>Basic configuration</h3>
+		<p class="description">Here you can select an alternative CernVM configuration server and change autoconfigured proxy server and site name settings. Unless you are sure that you know what are you doing, please leave these default values unchanged.</p>
+		<div id="cvmo_proxy">
+
+			<table class="plain long-text">
+				<tr>
+					<th width="150">Services to start</th>
+					<td colspan="2">
+						<div id="cvmo_services">
+
+							<!-- Visual components -->
+							<div class="list-wrapper">
+								<ul id="available_services">
+									<!-- Populated automatically -->
+								</ul>
+							</div>
+							<div class="list-wrapper">
+								<ul id="active_services">
+									<!-- Populated automatically -->
+								</ul>
+							</div>
+							<div class="float-clear"></div>
+
+							<!-- INPUT to bind with form -->
+							<input {{disabled|dis}} type="hidden" name="services" id="available_services_text" value="acpid,afs,anacron,atd,auditd,autofs,avahi-daemon,avahi-dnsconfd,bluetooth,capi,conman,cpuspeed,crond,cups,cups-config-daemon,dc_client,dc_server,dnsmasq,dovecot,dund,ebtables,ejabberd,firstboot,functions,gpm,haldaemon,halt,hidd,hplip,hsqldb,httpd,innd,ip6tables,ipmi,ipmievd,iptables,irda,irqbalance,iscsi,iscsid,isdn,kdump,killall,krb524,kudzu,lcm,lcm-firstboot,libvirtd,libvirt-guests,lisa,lm_sensors,lvm2-monitor,mcelogd,mcstrans,mdmonitor,mdmpd,messagebus,microcode_ctl,multipathd,named,netconsole,netfs,netplugd,network,NetworkManager,nfs,nfslock,nscd,ntpd,pand,pcscd,portmap,postgresql,psacct,qemu,rawdevices,rdisc,readahead_early,readahead_later,restorecond,rpcgssd,rpcidmapd,rpcsvcgssd,rwhod,saslauthd,sendmail,setroubleshoot,single,smartd,smb,spamassassin,squid,sshd,svnserve,syslog,tux,vncserver,vsftpd,wdaemon,winbind,wpa_supplicant,xend,xendomains,xfs,xinetd,ypbind,yum-autoupdate,yum-updatesd" />
+							<input {{disabled|dis}} type="hidden" name="values[general][services]" value="{{values.general.services}}" id="active_services_text" />
+						</div>
+												
+					</td>			
+				</tr>
+				<tr>
+					<th><label for="f_customservices">Custom services:</label></th>
+					<td colspan="2"><input type="text" id="f_customservices" name="values[general][custom_services]" value="{{values.general.services}}" /></td>
+				</tr>
+				<tr>
+					<th><label for="f_contextcmd">Contextualization cmd:</label></th>
+					<td colspan="2"><input type="text" id="f_contextcmd" name="values[general][context_cmd]" value="{{values.general.context_cmd}}" /></td>
+				</tr>
+			</table>
+		</div>
+		<h3>Environment variables</h3>
+		<p class="description">Environment variables that will be exposed globally to your virtual machine.</p>
+		<table id="table_env" class="pad-5">
+			<thead>
+				<tr>
+					{% if not disabled %}
+					<th>Name</th>
+					{% else %}
+					<th width="200">Name</th>
+					{% endif %}
+					<th width="10">&nbsp;</th>
+					<th>Value</th>
+					{% if not disabled %}
+					<th width="150">Operations</th>
+					{% endif %}
+				</tr>
+			</thead>
+			<tbody id="table_env_body">
+				{% for v_name,v_value in values.general.environment.items %}
+				<tr id="env-entry-{{v_name}}" class="cvm-environment-entry">
+					<td align="right"><strong>{{v_name}}</strong></td>
+					<td align="center">=</td>
+					{% if not disabled %}
+					<td><input type="hidden" name="values[general][environment][{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
+					<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.ContextUI.RemoveEnv('env-entry-{{v_name}}');" class="softbutton"><img border="0" src="{% static "images/page_delete.png" %}" align="absmiddle"> Remove variable</a></td>
+					{% else %}
+					<td><input type="hidden" name="values[general][environment][{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
+					{% endif %}
+				</tr>
+				{% empty %}
+					{% if disabled %}
+					<tr>
+						<td colspan="3" align="center">No environment variables are defined</tr>
+					</tr>
+					{% endif %}
+				{% endfor %}
+			</tbody>
+			{% if not disabled %}
+			<thead>
+				<tr id="newenv_row" class="tr-newenv">
+					<td><input type="text" id="new_env_var" style="width:98%" /></td>			
+					<td align="center">=</td>
+					<td><input type="text" id="new_env_value" style="width:98%" /></td>			
+					<td align="center"><a href="javascript:;" onclick="CVMO.ContextUI.AddEnvFromForm()" class="softbutton"><img border="0" src="{% static "images/page_add.png" %}" align="absmiddle"> Add variable</a></td>
+				</tr>
+			</thead>
+			{% endif %}
+		</table>
+	</div>
+		
+	<div class="accordion-header separator"><h2>CernVM</h2></div>
+	<div class="accordion-content">
+		<p class="description">While Basic CernVM is sufficient to run a typical experiment software framework, you can optionally download or upgrade to Development Edition (which will add extra tools and libraries to support software development) or full Desktop Edition which add a full X desktop environment (suitable for event display applications and platforms where native X is not available).</p>
+		<table class="plain" id='cernvm_config'>
+			<tr>
+				<th width="150">Configuration URL:</th>
+				<td colspan="2">
+					<select {{disabled|dis}} id="cernvmConfigUrl" name="values[general][config_url]">
+                        <option {{values.general.config_url|sel:"http://cernvm.cern.ch/config"}} value="http://cernvm.cern.ch/config">http://cernvm.cern.ch/config</option>
+						<option {{values.general.config_url|sel:"http://cernvm.cern.ch/config/config-sign.cgi"}} value="http://cernvm.cern.ch/config/config-sign.cgi">http://cernvm.cern.ch/config/config-sign.cgi</option>
+                    </select>
+				</td>
+			</tr>
+			<tr>
+				<th>CVMFS HTTP Proxy:</th>
+				<td colspan="2">
+					<select {{disabled|dis}} class="cvmo-disclose" name="values[general][http_proxy_mode]" id="proxy">
+						<option value="direct" {{ values.general.http_proxy_mode|sel:"direct" }}>Do not use proxy (Direct connection)</option>
+						<option value="http" {{ values.general.http_proxy_mode|sel:"http" }}>HTTP Proxy</option>
+						<option value="https" {{ values.general.http_proxy_mode|sel:"https" }}>HTTPS (Secure) Proxy</option>
+					</select>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td width="30">Host:</td>
+				<td>
+					<input {{disabled|dis}} type="text" name="values[general][http_proxy]" value="{{values.general.http_proxy}}" />
+					&nbsp; Port: <input {{disabled|dis}} type="text" style="width: 40px" name="values[general][http_proxy_port]" value="{{values.general.http_proxy_port}}" /></td>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td>Username:</td>
+				<td><input {{disabled|dis}} type="text" style="width: 150px" name="values[general][http_username]" value="{{values.general.http_username}}" class="cvmo-disabling-http_anon" /></td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td><label for="http_password">Password:</label></td>
+				<td><input {{disabled|dis}} id="http_password" type="text" style="width: 150px" name="values[general][http_password]" value="{{values.general.http_password}}" class="cvmo-disabling-http_anon" /></td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td colspan="2">
+					<input {{disabled|dis}} type="checkbox" name="values[general][http_usecredentials]" {{values.general.http_usecredentials|chk}} class="cvmo-disabling" id="http_anon"><label for="http_anon"> Proxy requires authentication</label>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>
+			<tr>
+				<th width="150">CernVM Edition:</th>
+				<td colspan="2">
+					<select class="cvmo-disclose" id="model" name="values[general][cvm_model]">
+                    	<option value="batch">Batch</option>
+                    	<option value="basic">Basic</option>
+						<option value="desktop">Desktop</option>
+                    </select>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-model-desktop">
+				<th>Screen resolution:</th>
+				<td colspan="2">
+					<select name="values[general][cvm_resolution]"> 
+	                    <option value="640x480">640x480</option>
+						<option value="800x600">800x600</option>
+						<option selected="selected" value="1024x768">1024x768</option>
+						<option value="1280x700">1280x700</option>
+						<option value="1280x800">1280x800</option>
+						<option value="1440x900">1440x900</option>
+						<option value="1280x1024">1280x1024</option>
+						<option value="1400x1050">1400x1050</option>
+						<option value="1680x1050">1680x1050</option>
+						<option value="1600x1200">1600x1200</option>
+						<option value="1920x1050">1920x1050</option>
+						<option value="1920x1200">1920x1200</option>
+                    </select>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-model-desktop">
+				<th>Keyboard Type</th>
+				<td colspan="2">
+					<select name="values[general][cvm_keyboard_layout]"> 
+	                    <option value="ar-azerty">Arabic (azerty)</option>
+						<option value="ar-azerty-digits">Arabic (azerty/digits)</option>
+						<option value="ar-digits">Arabic (digits)</option>
+						<option value="ar-qwerty">Arabic (qwerty)</option>
+						<option value="ar-qwerty-digits">Arabic (qwerty/digits)</option>
+						<option value="be-latin1">Belgian (be-latin1)</option>
+						<option value="ben">Bengali (Inscript)</option>
+						<option value="ben-probhat">Bengali (Probhat)</option>
+						<option value="br-abnt2">Brazilian (ABNT2)</option>
+						<option value="bg">Bulgarian</option>
+						<option value="croat">Croatian</option>
+						<option value="cz-lat2">Czechoslovakian</option>
+						<option value="cz-us-qwertz">Czechoslovakian (qwertz)</option>
+						<option value="dk">Danish</option>
+						<option value="dk-latin1">Danish (latin1)</option>
+						<option value="dev">Devanagari (Inscript)</option>
+						<option value="nl">Dutch</option>
+						<option value="dvorak">Dvorak</option>
+						<option value="et">Estonian</option>
+						<option value="fi">Finnish</option>
+						<option value="fi-latin1">Finnish (latin1)</option>
+						<option value="fr">French</option>
+						<option value="fr-latin1">French (latin1)</option>
+						<option value="fr-latin9">French (latin9)</option>
+						<option value="fr-pc">French (pc)</option>
+						<option value="cf">French Canadian</option>
+						<option value="de">German</option>
+						<option value="de-latin1-nodeadkeys">German (latin1 w/ no deadkeys)</option>
+						<option value="de-latin1">German (latin1)</option>
+						<option value="gr">Greek</option>
+						<option value="guj">Gujarati (Inscript)</option>
+						<option value="hu">Hungarian</option>
+						<option value="hu101">Hungarian (101 key)</option>
+						<option value="is-latin1">Icelandic</option>
+						<option value="it">Italian</option>
+						<option value="it-ibm">Italian (IBM)</option>
+						<option value="it2">Italian (it2)</option>
+						<option value="jp106">Japanese</option>
+						<option value="la-latin1">Latin American</option>
+						<option value="mk-utf">Macedonian</option>
+						<option value="no">Norwegian</option>
+						<option value="pl2">Polish</option>
+						<option value="pt-latin1">Portuguese</option>
+						<option value="gur">Punjabi (Inscript)</option>
+						<option value="ro_win">Romanian</option>
+						<option value="ru">Russian</option>
+						<option value="ru-ms">Russian (Microsoft)</option>
+						<option value="ru-cp1251">Russian (cp1251)</option>
+						<option value="ru1">Russian (ru1)</option>
+						<option value="ru2">Russian (ru2)</option>
+						<option value="ru.map.utf8ru">Russian (utf8ru)</option>
+						<option value="ru_win">Russian (win)</option>
+						<option value="sr-cy">Serbian</option>
+						<option value="sk-qwerty">Slovakian</option>
+						<option value="slovene">Slovenian</option>
+						<option value="es">Spanish</option>
+						<option value="sv-latin1">Swedish</option>
+						<option value="fr_CH">Swiss French</option>
+						<option value="fr_CH-latin1">Swiss French (latin1)</option>
+						<option value="sg">Swiss German</option>
+						<option value="sg-latin1">Swiss German (latin1)</option>
+						<option value="tml-inscript">Tamil (Inscript)</option>
+						<option value="tml-uni">Tamil (Typewriter)</option>
+						<option value="trq">Turkish</option>
+						<option selected="selected" value="us">U.S. English</option>
+						<option value="us-acentos">U.S. International</option>
+						<option value="ua-utf">Ukrainian</option>
+						<option value="uk">United Kingdom</option>
+                    </select>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-model-desktop">
+				<th>&nbsp;</th>
+				<td colspan="2">
+					<input id="startx" type="checkbox" name="values[general][cvm_startx]" value="1" {{values.general.cvm_startx|chk}}><label for="startx"> Start X on startup</label>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-model-desktop cvmo-disclose-model-basic long-text">
+				<th width="150">Admin password:</th>
+				<td colspan="2"><input type="password" name="values[general][cvm_raa_password]" value="{{ values.general.cvm_raa_password }}" /></td>			
+			</tr>
+			
+		</table>
+	</div>
+
+	<div class="accordion-header separator"><h2>Root SSH Key</h2></div>
+	<div class="accordion-content">
+		<p class="description">Here you can paste the contents of the public ssh key that will be used to authenticate the root user.</p>
+		<table class="plain long-text">
+			<tr>
+				<th>Root SSH Key:</th>
+				<td><textarea class="code" name="values[root_ssh_key]">{{ values.root_ssh_key }}</textarea></td>			
+			</tr>
+		</table>
+	</div>
+
+	{% for p in plugins %}
+	<div class="separator cvmo-module"><h2>{{ p.title }} <label title="Turn on to enable this module" class="cvmo-headcontrol"><input {{disabled|dis}} name="enabled[{{ p.id }}]" value="1" {% if p.enabled %}checked="checked"{% endif %} type="checkbox" /><span> Enable </span></label></h2></div>
+	<div class="">
+		{% if p.description != '' %} <p class="description">{{ p.description }}.</p>{% endif %}
+		{{ p.body }}
+	</div>
+	{% endfor %}
+
+</div>
+
+{% if not disabled %}
+<p><input type="submit" value="{{ submit_label|default:'Create context' }}" /></p>
+{% endif %}
+</form>
+
+{% autoescape off %}
+<script type="text/javascript">CVMO.ContextUI.Init({{ cernvm.CERNVM_REPOSITORY_MAP }})</script>
+{% endautoescape %}
+{% endblock %}

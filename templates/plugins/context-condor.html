@@ -1,0 +1,37 @@
+<table class="plain long-text">
+	<tr>
+		<th width="150">Node hostname:</th>
+		<td><input type="text" name="values[condor][hostname]" value="{{ values.condor.hostname }}" /></td>			
+	</tr>
+	<tr>
+		<th>Master hostname:</th>
+		<td><input type="text" name="values[condor][condor_master]" value="{{ values.condor.condor_master }}" /></td>			
+	</tr>
+	<tr>
+		<th>Shared secret:</th>
+		<td><input type="text" name="values[condor][condor_secret]" value="{{ values.condor.condor_secret }}" /></td>			
+	</tr>
+</table>
+<h3>Optional information:</h3>
+<table class="plain long-text">
+	<tr>
+		<th width="150">Collector name:</th>
+		<td><input type="text" name="values[condor][collector_name]" value="{{ values.condor.collector_name }}" /></td>			
+	</tr>
+	<tr>
+		<th>Condor user:</th>
+		<td><input type="text" name="values[condor][condor_user]" value="{{ values.condor.condor_user }}" /></td>			
+	</tr>
+	<tr>
+		<th>Condor group:</th>
+		<td><input type="text" name="values[condor][condor_group]" value="{{ values.condor.condor_group }}" /></td>			
+	</tr>
+	<tr>
+		<th>Condor directory:</th>
+		<td><input type="text" name="values[condor][condor_dir]" value="{{ values.condor.condor_dir }}" /></td>			
+	</tr>
+	<tr>
+		<th>Condor admin:</th>
+		<td><input type="text" name="values[condor][condor_admin]" value="{{ values.condor.condor_admin }}" /></td>			
+	</tr>
+</table>

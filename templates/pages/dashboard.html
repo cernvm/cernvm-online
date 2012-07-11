@@ -1,0 +1,107 @@
+{% extends "core/class_context.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+{% load static %}{% load url from future %}
+<h1>Dashboard</h1>
+
+<h2>Your context definitions</h2>
+<table class="pad-5">
+	<tr>
+		<th width="20">&nbsp;</th>
+		<th>Name</th>
+		<th width="240">ID</th>
+		<th width="200">Operations</th>		
+	</tr>
+	{% for item in context_list %}
+		<tr>
+			<td>{% if item.public %}
+				<img alt="Public" title="Definition visible in public listings" src="{% if item.key %}{% static "images/world_key.png" %}{% else %}{% static "images/world.png" %}{% endif %}" /></td>
+				{% else %}
+				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" /></td>
+				{% endif %}
+			<td>{{ item.name }}</td>
+			<td>{{ item.id }}</td>
+			<td>
+				<a href="{% url "context_delete" context_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
+				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a>
+			</td>
+		</tr>
+	{% empty %}
+		<tr>
+			<td colspan="4" align="center">No context defined yet</tr>
+		</tr>
+	{% endfor %}
+</table>
+<br />
+<p><a href="{% url "context_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Create new context</a></p>
+
+<h2>Your cluster definitions</h2>
+<table class="pad-5">
+	<tr>
+		<th width="20">&nbsp;</th>
+		<th>Name</th>
+		<th>ID</th>
+		<th>Key</th>
+		<th width="200">Operations</th>		
+	</tr>
+	{% for item in cluster_list %}
+		<tr>
+			<td>{% if item.public %}
+				<img alt="Public" title="Definition visible in public listings" src="{% static "images/world.png" %}" /></td>
+				{% else %}
+				<img alt="Private" title="Private definition" src="{% static "images/lock.png" %}" /></td>
+				{% endif %}
+			<td>{{ item.name }}</td>
+			<td>{{ item.cid }}</td>
+			<td>{{ item.key }}</td>
+			<td>
+				<a href="#" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
+				<a href="#" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a>
+			</td>
+		</tr>
+	{% empty %}
+		<tr>
+			<td colspan="5" align="center">No clusters defined yet</tr>
+		</tr>
+	{% endfor %}
+</table>
+<br />
+<p><a href="#" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/package_add.png" %}" /> Create new cluster</a></p>
+
+<h2>Your virtual machines</h2>
+<table class="pad-5">
+	<tr>
+		<th width="20">&nbsp;</th>
+		<th>UUID</th>
+		<th width="50">CernVM</th>
+		<th width="170">Context</th>
+		<th width="100">Operations</th>
+	</tr>
+	{% for item in machine_list %}
+		<tr>
+			<td>
+				{% if item.status == "C" %}
+				<img alt="VM Cloud" title="Instance contextualized on the cloud" src="{% static "images/vm_cloud.png" %}" /></td>
+				{% elif item.status == "P" %}
+				<img alt="VM" title="Instance contextualized via pairing" src="{% static "images/vm_user.png" %}" /></td>
+				{% else %}
+				<img alt="VM" src="{% static "images/vm.png" %}" /></td>
+				{% endif %}
+			<td>{{ item.uuid }}</td>
+			<td>{{ item.version }}</td>
+			<td>{{ item.context.name }}</td>
+			<td align="center">
+				<a href="{% url "vm_delete" machine_uuid=item.uuid %}" class="softbutton" title="Stop managing this virtual machine"><img border="0" align="absmiddle" src="{% static "images/vm_remove.png" %}" /> Unmanage</a>
+			</td>
+		</tr>
+	{% empty %}
+		<tr>
+			<td colspan="4" align="center">No instances paired yet</tr>
+		</tr>
+	{% endfor %}
+</table>
+<br />
+<p><a href="{% url "vm_pair_begin" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/vm_contextualize.png" %}" /> Pair an instance of CernVM</a></p>
+
+{% endblock %}

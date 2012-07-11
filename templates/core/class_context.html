@@ -1,0 +1,44 @@
+{% extends "core/main.html" %}
+
+{% block title %}Context{% endblock %}
+
+{% block sidebar %}
+{% load static %}{% load url from future %}
+<div id="block-views-News-block-block-1" class="block block-views block-odd region-odd clearfix">
+	<h3 class="title">Commands</h3>
+	<div class="content sidenav">
+		<ul>
+			<li><a href="{% url "dashboard" %}">Dashboard</a></li>
+			<li><a href="{% url "vm_pair_begin" %}">Pair an instance</a></li>
+			<li><a href="{% url "context_new" %}">Create Context</a></li>
+			<li><a href="{% url "cluster_new" %}">Create Cluster</a></li>
+			<li><a href="#">Live Console</a></li>
+		</ul>
+	</div>
+</div>
+
+<div id="block-views-News-block-block-1" class="block block-views block-odd region-odd clearfix">
+	<h3 class="title">Recent Definitions</h3>
+	<div class="content sidenav">
+		<ul>
+			{% for item in last_definitions %}
+			<li><a href="{% url "context_view" context_id=item.id %}"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
+			{% empty %}
+			<li class="empty">No context definitions</li>
+			{% endfor %}
+		</ul>
+		</ul>
+	</div>
+</div>
+
+<div id="block-views-News-block-block-1" class="block block-views block-odd region-odd clearfix">
+	<h3 class="title">Cluster Definitions</h3>
+	<div class="content sidenav">
+		<ul>
+			{% block last_clusters %}
+			<li class="empty">No cluster definitions</li>
+			{% endblock %}
+		</ul>
+	</div>
+</div>
+{% endblock %}

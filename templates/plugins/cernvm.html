@@ -1,0 +1,34 @@
+{% load formutils %}
+<table class="plain long-text" id='cernvm_config'>
+	<tr>
+		<th width="150">CernVM Edition:</th>
+		<td>
+			<select onchange="javascript:CVMO.ContextUI.CheckEdition()" id="cernvmEdition" name="cernvmEdition">
+            	<option value="Basic">Basic</option>
+				<option value="Desktop">Desktop</option>
+            </select>
+		</td>
+	</tr>
+	<tr class="ed-Desktop">
+		<th>Screen resolution:</th>
+		<td>
+			<select id="cernvmScreenRes" name="cernvmScreenRes"> 
+                <option value="640x480">640x480</option><option value="800x600">800x600</option><option selected="selected" value="1024x768">1024x768</option><option value="1280x700">1280x700</option><option value="1280x800">1280x800</option><option value="1440x900">1440x900</option><option value="1280x1024">1280x1024</option><option value="1400x1050">1400x1050</option><option value="1680x1050">1680x1050</option><option value="1600x1200">1600x1200</option><option value="1920x1050">1920x1050</option><option value="1920x1200">1920x1200</option>
+            </select>
+		</td>
+	</tr>
+	<tr class="ed-Desktop">
+		<th>Keyboard Type</th>
+		<td>
+			<select id="cernvmKeyboard" name="cernvmKeyboard"> 
+                <option value="ar-azerty">Arabic (azerty)</option><option value="ar-azerty-digits">Arabic (azerty/digits)</option><option value="ar-digits">Arabic (digits)</option><option value="ar-qwerty">Arabic (qwerty)</option><option value="ar-qwerty-digits">Arabic (qwerty/digits)</option><option value="be-latin1">Belgian (be-latin1)</option><option value="ben">Bengali (Inscript)</option><option value="ben-probhat">Bengali (Probhat)</option><option value="br-abnt2">Brazilian (ABNT2)</option><option value="bg">Bulgarian</option><option value="croat">Croatian</option><option value="cz-lat2">Czechoslovakian</option><option value="cz-us-qwertz">Czechoslovakian (qwertz)</option><option value="dk">Danish</option><option value="dk-latin1">Danish (latin1)</option><option value="dev">Devanagari (Inscript)</option><option value="nl">Dutch</option><option value="dvorak">Dvorak</option><option value="et">Estonian</option><option value="fi">Finnish</option><option value="fi-latin1">Finnish (latin1)</option><option value="fr">French</option><option value="fr-latin1">French (latin1)</option><option value="fr-latin9">French (latin9)</option><option value="fr-pc">French (pc)</option><option value="cf">French Canadian</option><option value="de">German</option><option value="de-latin1-nodeadkeys">German (latin1 w/ no deadkeys)</option><option value="de-latin1">German (latin1)</option><option value="gr">Greek</option><option value="guj">Gujarati (Inscript)</option><option value="hu">Hungarian</option><option value="hu101">Hungarian (101 key)</option><option value="is-latin1">Icelandic</option><option value="it">Italian</option><option value="it-ibm">Italian (IBM)</option><option value="it2">Italian (it2)</option><option value="jp106">Japanese</option><option value="la-latin1">Latin American</option><option value="mk-utf">Macedonian</option><option value="no">Norwegian</option><option value="pl2">Polish</option><option value="pt-latin1">Portuguese</option><option value="gur">Punjabi (Inscript)</option><option value="ro_win">Romanian</option><option value="ru">Russian</option><option value="ru-ms">Russian (Microsoft)</option><option value="ru-cp1251">Russian (cp1251)</option><option value="ru1">Russian (ru1)</option><option value="ru2">Russian (ru2)</option><option value="ru.map.utf8ru">Russian (utf8ru)</option><option value="ru_win">Russian (win)</option><option value="sr-cy">Serbian</option><option value="sk-qwerty">Slovakian</option><option value="slovene">Slovenian</option><option value="es">Spanish</option><option value="sv-latin1">Swedish</option><option value="fr_CH">Swiss French</option><option value="fr_CH-latin1">Swiss French (latin1)</option><option value="sg">Swiss German</option><option value="sg-latin1">Swiss German (latin1)</option><option value="tml-inscript">Tamil (Inscript)</option><option value="tml-uni">Tamil (Typewriter)</option><option value="trq">Turkish</option><option selected="selected" value="us">U.S. English</option><option value="us-acentos">U.S. International</option><option value="ua-utf">Ukrainian</option><option value="uk">United Kingdom</option>
+            </select>
+		</td>
+	</tr>
+	<tr class="ed-Desktop">
+		<th>&nbsp;</th>
+		<td>
+			<input type="checkbox" id="startx"><label for="startx"> Start X on startup</label>
+		</td>
+	</tr>
+</table>

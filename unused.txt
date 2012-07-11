@@ -1,0 +1,63 @@
+
+class AmiconfigPlugin(models.Model):
+    """ Amiconfig plugin definition """
+    name        = models.CharField(max_length=100)
+    description = models.TextField()
+    
+class AmiconfigParameter(models.Model):
+    """ The parameters of an Amiconfig plugin """
+    KIND_CHOICES = (
+            ('string', 'Free string'),
+            ('regex',  'Regex-validated string'),
+            ('bool',   'Boolean'),
+            ('list',   'List'),
+            ('set',    'Set')
+        )
+        
+    plugin      = models.ForeignKey(AmiconfigPlugin)
+    name        = models.CharField(max_length=100)
+    label       = models.CharField(max_length=100)
+    kind        = models.CharField(max_length=7, choices=KIND_CHOICES)
+    parameters  = models.TextField()
+    help        = models.TextField()
+
+
+class ContextDefinition(models.Model):
+    """ The definition of a CernVM Context instance """
+    name        = models.CharField(max_length=100)
+    key         = models.CharField(max_length=100)
+    description = models.TextField()
+    owner       = models.ForeignKey(User)
+    public      = models.BooleanField(verbose_name='Visible on public lists')
+
+class ClusterDefinition(models.Model):
+    """ The generic definition of a cluster """
+    name        = models.CharField(max_length=100)
+    key         = models.CharField(max_length=100)
+    cid         = models.CharField(max_length=100,verbose_name='Cluster ID')
+    description = models.TextField()
+    owner       = models.ForeignKey(User)
+    public      = models.BooleanField(verbose_name='Visible on public lists')
+
+class ClusterContexts(models.Model):
+    """ The linked context definitions for a cluster  """
+    cluster     = models.ForeignKey(ClusterDefinition)
+    context     = models.ForeignKey(ContextDefinition)
+    order       = models.PositiveIntegerField()
+
+class Values(models.Model):
+    """ The values of the parameters of a specified definition """
+    context     = models.ForeignKey(ContextDefinition)
+    parameter   = models.ForeignKey(AmiconfigParameter)
+    value       = models.CharField(max_length=200)
+
+class ClaimRequests(models.Model):
+    """ Claim requests made by the user """
+    ip          = models.CharField(max_length=39) # Enough space for IP6
+    routehash   = models.CharField(max_length=64) # The SHA1 hash of the X-Forwarded-For headers, in the order of arrival
+
+class Machines(models.Model):
+    """ Instantiated machines """
+    uid         = models.CharField(max_length=64, primary_key=True)
+    owner       = models.ForeignKey(User)
+

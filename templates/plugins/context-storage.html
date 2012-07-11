@@ -1,0 +1,14 @@
+<table class="plain long-text">
+	<tr>
+		<th>&nbsp</th>
+		<td><label><input type="checkbox"  name="values[storage][daemon]" value="1" {% if values.storage.daemon %}checked="checked"{% endif %}> Start the spacedaemon</label></td>
+	</tr>
+	<tr>
+		<th>Pre-allocated space:</th>
+		<td><input type="text" name="values[storage][pre-allocated-space]" value="{{ values.storage.pre_allocated_space }}" /> GB</td>			
+	</tr>
+	<tr>
+		<th>Relocate paths:</th>
+		<td><input type="text" name="values[storage][relocate-paths]" value="{{ values.storage.relocate_paths }}" /></td>			
+	</tr>
+</table>

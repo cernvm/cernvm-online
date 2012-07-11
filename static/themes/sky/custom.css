@@ -1,0 +1,5 @@
+html, body, .form-radio, .form-checkbox, .form-file, .form-select, select, .form-text, input, .form-textarea, textarea  { font-family: Tahoma, Geneva, "DejaVu Sans Condensed", sans-serif; }
+h1, h2, h3, h4, h5, h6  { font-family:'Open Sans','Lato',Helvetica, Arial, sans-serif; }
+#wrapper { font-size: 12px; }
+#header { height: 96px; }
+#wrapper, #footer { width: 960px; }

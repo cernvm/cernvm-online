@@ -1,0 +1,36 @@
+{% load formutils %}
+<table class="plain long-text">
+	<tr>
+		<th width="150">No-ip resolving mode:</th>
+		<td>
+			<select class="cvmo-disclose" name="values[noip][mode]" id="noipmode">
+				<option value="hostname" {{ values.noip.mode|sel:"hostname" }}>Hostname</option>
+				<option value="prefix" {{ values.noip.mode|sel:"prefix" }}>Prefix/Domain</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th>Username:</th>
+		<td><input type="text" name="values[noip][username]" value="{{ values.noip.username }}" /></td>			
+	</tr>
+	<tr>
+		<th>Password:</th>
+		<td><input type="password" name="values[noip][password]" value="{{ values.noip.password }}" /></td>			
+	</tr>
+	<tr class="cvmo-disclose-noipmode-hostname">
+		<th>Hostname:</th>
+		<td><input type="text" name="values[noip][hostname]" value="{{ values.noip.hostname }}" /></td>			
+	</tr>
+	<tr class="cvmo-disclose-noipmode-prefix">
+		<th>Prefix:</th>
+		<td><input type="text" name="values[noip][prefix]" value="{{ values.noip.prefix }}" /></td>			
+	</tr>
+	<tr class="cvmo-disclose-noipmode-prefix">
+		<th>Domain:</th>
+		<td><input type="text" name="values[noip][domain]" value="{{ values.noip.domain }}" /></td>			
+	</tr>
+	<tr class="cvmo-disclose-noipmode-prefix">
+		<th>Start:</th>
+		<td><input type="text" name="values[noip][start]" value="{{ values.noip.start }}" /></td>			
+	</tr>
+</table>
