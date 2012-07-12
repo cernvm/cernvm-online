@@ -3,6 +3,13 @@ from django.template.context import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.conf import settings
+from django.template import loader
+from cvmo.context.models import UserActivationKey
+from Crypto.Random import random
+from Crypto.Hash import SHA384
+import urllib2, urllib
+import smtplib
 import re
 
 def login(request):
@@ -54,16 +61,13 @@ def register(request):
     if "form" in request.session:
         context["user"] = request.session["form"]
         del request.session["form"]
+        
+    # Add Google Recaptcha Key
+    context["recaptcha_public_key"] = settings.GOOGLE_RECAPTCHA["public_key"]
     
-    return render_to_response("pages/profile.html", context, RequestContext(request))
+    return render_to_response("pages/register.html", context, RequestContext(request))
 
 def register_action(request):
-    """
-        TODO LIST: 
-            1) Email validation
-            2) Send email to activate account(?)
-            3) CAPTACHA field(?)
-    """
     if user_is_logged(request):
         return redirect("dashboard")    
     
@@ -86,6 +90,12 @@ def register_action(request):
         request.session["form_error"] = "Please fill in all required fields!"
         request.session["form"] = form
         return redirect("register")
+    
+    # Check if recaptcha is valid
+    if not verify_recaptcha(request):
+        request.session["form_error"] = "Please fill carefully the CAPTCHA field!"
+        request.session["form"] = form
+        return redirect("/register")
     
     # Check if email is valid
     if not is_valid_email(email):
@@ -128,6 +138,9 @@ def register_action(request):
         request.session["form_error"] = "Failed to store new user!"
         request.session["form"] = form
         return redirect("register")
+    
+    # Send activation email
+    send_activation_email(request,user)
     
     # Login user and proceed
     loggedUser = auth.authenticate(username=username, password=password)
@@ -253,6 +266,54 @@ def profile_edit_action(request):
    Helper functions 
 """
 
+def send_activation_email(request, user):
+    # Create activation key
+    randomNumber = random.getrandbits(32)
+    h = SHA384.new(str(randomNumber))
+    userActivationKey = UserActivationKey(
+        user = user,
+        key = h.hexdigest()
+    )
+    userActivationKey.save()
+    
+    # Create activation link
+    if request.is_secure():
+        activationLink = "https://"
+    else: 
+        activationLink = "http://"
+    activationLink += request.get_host()
+    activationLink += "/AccountActivation?key=" + userActivationKey.key
+    
+    # Get email template
+    context = {
+        "user": user,
+        "activate_link": activationLink 
+    }
+    emailContent = loader.render_to_string("verification_email.txt", context)
+    
+    # Prepare the mail
+    sender = settings.ACTIVATION_EMAIL["sender_email"]
+    receivers = [user.email]
+    if user.first_name != '' or user.last_name != '':
+        userDisplayName = user.first_name + " " + user.last_name
+    else:
+        userDisplayName = user.username        
+    message = """From: """ + settings.ACTIVATION_EMAIL["sender"] + """ <""" + settings.ACTIVATION_EMAIL["sender_email"] + """>
+To: """ + userDisplayName + """ <""" + user.email + """>
+Subject: """ + settings.ACTIVATION_EMAIL["subject"] + """
+"""
+    message += "\n" + emailContent + "\n"    
+    if settings.DEBUG:
+        print emailContent
+
+    # Send the email
+    try:
+        smtpObj = smtplib.SMTP('localhost')
+        smtpObj.sendmail(sender, receivers, message)
+        return True         
+    except:
+        return False    
+
 def user_is_logged(request):
     return request.user is not None \
         and request.user.is_authenticated()
@@ -262,3 +323,36 @@ def is_valid_email(email):
         if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
             return True
     return False
+
+def verify_recaptcha(request):
+    # Prepare call params
+    baseURL = "http://www.google.com/recaptcha/api/verify"
+    query = [
+             ("privatekey", settings.GOOGLE_RECAPTCHA["private_key"]),
+             ("remoteip", request.META["REMOTE_ADDR"]),
+             ("challenge", request.POST.get("recaptcha_challenge_field", "")),
+             ("response", request.POST.get("recaptcha_response_field", ""))
+    ]
+    data = urllib.urlencode(query) 
+    
+    # Create the handle
+    try:
+        handle = urllib2.urlopen(baseURL, data)
+        
+        # Get response line
+        lines = []
+        line = handle.readline()
+        while line != '':
+            lines.append(line)
+#            if settings.DEBUG:
+#                print line
+            line = handle.readline()                    
+        
+        # Check first line - it may contain some whitespace characters
+        if re.match("^\s*true\s*$", lines[0]) != None:
+            return True
+        else:
+            return False
+    except:
+        # URLError occurred
+        return False

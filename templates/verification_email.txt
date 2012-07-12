@@ -1,0 +1,5 @@
+Dear {{user.username}},
+your account in CernVM Online has been created.
+In order to activate it you should verify your email address
+by clicking on the following link:
+{{activate_link}}

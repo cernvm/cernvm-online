@@ -209,3 +209,18 @@ SHIBBOLETH_SSO = {
         r'/api/cloud/?$'
     ]
 }
+
+GOOGLE_RECAPTCHA = {
+    # cernvm-online.cern.ch keys
+#    "public_key": "6LdG6tMSAAAAAMDBse8Dzze0Wz_3WGTwfUdyz60Z",
+#    "private_key": "6LdG6tMSAAAAAJTx1HqU69b-r90tERI51U8Gn-F2"
+    # localhost keys
+    "public_key": "6Lf-6tMSAAAAAINhybwn_uxxdugd9nfDv5NCx-tY",
+    "private_key": "6Lf-6tMSAAAAAIAMH0F6OLvySp--S6aPWoQGW_bU"    
+}
+
+ACTIVATION_EMAIL = {
+    "sender": "CernVM Online",
+    "sender_email": "info@cernvm-online.cern.ch",
+    "subject": "Account activation"
+}

@@ -101,3 +101,8 @@ class ClusterInstance(models.Model):
     
     def __unicode__(self):
         return '#'+self.order+' - '+self.definition.name+' ('+self.cluster.name+')'
+
+class UserActivationKey(models.Model):
+    user = models.ForeignKey(User)
+    key = models.CharField(max_length=150)
+    created_on = models.DateTimeField(auto_now_add=True)

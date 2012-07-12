@@ -2,36 +2,11 @@
 {% block title %}Register{% endblock %}
 
 {% block body %}{% load url from future %}
-{% if profile_edit %}
 <h1>Profile edit</h1>
 <form action="{% url "profile_save" %}" method="post">
-{% else %}
-<h1>User registration</h1>
-<form action="{% url "do_register" %}" method="post">
-{% endif %}
 	{% csrf_token %}
 	<table class="plain long-text" id="register_form">
-		<tbody>
-			{% if not profile_edit %}
-			<tr>
-				<td width="150"><label for="username">Username:</label></td>
-				<td>
-					<input id="username" type="text" class="cvmo-validate" -cvmo-validate="regex:^\w+$" maxlength="100" name="username" value="{{user.username}}">
-				</td>			
-			</tr>
-			<tr>
-				<td><label for="password">Password:</label></td>
-				<td>
-					<input id="password" class="cvmo-validate" maxlength="30" name="password" type="password">
-				</td>			
-			</tr>
-			<tr>
-				<td><label for="retype_password">Retype password:</label></td>
-				<td>
-					<input id="retype_password" class="cvmo-validate" -cvmo-validate="equals:#password" maxlength="30" name="retype_password" type="password">
-				</td>
-			</tr>
-			{% endif %}			
+		<tbody>			
 			<tr>
 				<td><label for="email">Email Address:</label></td>
 				<td>
@@ -53,7 +28,6 @@
 		</tbody>
 	</table>
 	
-	{% if profile_edit %}
 	<h2>Change password</h2>
 	<table class="plain long-text" id="register_form">
 		<tbody>
@@ -77,33 +51,9 @@
 			</tr>	
 		</tbody>
 	</table>
-	{% endif %}
 	
 	<p>
-		{% if profile_edit %}
 		<input name="submit" type="submit" value="Save changes"/>
-		{% else %}
-		<input name="submit" type="submit" value="Register"/>
-		{% endif %}
 	</p>
 </form>
-<style type="text/css">
-	#register_form #username {
-		width: 100px;
-	}
-	#register_form #current_password,
-	#register_form #password,
-	#register_form #retype_password {
-		width: 90px !important;
-	}
-	#register_form #email {
-		width: 180px;
-	}
-	#register_form #first_name {
-		width: 110px;
-	}
-	#register_form #last_name {
-		width: 150px;
-	}
-</style>
 {% endblock %}
