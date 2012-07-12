@@ -1,0 +1,45 @@
+{% extends "core/main.html" %}
+{% block body_class %}single_column{% endblock %}
+{% block title %}Login{% endblock %}
+
+{% block body %}{% load url from future %}
+<h1>Welcome to CernVM Online</h1>
+<p class="gray">Please login using your CERN credentials or your CernVM Online account in order to use the infrastructure. If you don't have neither, you can register using the link below.</p>
+
+<div class="clearfix" id="login_form">
+	<div class="option">
+		<h2>Using CernVM Online Account</h2>
+		<form action="{% url "do_login" %}" method="POST">
+			{% csrf_token %}
+			<table class="plain long-text login-table">
+				<tr>
+					<td><label for="username">Username</label></td>
+					<td><input name="username" value="" id="username" type="text" /></td>
+				</tr>
+				<tr>
+					<td><label for="password">Password</label></td>
+					<td><input name="password" value="" id="password" type="password" /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input name="submit" type="submit" value="Login" />
+					</td>
+				</tr>
+			</table>
+			<p>
+				If you don't have an account you can <a href="{% url "register" %}">register</a>.
+			</p>
+		</form>
+	</div>
+	<div id="or_container">
+		<span class="text">or</span>
+	</div>
+	<div class="option">
+		<h2>Using CERN Account</h2>
+		<div class="field clearfix button-container center">
+			<input type="button" onclick="window.location='https://cernvm-online.cern.ch/Shibboleth.sso/?target=https://cernvm-online.cern.ch/dashboard'" value="Login with CERN Account" />
+		</div>
+	</div>
+</div>
+
+{% endblock %}
