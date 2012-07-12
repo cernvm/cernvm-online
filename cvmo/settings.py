@@ -195,11 +195,14 @@ SHIBBOLETH_SSO = {
     ],
     
     # Where to redirect if the user is not authenticated
-    'redirect_login': '/admin/',
+    'redirect_login': '/login',
     
     # Which website paths are publicly accessible
     'public_path': [
-        r'/admin/$',
+        r'/login$',
+        r'/login_action$',
+        r'/register$',
+        r'/register_action$',
         r'/api/context/?$',
         r'/api/pair/?$',
         r'/api/confirm/?$',

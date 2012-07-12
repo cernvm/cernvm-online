@@ -5,11 +5,27 @@ var CVMO = {
 };
 
 /**
- * 
+ * A quick validation utility based on CSS selectors
+ *
+ * To use this widget: 
+ *  1) Add on an <input> element the 'cvmo-validate' class
+ *  2) (Optionally) add a -cvmo-validate= attribute to specialize the validation
+ *     by default the system will check for empty fields.
+ *
+ * -cvmo-validate can be:
+ *
+ *  = required              : To require the field to be non-empty
+ *  = equals:<CSS Selector> : To be equal with the value of another <input /> element
+ *  = regex:<Regexp>        : To match a specified regular expression
+ *
+ * The attribute -cvmo-validate will be removed right after the page
+ * is loaded.
+ *
  */
 CVMO.Widgets.ValidateInput = function( element ) {
     var requiredStar = new Element('span', { html: ' *', style: 'color: red' }),
-        validation = element.get('cvmo_validate'),
+        validation = element.getProperty('-cvmo-validate'),
+        error_msg = "Field '%' has invalid value",
         e = $(element),
         
         validate = function() { 
@@ -32,7 +48,7 @@ CVMO.Widgets.ValidateInput = function( element ) {
             if (h_id) {
                 var items = $$('label[for='+h_id+']');
                 if (items.length>0) {
-                    return items[0].innerText;
+                    return items[0].innerText.replace(/["':]/,'').toLowerCase();
                 }
             }
             
@@ -63,22 +79,45 @@ CVMO.Widgets.ValidateInput = function( element ) {
             set_valid(valid);
             return valid;
         };
+        
+    // Remove cvmo-validate property to be HTML-compatible
+    element.removeProperty('cvmo-validate');
 
     // Simple 'REQUIRED' validation (Default)
     if ((!validation) || (validation == 'required')) {
         
         // Inject the 'required' star after the item
         requiredStar.inject(element, 'after');
+        error_msg = "Field '%' is required!";
         
         // Prepare the validation function
         validate = function() { return (e.get('value') != ''); };
         
+    // Simple required and 'EQUALS' validation
+    } else if (validation.substr(0,7) == 'equals:') {
+
+        // Inject the 'required' star after the item
+        requiredStar.inject(element, 'after');
+        error_msg = "Field '%' does not match!";
+
+        // Prepare the validation function
+        var elm = $$(validation.substr(7))[0];
+        if (elm != undefined) {
+            validate = function() { 
+                return (e.get('value') != '') && (e.get('value') == elm.get('value')); 
+            };
+        }
+
     // Simple 'RERGULAR EXPRESSION' validation
     } else if (validation.substr(0,6) == 'regex:') {
 
+        // Inject the 'required' star after the item
+        requiredStar.inject(element, 'after');
+        error_msg = "Field '%' has not a valid value!";
+
         // Prepare the validation function
-        validate = function() { 
-            var r = new RegExp(validation.substr(6));
+        validate = function() {
+            var r = new RegExp(validation.substr(6),'i');
             return (String(e.get('value')).match(r) != null); 
         };
 
@@ -94,7 +133,7 @@ CVMO.Widgets.ValidateInput = function( element ) {
             if (!do_validation()) { 
                 var name = guess_name();
                 if (name != false) {
-                    alert('The field "'+name+'" has not a valid value!');
+                    alert(error_msg.replace('%',name));
                 } else {
                     alert('Please fill all the required fields!');
                 }

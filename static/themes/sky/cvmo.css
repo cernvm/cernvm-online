@@ -85,6 +85,7 @@ div.list-wrapper {
     -moz-border-radius: 8px;
     -o-border-radius: 8px;
     border-radius: 8px;
+    position: relative;
 }
 
 div.list-wrapper > ul {
@@ -129,11 +130,11 @@ table.pad-5 td {
     font-size: 12px;
 }
 
-table.long-text input[type=text], table.long-text input[type=password] {
+.long-text input[type=text], table.long-text input[type=password] {
     width: 200px !important;
 }
 
-table.long-text textarea {
+.long-text textarea {
     width: 425px;
     height: 150px;    
 }
@@ -430,6 +431,65 @@ td.split {
 
 input.invalid {
     background-color: #F99;
+}
+
+.profile-link {
+    background: none !important;
+    padding-right: 0 !important;
+}
+
+#login_form {
+	width: 700px;
+	margin: 0px auto;
+    border: solid 1px #ccc;
+    border-radius: 12px;
+    padding: 5px;
+}
+#login_form div.option {
+	width: 315px;
+	padding: 10px;
+	float: left;
+}
+#login_form div.option h2 {
+	text-align: center;
+	margin-bottom: 25px;
+}
+#login_form div#or_container {
+	position: relative;
+	margin-left: 14.5px;
+	padding-right: 14.5px;
+	width: 0px;
+	border-left: 1px solid #ccc;
+	float: left;
+	height: 160px;
+}
+#login_form div#or_container span.text {
+	top: 67.5px;
+	width: 24px;
+	left: -13px;
+	position: absolute;
+	background: white;
+	text-align: center;
+	line-height: 20px;
+	height: 25px;
+	font-size: 14px;
+}
+#login_form div.field {
+	margin-top: 5px;
+}
+#login_form div.field.button-container {
+	margin-bottom: 15px;
+}
+#login_form div.field label {
+	font-weight: bold;
+	width: 80px;
+	margin-right: 10px;
+	display: block;
+	float: left;
+	clear: left;
+}
+#login_form .login-table {
+    margin-bottom: 15px;
 }
 
 .handle { cursor: move; };

@@ -1,5 +1,5 @@
-{% load static %}{% load url from future %}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+{% load static %}{% load url from future %}<!DOCTYPE html>
+<html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
       	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -24,23 +24,27 @@
 	    <div id="header" class="layout-region">
 	
 			<div id="header-inner">
-				<a href="{% url "welcome" %}" title="" id="logo-inner" name="logo-inner"><img class="online" src="{% static "themes/sky/img/online_logo.png" %}"></a> 
-				<a href="http://cernvm.cern.ch/portal" title="home"><img class="logo-home" src="{% static "themes/sky/img/logo-home.png" %}"></a>
+				<a href="{% url "welcome" %}" title="" id="logo-inner"><img class="online" alt="CernVM Online Logo" src="{% static "themes/sky/img/online_logo.png" %}" /></a> 
+				<a href="http://cernvm.cern.ch/portal" title="home"><img class="logo-home" alt="Home" src="{% static "themes/sky/img/logo-home.png" %}" /></a>
 				<div class="header-fl-right">
 					<!-- LOGIN -->
 					<div class="login">
 						{% if user.username %}
 						<font color="#FFFFFF"> Logged in as {{ user.username|default:"anonymous" }} |</font>
-						<a href="https://login.cern.ch/adfs/ls/?wa=wsignout1.0">Log out</a>
+							{% if user.password %}
+							<a class="profile-link" href="{% url "profile" %}">Profile</a>
+							<font color="#FFFFFF"> |</font>
+							{% endif %}
+							<a class="logout-link" href="{% url "logout" %}">Log out</a>
 						{% else %}
-						<a href="https://cernvm.cern.ch/Shibboleth.sso/?target=https://cernvm-online.cern.ch/dashboard/">Login</a>
+						<a class="login-link" href="{% url "login" %}">Login</a>
 						{% endif %}
 					</div><!-- CENTER -->
 					<div style="clear:both;margin:0;padding:0;"></div><!-- SEARCH -->
 					<div id="search">
 						<form action="https://cernvm.cern.ch/portal/?q=search" method="post">
 							<div class="form">
-								<input class="form-text" type="text" size="15" value="" name="keys" alt="Enter the terms you wish to search for."> <input class="form-submit" type="submit" value="">
+								<input class="form-text" type="text" size="15" value="" name="keys" alt="Enter the terms you wish to search for."/> <input class="form-submit" type="submit" value=""/>
 							</div>
 						</form>
 					</div>
@@ -58,10 +62,10 @@
 			<ul>
 				{% block navbar %}
 				<li class="leaf first">
-					<a href="http://cernvm.cern.ch/portal/online" title="Home" id="custom_breadcrumbs_menu-397" >About</a>
+					<a href="http://cernvm.cern.ch/portal/online" title="Home">About</a>
 				</li>
 				<li class="leaf first">
-					<a href="{% url "dashboard" %}" title="Home" id="custom_breadcrumbs_menu-397" class="active">Dashboard</a>
+					<a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
 				</li>
 				{% endblock %}
 			</ul>

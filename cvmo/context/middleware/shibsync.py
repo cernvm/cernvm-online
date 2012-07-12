@@ -91,8 +91,8 @@ class ShibbolethUserSync(object):
         if not request.user.is_authenticated():
 
             # Check if we have shibboleth headers
-            if config['login_header'] in request.META:
-            
+            if (config['login_header'] in request.META) and (request.META[config['login_header']] != ''):
+                
                 # Fetch login and group info
                 loginname = request.META[config['login_header']]
             

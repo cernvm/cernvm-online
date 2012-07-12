@@ -40,6 +40,16 @@ urlpatterns += patterns('cvmo.context.views.machine',
     url(r'^api/confirm$', 'confirm')
 )
 
+urlpatterns += patterns('cvmo.context.views.user',
+    url(r'^login$', 'login',                        name="login"),
+    url(r'^login_action', 'login_action',           name="do_login"),
+    url(r'^register$', 'register',                  name="register"),
+    url(r'^register_action$', 'register_action',    name="do_register"),
+    url(r'^logout$', 'logout',                      name="logout"),
+    url(r'^profile$', 'profile_edit',               name="profile"),
+    url(r'^profile_save$', 'profile_edit_action',   name="profile_save")
+)
+
 urlpatterns += patterns('',
     # Examples:
     # url(r'^$', 'cvmo.views.home', name='home'),
