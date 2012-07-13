@@ -103,6 +103,6 @@ class ClusterInstance(models.Model):
         return '#'+self.order+' - '+self.definition.name+' ('+self.cluster.name+')'
 
 class UserActivationKey(models.Model):
-    user = models.ForeignKey(User)
+    user = models.OneToOneField(User)
     key = models.CharField(max_length=150)
     created_on = models.DateTimeField(auto_now_add=True)

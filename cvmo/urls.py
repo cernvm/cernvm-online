@@ -47,7 +47,8 @@ urlpatterns += patterns('cvmo.context.views.user',
     url(r'^register_action$', 'register_action',    name="do_register"),
     url(r'^logout$', 'logout',                      name="logout"),
     url(r'^profile$', 'profile_edit',               name="profile"),
-    url(r'^profile_save$', 'profile_edit_action',   name="profile_save")
+    url(r'^profile_save$', 'profile_edit_action',   name="profile_save"),
+    url(r'^account_activation$', 'account_activation', name="account_activation")
 )
 
 urlpatterns += patterns('',

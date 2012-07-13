@@ -5,6 +5,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.template import loader
+from django.core import urlresolvers 
 from cvmo.context.models import UserActivationKey
 from Crypto.Random import random
 from Crypto.Hash import SHA384
@@ -15,13 +16,14 @@ import re
 def login(request):
     if user_is_logged(request):
         return redirect("dashboard")
-    
-    # Get form error
-    if "login_error" in request.session:
-        context = { "msg_error": request.session["login_error"] }
-        del request.session["login_error"]
-    else:
-        context = {}
+        
+    # Push session messages to the context
+    context = {}
+    push_to_context("redirect_msg_info", "msg_info", context, request)
+    push_to_context("redirect_msg_error", "msg_error", context, request)
+    push_to_context("login_error", "msg_error", context, request)
+    push_to_context("redirect_msg_warning", "msg_warning", context, request)
+    push_to_context("redirect_msg_confirm", "msg_confirm", context, request)
         
     return render_to_response("pages/login.html", context, RequestContext(request))
 
@@ -33,12 +35,17 @@ def login_action(request):
     username = request.POST.get('username', '')
     password = request.POST.get('password', '')
     if username == '' or password == '':
-        request.session["login_error"] = "Plase fill in username and password!"
+        request.session["login_error"] = "Please fill in username and password!"
         return redirect("login")
     
     # Try login user
     user = auth.authenticate(username=username, password=password)
     if user is not None and user.is_authenticated():
+        # Check if user is active
+        if not user.is_active:
+            request.session["login_error"] = "You should verify your email address to activate your account"
+            return redirect("login")
+        
         auth.login(request, user)
         return redirect("dashboard")
     else:
@@ -132,6 +139,7 @@ def register_action(request):
     user.set_password(password)
     user.first_name = firstName
     user.last_name = lastName
+    user.is_active = False
     try:
         user.save()
     except:
@@ -142,12 +150,10 @@ def register_action(request):
     # Send activation email
     send_activation_email(request,user)
     
-    # Login user and proceed
-    loggedUser = auth.authenticate(username=username, password=password)
-    auth.login(request, loggedUser)
-    
-    request.session["redirect_msg_info"] = "Your account has been created!"
-    return redirect("dashboard")
+    # Redirect to login    
+    request.session["redirect_msg_info"] = "Your account has been created. \
+    Please check you inbox in %s to activate your account." % user.email
+    return redirect("login")
 
 def logout(request):
     if not user_is_logged(request):
@@ -262,6 +268,28 @@ def profile_edit_action(request):
     request.session["redirect_msg_info"] = "Your account has been modified!"
     return redirect("dashboard")
 
+def account_activation(request):
+    # Parse request
+    key = request.GET.get( "key", "" )
+    
+    # Find UserActivationKey
+    try:
+        activationKey = UserActivationKey.objects.get(key=key)
+        
+        # Update user
+        activationKey.user.is_active = 1
+        activationKey.user.save()
+        
+        # Delete the key
+        activationKey.delete()
+        
+        request.session["redirect_msg_info"] = "User %s has been activated. You can now login." % activationKey.user.username        
+    except:
+        # Key not found
+        request.session["redirect_msg_error"] = "Activation key is invalid!"
+    
+    return redirect("login")                
+
 """
    Helper functions 
 """
@@ -282,7 +310,8 @@ def send_activation_email(request, user):
     else: 
         activationLink = "http://"
     activationLink += request.get_host()
-    activationLink += "/AccountActivation?key=" + userActivationKey.key
+    activationLink += urlresolvers.reverse("account_activation")
+    activationLink += "?key=" + userActivationKey.key
     
     # Get email template
     context = {
@@ -303,8 +332,6 @@ To: """ + userDisplayName + """ <""" + user.email + """>
 Subject: """ + settings.ACTIVATION_EMAIL["subject"] + """
 """
     message += "\n" + emailContent + "\n"    
-    if settings.DEBUG:
-        print emailContent
 
     # Send the email
     try:
@@ -312,6 +339,12 @@ Subject: """ + settings.ACTIVATION_EMAIL["subject"] + """
         smtpObj.sendmail(sender, receivers, message)
         return True         
     except:
+        if settings.DEBUG:
+            print "===================================================================================="
+            print "Failed to send the activation email"
+            print emailContent
+            print "===================================================================================="
+
         return False    
 
 def user_is_logged(request):
@@ -356,3 +389,9 @@ def verify_recaptcha(request):
     except:
         # URLError occurred
         return False
+    
+def push_to_context(sessionName,contextName,context,request):
+    if sessionName in request.session:
+        context[contextName] = request.session[sessionName]
+        del request.session[sessionName]
+
