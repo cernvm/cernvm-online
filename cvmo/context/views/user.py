@@ -1,3 +1,7 @@
+import re
+import smtplib
+import urllib2, urllib
+
 from django.http import HttpResponse
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response, redirect
@@ -8,10 +12,7 @@ from django.template import loader
 from django.core import urlresolvers 
 from cvmo.context.models import UserActivationKey
 from Crypto.Random import random
-from Crypto.Hash import SHA384
-import urllib2, urllib
-import smtplib
-import re
+from Crypto.Hash import SHA256
 
 def login(request):
     if user_is_logged(request):
@@ -297,7 +298,7 @@ def account_activation(request):
 def send_activation_email(request, user):
     # Create activation key
     randomNumber = random.getrandbits(32)
-    h = SHA384.new(str(randomNumber))
+    h = SHA256.new(str(randomNumber))
     userActivationKey = UserActivationKey(
         user = user,
         key = h.hexdigest()

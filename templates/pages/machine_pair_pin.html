@@ -9,7 +9,7 @@
 <p>Wait your virtual machine to boot and put the following key in your virtual machine contextualization screen. You will have the option to contextualize it right after.</p>
 <br />
 <p align="center" class="cloud">
-	<span class="yellowframe" id="pinframe">{{ key }}</span>
+	<span class="yellowframe" id="pinframe">{{ key|slice:":2" }} {{ key|slice:"2:4" }} {{ key|slice:"4:6" }}</span>
 	<br />
 </p>
 <p align="right" class="pairspin">

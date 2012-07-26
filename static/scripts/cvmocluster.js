@@ -116,7 +116,7 @@ window.addEvent('domready', function(){  // Run only when we are fully loaded
         new Element('td', { align: 'right',  html: '<strong>'+variable+'</strong>' }).inject(row);
         new Element('td', { html: '=' }).inject(row);
         new Element('td', { align: 'left',   html: '<input type="hidden" name="values[environment]['+variable+']" value="'+value+'" />'+value }).inject(row);
-        new Element('td', { align: 'center', 'class': 'v-center', html: '<a href="javascript:;" onclick="CVMO.ClusterUI.RemoveEnv(\''+id+'\'');" class="softbutton"><img border="0" src="/static/images/page_delete.png" align="absmiddle"> Remove variable</a>' }).inject(row);
+        new Element('td', { align: 'center', 'class': 'v-center', html: '<a href="javascript:;" onclick="CVMO.ClusterUI.RemoveEnv(\''+id+'\');" class="softbutton"><img border="0" src="/static/images/page_delete.png" align="absmiddle"> Remove variable</a>' }).inject(row);
         row.inject(table);
         new Fx.Reveal(row.getChildren(), {duration: 500, mode: 'vertical', opacity: 0});
         

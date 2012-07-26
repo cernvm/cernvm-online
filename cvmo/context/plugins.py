@@ -164,6 +164,11 @@ class ContextPlugins(object):
             enable_plugins=',raa'+enable_plugins
             _rpath = "\n[rpath]\n"
             _rpath+= "rap-password=%s\n" % values['general']['cvm_raa_password']
+            
+        # Prepare general header
+        _ans = "[general]\n"
+        _ans+= "enabled_plugins=cernvm%s\n" % enable_plugins
+        _ans+= "disabled_plugins=\n\n"
         
         # Prepare amiconfig header
         _ans = "[amiconfig]\n"

@@ -48,7 +48,11 @@ CVMO.Widgets.ValidateInput = function( element ) {
             if (h_id) {
                 var items = $$('label[for='+h_id+']');
                 if (items.length>0) {
-                    return items[0].innerText.replace(/["':]/,'').toLowerCase();
+                    if (document['all']) {
+                        return items[0].innerText.replace(/["':]/,'').toLowerCase();
+                    } else{
+                        return items[0].textContent.replace(/["':]/,'').toLowerCase();
+                    }
                 }
             }
             

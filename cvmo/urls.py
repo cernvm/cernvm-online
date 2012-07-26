@@ -35,9 +35,7 @@ urlpatterns += patterns('cvmo.context.views.machine',
     url(r'^machine/setup/(?P<claim_key>\w+)$', 'pair_setup', name="vm_setup"),
     url(r'^machine/delete/(?P<machine_uuid>[-\w]+)$', 'delete', name="vm_delete"),
     url(r'^ajax/machine/status/(?P<claim_key>\w+)$', 'pair_status', name="vm_ajax_status"),
-    url(r'^api/pair$', 'pair'),
-    url(r'^api/cloud$', 'context_cloud'),
-    url(r'^api/confirm$', 'confirm')
+    url(r'^api/fetch$', 'context_fetch')
 )
 
 urlpatterns += patterns('cvmo.context.views.user',

@@ -59,7 +59,6 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
                         header.removeClass('accordion-header');
                     });
                 }
-                window.console.log(accordion);
             };
         
         header.addEvent('change', updateView);

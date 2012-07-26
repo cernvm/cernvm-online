@@ -204,10 +204,7 @@ SHIBBOLETH_SSO = {
         r'/register$',
         r'/register_action$',
         r'/account_activation$',
-        r'/api/context/?$',
-        r'/api/pair/?$',
-        r'/api/confirm/?$',
-        r'/api/cloud/?$'
+        r'/api/fetch/?$',
     ]
 }
 

@@ -1,7 +1,6 @@
 import urllib2
 import json
 import pickle
-import uuid
 import hashlib
 import base64
 
@@ -17,10 +16,8 @@ from cvmo.context.models import ContextStorage, ContextDefinition
 from cvmo.querystring_parser import parser
 
 from cvmo.context.utils.views import uncache_response, render_error, render_confirm, render_password_prompt
+from cvmo.context.utils.context import gen_context_key, salt_context_key
 from cvmo.context.utils import crypt
-
-def gen_context_key():
-    return uuid.uuid4().hex
 
 def get_cernvm_config():
     """ Download the latest configuration parameters from CernVM """
@@ -135,7 +132,7 @@ def create(request):
     if (c_key != ''):
         c_values = base64.b64encode(crypt.encrypt(c_values, c_key))
         c_config = "ENCRYPTED:"+base64.b64encode(crypt.encrypt(c_config, c_key))
-        c_key = hashlib.sha1(c_uuid+':'+c_key).hexdigest()
+        c_key = salt_context_key(c_uuid, c_key)
     
     # Check if this is public
     c_public = False
@@ -180,7 +177,7 @@ def clone(request, context_id):
             
             # Validate password
             try:
-                if hashlib.sha1(context_id+':'+request.POST['password']).hexdigest() != item.key:
+                if salt_context_key(item.id, request.POST['password']) != item.key:
                     return render_password_prompt(request, 'Context encrypted', 
                         'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
                         reverse('context_clone', kwargs={'context_id':context_id}),
@@ -232,7 +229,7 @@ def view(request, context_id):
             
             # Validate password
             try:
-                if hashlib.sha1(context_id+':'+request.POST['password']).hexdigest() != item.key:
+                if salt_context_key(item.id, request.POST['password']) != item.key:
                     return render_password_prompt(request, 'Context encrypted', 
                         'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
                         reverse('context_view', kwargs={'context_id':context_id}),

@@ -61,3 +61,196 @@ class Machines(models.Model):
     uid         = models.CharField(max_length=64, primary_key=True)
     owner       = models.ForeignKey(User)
 
+
+	def confirm(request):
+	    """ Second step in pairing sequence - Validate password """
+
+	    # Validate request
+	    if not 'REMOTE_ADDR' in request.META:
+	        return render_error(request, 400)
+	    if not 'uuid' in request.GET:
+	        return render_error(request, 400)
+	    if not 'pin' in request.GET:
+	        return render_error(request, 400)
+	    if not 'checksum' in request.GET:
+	        return render_error(request, 400)
+
+	    # Get some machine info
+	    ip = request.META['REMOTE_ADDR']
+	    uuid = request.GET['uuid']
+	    pin = request.GET['pin'].upper()
+	    checksum = request.GET['checksum']
+
+	    # Get our current timestamp and calculate validity time
+	    ts = datetime.utcnow().replace(tzinfo=utc)
+	    ts_expire = ts - REQUEST_TIMEOUT
+
+	    # Lookup the pin/machine UUID combination
+	    try:
+	        claim_request = ClaimRequests.objects.get(pin=pin, status='P', machine__uuid=uuid, alloc_date__gte=ts_expire)
+
+	        # Validate checksum
+	        if (claim_request.context.checksum != checksum):
+
+	            # Error...
+	            claim_request.status='E'
+	            claim_request.save()
+	            return uncache_response(HttpResponse('not-match', content_type="text/plain"))
+
+	        # If successful, claim it
+	        claim_request.status='C'
+
+	        # Machine is registered via pairing API
+	        claim_request.machine.status = 'P'
+
+	        # Save machine
+	        claim_request.save()
+
+	        # Return OK
+	        return uncache_response(HttpResponse('ok', content_type="text/plain"))
+
+	    except:
+	        # Something went wrong. Stop
+	        return uncache_response(HttpResponse('not-found', content_type="text/plain"))
+
+	def pair(request):
+	    """ First step in pairing sequence - Fetch context by pairing key """
+
+	    # Validate request
+	    if not 'REMOTE_ADDR' in request.META:
+	        return render_error(request, 400)
+	    if not 'uuid' in request.GET:
+	        return render_error(request, 400)
+	    if not 'pin' in request.GET:
+	        return render_error(request, 400)
+	    if not 'ver' in request.GET:
+	        return render_error(request, 400)
+
+	    # Get some machine info
+	    ip = request.META['REMOTE_ADDR']
+	    uuid = request.GET['uuid']
+	    pin = request.GET['pin'].upper()
+	    ver = request.GET['ver']
+
+	    # Get our current timestamp and calculate validity time
+	    ts = datetime.utcnow().replace(tzinfo=utc)
+	    ts_expire = ts - REQUEST_TIMEOUT
+
+	    # Lookup the pin
+	    try:
+	        claim_request = ClaimRequests.objects.get(pin=pin, status='U', alloc_date__gte=ts_expire)
+
+	        # Request is now claimed
+	        claim_request.status='C'
+
+	        # Unless the context is encrypted. Then we also need
+	        # a confirmation that the machine managed to decrypt it
+	        if (claim_request.context.key != ""):
+	            claim_request.status='P' # Pending
+
+	        # Get or create the VM
+	        claimed_vm = None
+	        try:
+	            claimed_vm = Machines.objects.get(uuid=uuid)
+
+	            # Update the IP address
+	            claimed_vm.ip = ip
+
+	            # If the owner is different than expected, someone tries to hijack...
+	            if (claimed_vm.owner != claim_request.requestby):
+	                claim_request.status='E'
+	                claim_request.save()
+	                return uncache_response(HttpResponse('invalid-pin', content_type="text/plain"))
+
+	        except:
+	            claimed_vm = Machines(uuid=uuid, ip=ip, version=ver, owner=claim_request.requestby)
+
+	        # Store the VM
+	        claim_request.machine = claimed_vm
+
+	        # Machine is registered via pairing API
+	        claimed_vm.status = 'P'
+
+	        # Update claim request
+	        claim_request.save()
+
+	        # Fetch the context definition
+	        claim_context = claim_request.context
+	        context_data = ContextStorage.objects.get(id=claim_context.id)
+
+	        # Update claimed VM info
+	        claimed_vm.context = claim_request.context
+	        claimed_vm.save()
+
+	        # Return successful pairing
+	        return uncache_response(HttpResponse(context_data.data, content_type="text/plain"))
+
+	    except:
+	        # Something went wrong. Stop
+	        return uncache_response(HttpResponse('invalid-pin', content_type="text/plain"))
+
+
+	def context_cloud(request):
+	    """ Two-in-one pairing and password validation phase """
+
+	    # Validate request
+	    if not 'REMOTE_ADDR' in request.META:
+	        return render_error(request, 400)
+	    if not 'uuid' in request.GET:
+	        return render_error(request, 400)
+	    if not 'context' in request.GET:
+	        return render_error(request, 400)
+	    if not 'ver' in request.GET:
+	        return render_error(request, 400)
+	    if not 'checksum' in request.GET:
+	        return render_error(request, 400)
+
+	    # Get some machine info
+	    ip = request.META['REMOTE_ADDR']
+	    uuid = request.GET['uuid']
+	    context_id = request.GET['context']
+	    ver = request.GET['ver']
+	    checksum = request.GET['checksum']
+
+	    # Validate password first
+	    try:
+	        context = ContextDefinition.objects.get(id=context_id)
+
+	        # Validate password
+	        if (context.key != "") and (checksum != context.key):
+	            return uncache_response(HttpResponse('invalid-checksum', content_type="text/plain"))
+
+	        # Register/update VM registration only if the VM is private
+	        if not context.public:
+
+	            # Get or create the VM
+	            claimed_vm = None
+	            try:
+	                claimed_vm = Machines.objects.get(uuid=uuid)
+	                claimed_vm.ip = ip
+	                claimed_vm.ver = ver
+	                claimed_vm.owner = context.owner
+
+	            except:
+	                claimed_vm = Machines(uuid=uuid, ip=ip, version=ver, owner=context.owner)
+
+	            # Machine is registered via cloud API
+	            claimed_vm.status = 'C'
+
+	            # Assign context
+	            claimed_vm.context = context
+	            claimed_vm.save()
+
+	        # Return the context definition
+	        context_data = ContextStorage.objects.get(id=context_id)
+
+	        # Return successful pairing
+	        return uncache_response(HttpResponse(context_data.data, content_type="text/plain"))
+
+	    except:
+	        # Not found
+	        return uncache_response(HttpResponse('invalid-id', content_type="text/plain"))
+
+#    url(r'^api/pair$', 'pair'),
+#    url(r'^api/cloud$', 'context_cloud'),
+#    url(r'^api/confirm$', 'confirm'),
