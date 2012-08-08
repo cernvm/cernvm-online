@@ -49,6 +49,11 @@ urlpatterns += patterns('cvmo.context.views.user',
     url(r'^account_activation$', 'account_activation', name="account_activation")
 )
 
+urlpatterns += patterns('cvmo.context.views.actions',
+    url(r'^actions/edit$', 'edit',                  name="actions_edit"),
+    url(r'^actions/save$', 'save',                  name="actions_save")
+)
+
 urlpatterns += patterns('',
     # Examples:
     # url(r'^$', 'cvmo.views.home', name='home'),

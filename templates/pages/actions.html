@@ -1,0 +1,83 @@
+{% extends "core/class_context.html" %}
+{% load formutils %}
+{% load static %}
+{% block title %}Actions listing{% endblock %}
+{% block body %}{% load url from future %}
+<h1>Actions edit</h1>
+<p>Please select the contextualization template you want to use for your VM:</p>
+<table class="pad-5">
+	<tr>
+		<th width="20">&nbsp;</th>
+		<th>Name</th>
+		<th width="200">Operations</th>		
+	</tr>
+	<tr>
+		<td>
+			<img alt="Public" title="Definition visible in public listings" src="{% if item.key %}{% static "images/world_key.png" %}{% else %}{% static "images/world.png" %}{% endif %}" /></td>			
+		</td>
+		<td><strong>My script</strong><br />Genrates a set of serial objects</td>
+		<td class="v-middle" align="center">
+			<a href="javascript:;" onclick="" class="softbutton">
+				<img border="0" src="{% static "images/script_code.png" %}" align="absmiddle"> Edit
+			</a>
+			&nbsp;
+			<a href="javascript:;" onclick="" class="softbutton">
+				<img border="0" src="{% static "images/script_delete.png" %}" align="absmiddle"> Remove
+			</a>
+		</td>
+	</tr>
+	<tr class="no-hover">
+		<td colspan="3">
+			<textarea id="code" style="width: 100%" rows="20"></textarea>
+			<div class="script-controls">
+				<a href="javascript:;" onclick="" class="softbutton">
+					<img border="0" src="{% static "images/accept.png" %}" align="absmiddle"> Apply changes
+				</a>
+				&nbsp;
+				<a href="javascript:;" onclick="" class="softbutton">
+					<img border="0" src="{% static "images/cancel.png" %}" align="absmiddle"> Abort changes
+				</a>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img alt="Public" title="Definition visible in public listings" src="{% if item.key %}{% static "images/world_key.png" %}{% else %}{% static "images/world.png" %}{% endif %}" /></td>			
+		</td>
+		<td><strong>My script</strong><br />Genrates a set of serial objects</td>
+		<td class="v-middle" align="center">
+			<a href="javascript:;" onclick="" class="softbutton">
+				<img border="0" src="{% static "images/script_code.png" %}" align="absmiddle"> Edit
+			</a>
+			&nbsp;
+			<a href="javascript:;" onclick="" class="softbutton">
+				<img border="0" src="{% static "images/script_delete.png" %}" align="absmiddle"> Remove
+			</a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img alt="Public" title="Definition visible in public listings" src="{% if item.key %}{% static "images/world_key.png" %}{% else %}{% static "images/world.png" %}{% endif %}" /></td>			
+		</td>
+		<td><strong>My script</strong><br />Genrates a set of serial objects</td>
+		<td class="v-middle" align="center">
+			<a href="javascript:;" onclick="" class="softbutton">
+				<img border="0" src="{% static "images/script_code.png" %}" align="absmiddle"> Edit
+			</a>
+			&nbsp;
+			<a href="javascript:;" onclick="" class="softbutton">
+				<img border="0" src="{% static "images/script_delete.png" %}" align="absmiddle"> Remove
+			</a>
+		</td>
+	</tr>
+</table>
+	
+<script type="text/javascript">
+  var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+    mode: 'shell',
+    lineNumbers: true,
+    matchBrackets: true
+  });
+</script>
+
+{% endblock %}

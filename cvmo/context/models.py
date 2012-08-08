@@ -106,3 +106,11 @@ class UserActivationKey(models.Model):
     user = models.OneToOneField(User)
     key = models.CharField(max_length=150)
     created_on = models.DateTimeField(auto_now_add=True)
+
+class ActionDefinition(models.Model):
+    id          = models.CharField(max_length=64, primary_key=True)
+    name        = models.CharField(max_length=100)
+    description = models.TextField()
+    owner       = models.ForeignKey(User)
+    script      = models.TextField()
+    

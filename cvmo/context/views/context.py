@@ -112,16 +112,16 @@ def create(request):
     values = post_dict.get('values')
     enabled = post_dict.get('enabled')
     
+    # Generate a UUID for this context
+    c_uuid = gen_context_key()
+    
     # Prepare pickled data for easy reconstruction
     # (in case somebody wants to clone a template)
     c_values = pickle.dumps({'values':values, 'enabled':enabled})
-    c_config = ContextPlugins().renderContext(values, enabled)
+    c_config = ContextPlugins().renderContext(c_uuid, values, enabled)
     
     # Generate checksum of the configuration 
     c_checksum = hashlib.sha1(c_config).hexdigest()
-    
-    # Generate a UUID for this context
-    c_uuid = gen_context_key()
     
     # Get the possible secret key
     c_key = ""

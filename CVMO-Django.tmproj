@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>cvmo/settings.py</string>
+	<string>cvmo/context/plugins.py</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,160 +21,70 @@
 	<integer>262</integer>
 	<key>metaData</key>
 	<dict>
-		<key>cvmo/context/plugins.py</key>
+		<key>cvmo/context/plugin/condor.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>8</integer>
+				<integer>23</integer>
 				<key>line</key>
-				<integer>174</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>142</integer>
-		</dict>
-		<key>cvmo/context/utils/crypt.py</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>31</integer>
-				<key>line</key>
-				<integer>27</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>cvmo/context/views/user.py</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>20</integer>
-				<key>line</key>
-				<integer>301</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>278</integer>
-		</dict>
-		<key>cvmo/settings.py</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>27</integer>
-				<key>line</key>
-				<integer>206</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>134</integer>
-		</dict>
-		<key>static/scripts/cvmo.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>31</integer>
-				<key>line</key>
-				<integer>118</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>116</integer>
-		</dict>
-		<key>static/scripts/cvmoclaim.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>39</integer>
-				<key>line</key>
-				<integer>17</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>static/scripts/cvmocluster.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>24</integer>
-				<key>line</key>
-				<integer>110</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>static/scripts/cvmocontext.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>149</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>125</integer>
-		</dict>
-		<key>templates/pages/context.html</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>46</integer>
-				<key>line</key>
-				<integer>115</integer>
+				<integer>12</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>94</integer>
+			<integer>0</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>32</integer>
+				<integer>13</integer>
 				<key>line</key>
-				<integer>115</integer>
+				<integer>12</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>46</integer>
+				<integer>26</integer>
 				<key>line</key>
-				<integer>115</integer>
+				<integer>12</integer>
 			</dict>
+		</dict>
+		<key>cvmo/context/plugins.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>32</integer>
+				<key>line</key>
+				<integer>167</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>163</integer>
+		</dict>
+		<key>templates/pages/context.html</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>131</integer>
+				<key>line</key>
+				<integer>114</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>172</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>static/scripts/cvmoclaim.js</string>
-		<string>static/scripts/cvmocontext.js</string>
-		<string>static/scripts/cvmo.js</string>
+		<string>cvmo/context/plugin/condor.py</string>
 		<string>cvmo/context/plugins.py</string>
 		<string>templates/pages/context.html</string>
-		<string>static/scripts/cvmocluster.js</string>
-		<string>cvmo/context/views/user.py</string>
-		<string>cvmo/settings.py</string>
-		<string>cvmo/context/utils/crypt.py</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>

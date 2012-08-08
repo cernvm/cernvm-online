@@ -154,21 +154,21 @@ class ContextPlugins(object):
     def renderCoreContext(self, values, enable_plugins):
         """ Render the very basic, hard-coded stuff """
         
-        # Ensure enable_plugins is prefixed with ','
+        # Ensure enable_plugins is prefixed with ' '
         if enable_plugins != "":
-            enable_plugins = ","+enable_plugins
+            enable_plugins = " "+enable_plugins
 
         # Check if we should enable the raa plugin
         _rpath = ""
         if 'cvm_raa_password' in values['general']:
-            enable_plugins=',raa'+enable_plugins
+            enable_plugins=" rapadminpassword"+enable_plugins
             _rpath = "\n[rpath]\n"
             _rpath+= "rap-password=%s\n" % values['general']['cvm_raa_password']
             
         # Prepare general header
-        _ans = "[general]\n"
-        _ans+= "enabled_plugins=cernvm%s\n" % enable_plugins
-        _ans+= "disabled_plugins=\n\n"
+        #_ans = "[general]\n"
+        #_ans+= "enabled_plugins=cernvm%s\n" % enable_plugins
+        #_ans+= "disabled_plugins=\n\n"
         
         # Prepare amiconfig header
         _ans = "[amiconfig]\n"
@@ -184,6 +184,11 @@ class ContextPlugins(object):
         _ans+= "repositories=%s\n" % values['general']['repositories']
         _ans+= "shell=%s\n" % values['general']['shell']
         _ans+= "config_url=%s\n" % values['general']['config_url']
+        
+        # Prepare contextualization_command
+        if 'context_cmd' in values['general']:
+            if 'context_cmd_user' in values['general']:
+                _ans+= "contextualization_command=%s:%s\n" % (values['general']['context_cmd_user'], values['general']['context_cmd'])
         
         # Prepare services
         if 'services' in values['general']:
@@ -228,10 +233,28 @@ class ContextPlugins(object):
                     _env+= ","
                 _env += "%s=%s" % (k,v)
             _ans+= "environment=%s\n" % _env
+            
+        # Setup CernVM-Edition
+        if 'cvm_edition' in values['general']:
+            _ans+="edition=%s\n" % values['general']['cvm_edition']
+            
+            # If we have desktop, setup X and resolution
+            if (values['general']['cvm_edition'] == 'desktop'):
+            
+                # Setup resolution
+                if 'cvm_resolution' in values['general']:
+                    _ans+="screenRes=%s\n" % values['general']['cvm_resolution']
+                if 'cvm_keyboard_layout' in values['general']:
+                    _ans+="keyboard=%s\n" % values['general']['cvm_keyboard_layout']
+                if 'cvm_startx' in values['general']:
+                    if (values['general']['cvm_startx'] == 1):
+                        _ans+="startXDM=on\n"
+                    else:
+                        _ans+="startXDM=off\n"
         
         return _ans
 
-    def renderContext(self, values, enabled):
+    def renderContext(self, uuid, values, enabled):
         """ Render all the enabled plugins into a string """
         
         # If enabled is nothing, make empty array
@@ -242,7 +265,7 @@ class ContextPlugins(object):
         _plugins = ""
         for k in self.plugins.keys():
             if (k in enabled) and (enabled[k]):
-                if _plugins != "": _plugins +=","
+                if _plugins != "": _plugins +=" "
                 _plugins += self.plugins[k].CONFIG_GROUP
 
         # Prepare context
@@ -265,8 +288,12 @@ class ContextPlugins(object):
             # Extract the plugin variables
             _ans += _p.renderContext(_values)
 
-        # Now build the contextualization script
-        _script = "EC2_USER_DATA=%s\n" % base64.b64encode(_ans)
+        # Start by placing some identification information
+        _script  = "VM_CONTEXT_UUID=%s\n" % uuid
+        _script += "VM_CONTEXT_NAME=%s\n" % values['name']
+
+        # Then build the contextualization script
+        _script += "EC2_USER_DATA=%s\n" % base64.b64encode(_ans)
         
         # If we have a private key, add it too
         if ('root_ssh_key' in values) and (values['root_ssh_key'] != ""):

@@ -112,7 +112,7 @@
 				{% endfor %}
 				{% if not disabled %}
 				<tr id="newuser_row" class="tr-newuser">
-					<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value);" /></td>			
+					<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value); $('f_contextcmduser).setProperty('value', this.value);" /></td>			
 					<td><input type="text" id="new_user_group" /></td>
 					<td><input type="text" id="new_user_home" value="/home/user" /></td>
 					<td><input type="password" id="new_user_password" value="" /></td>
@@ -169,11 +169,15 @@
 				</tr>
 				<tr>
 					<th><label for="f_customservices">Custom services:</label></th>
-					<td colspan="2"><input type="text" id="f_customservices" name="values[general][custom_services]" value="{{values.general.services}}" /></td>
+					<td colspan="2"><input type="text" id="f_customservices" name="values[general][custom_services]" value="{{values.general.custom_services}}" /></td>
 				</tr>
 				<tr>
 					<th><label for="f_contextcmd">Contextualization cmd:</label></th>
 					<td colspan="2"><input type="text" id="f_contextcmd" name="values[general][context_cmd]" value="{{values.general.context_cmd}}" /></td>
+				</tr>
+				<tr>
+					<th><label for="f_contextcmduser">Run command as:</label></th>
+					<td colspan="2"><input type="text" id="f_contextcmduser" name="values[general][context_cmd_user]" value="{{values.general.context_cmd_user}}" /></td>
 				</tr>
 			</table>
 		</div>
@@ -280,114 +284,114 @@
 			<tr>
 				<th width="150">CernVM Edition:</th>
 				<td colspan="2">
-					<select class="cvmo-disclose" id="model" name="values[general][cvm_model]">
-                    	<option value="batch">Batch</option>
-                    	<option value="basic">Basic</option>
-						<option value="desktop">Desktop</option>
+					<select class="cvmo-disclose" id="model" name="values[general][cvm_edition]">
+                    	<option value="Batch" {{ values.general.cvm_edition|sel:"Batch" }}>Batch</option>
+                    	<option value="Basic" {{ values.general.cvm_edition|sel:"Basic" }}>Basic</option>
+						<option value="Desktop" {{ values.general.cvm_edition|sel:"Desktop" }}>Desktop</option>
                     </select>
 				</td>
 			</tr>
-			<tr class="cvmo-disclose-model-desktop">
+			<tr class="cvmo-disclose-model-Desktop">
 				<th>Screen resolution:</th>
 				<td colspan="2">
 					<select name="values[general][cvm_resolution]"> 
-	                    <option value="640x480">640x480</option>
-						<option value="800x600">800x600</option>
-						<option selected="selected" value="1024x768">1024x768</option>
-						<option value="1280x700">1280x700</option>
-						<option value="1280x800">1280x800</option>
-						<option value="1440x900">1440x900</option>
-						<option value="1280x1024">1280x1024</option>
-						<option value="1400x1050">1400x1050</option>
-						<option value="1680x1050">1680x1050</option>
-						<option value="1600x1200">1600x1200</option>
-						<option value="1920x1050">1920x1050</option>
-						<option value="1920x1200">1920x1200</option>
+	                    <option value="640x480" {{ values.general.cvm_resolution|sel:"640x480" }}>640x480</option>
+						<option value="800x600" {{ values.general.cvm_resolution|sel:"800x600" }}>800x600</option>
+						<option value="1024x768" {{ values.general.cvm_resolution|sel:"1024x768" }}>1024x768</option>
+						<option value="1280x700" {{ values.general.cvm_resolution|sel:"1280x700" }}>1280x700</option>
+						<option value="1280x800" {{ values.general.cvm_resolution|sel:"1280x800" }}>1280x800</option>
+						<option value="1440x900" {{ values.general.cvm_resolution|sel:"1440x900" }}>1440x900</option>
+						<option value="1280x1024" {{ values.general.cvm_resolution|sel:"1280x1024" }}>1280x1024</option>
+						<option value="1400x1050" {{ values.general.cvm_resolution|sel:"1400x1050" }}>1400x1050</option>
+						<option value="1680x1050" {{ values.general.cvm_resolution|sel:"1680x1050" }}>1680x1050</option>
+						<option value="1600x1200" {{ values.general.cvm_resolution|sel:"1600x1200" }}>1600x1200</option>
+						<option value="1920x1050" {{ values.general.cvm_resolution|sel:"1920x1050" }}>1920x1050</option>
+						<option value="1920x1200" {{ values.general.cvm_resolution|sel:"1920x1200" }}>1920x1200</option>
                     </select>
 				</td>
 			</tr>
-			<tr class="cvmo-disclose-model-desktop">
+			<tr class="cvmo-disclose-model-Desktop">
 				<th>Keyboard Type</th>
 				<td colspan="2">
 					<select name="values[general][cvm_keyboard_layout]"> 
-	                    <option value="ar-azerty">Arabic (azerty)</option>
-						<option value="ar-azerty-digits">Arabic (azerty/digits)</option>
-						<option value="ar-digits">Arabic (digits)</option>
-						<option value="ar-qwerty">Arabic (qwerty)</option>
-						<option value="ar-qwerty-digits">Arabic (qwerty/digits)</option>
-						<option value="be-latin1">Belgian (be-latin1)</option>
-						<option value="ben">Bengali (Inscript)</option>
-						<option value="ben-probhat">Bengali (Probhat)</option>
-						<option value="br-abnt2">Brazilian (ABNT2)</option>
-						<option value="bg">Bulgarian</option>
-						<option value="croat">Croatian</option>
-						<option value="cz-lat2">Czechoslovakian</option>
-						<option value="cz-us-qwertz">Czechoslovakian (qwertz)</option>
-						<option value="dk">Danish</option>
-						<option value="dk-latin1">Danish (latin1)</option>
-						<option value="dev">Devanagari (Inscript)</option>
-						<option value="nl">Dutch</option>
-						<option value="dvorak">Dvorak</option>
-						<option value="et">Estonian</option>
-						<option value="fi">Finnish</option>
-						<option value="fi-latin1">Finnish (latin1)</option>
-						<option value="fr">French</option>
-						<option value="fr-latin1">French (latin1)</option>
-						<option value="fr-latin9">French (latin9)</option>
-						<option value="fr-pc">French (pc)</option>
-						<option value="cf">French Canadian</option>
-						<option value="de">German</option>
-						<option value="de-latin1-nodeadkeys">German (latin1 w/ no deadkeys)</option>
-						<option value="de-latin1">German (latin1)</option>
-						<option value="gr">Greek</option>
-						<option value="guj">Gujarati (Inscript)</option>
-						<option value="hu">Hungarian</option>
-						<option value="hu101">Hungarian (101 key)</option>
-						<option value="is-latin1">Icelandic</option>
-						<option value="it">Italian</option>
-						<option value="it-ibm">Italian (IBM)</option>
-						<option value="it2">Italian (it2)</option>
-						<option value="jp106">Japanese</option>
-						<option value="la-latin1">Latin American</option>
-						<option value="mk-utf">Macedonian</option>
-						<option value="no">Norwegian</option>
-						<option value="pl2">Polish</option>
-						<option value="pt-latin1">Portuguese</option>
-						<option value="gur">Punjabi (Inscript)</option>
-						<option value="ro_win">Romanian</option>
-						<option value="ru">Russian</option>
-						<option value="ru-ms">Russian (Microsoft)</option>
-						<option value="ru-cp1251">Russian (cp1251)</option>
-						<option value="ru1">Russian (ru1)</option>
-						<option value="ru2">Russian (ru2)</option>
-						<option value="ru.map.utf8ru">Russian (utf8ru)</option>
-						<option value="ru_win">Russian (win)</option>
-						<option value="sr-cy">Serbian</option>
-						<option value="sk-qwerty">Slovakian</option>
-						<option value="slovene">Slovenian</option>
-						<option value="es">Spanish</option>
-						<option value="sv-latin1">Swedish</option>
-						<option value="fr_CH">Swiss French</option>
-						<option value="fr_CH-latin1">Swiss French (latin1)</option>
-						<option value="sg">Swiss German</option>
-						<option value="sg-latin1">Swiss German (latin1)</option>
-						<option value="tml-inscript">Tamil (Inscript)</option>
-						<option value="tml-uni">Tamil (Typewriter)</option>
-						<option value="trq">Turkish</option>
-						<option selected="selected" value="us">U.S. English</option>
-						<option value="us-acentos">U.S. International</option>
-						<option value="ua-utf">Ukrainian</option>
-						<option value="uk">United Kingdom</option>
+	                    <option value="ar-azerty" {{ values.general.cvm_keyboard_layout|sel:"ar-azerty" }}>Arabic (azerty)</option>
+						<option value="ar-azerty-digits" {{ values.general.cvm_keyboard_layout|sel:"ar-azerty-digits" }}>Arabic (azerty/digits)</option>
+						<option value="ar-digits" {{ values.general.cvm_keyboard_layout|sel:"ar-digits" }}>Arabic (digits)</option>
+						<option value="ar-qwerty" {{ values.general.cvm_keyboard_layout|sel:"ar-qwerty" }}>Arabic (qwerty)</option>
+						<option value="ar-qwerty-digits" {{ values.general.cvm_keyboard_layout|sel:"ar-qwerty-digits" }}>Arabic (qwerty/digits)</option>
+						<option value="be-latin1" {{ values.general.cvm_keyboard_layout|sel:"be-latin1" }}>Belgian (be-latin1)</option>
+						<option value="ben" {{ values.general.cvm_keyboard_layout|sel:"ben" }}>Bengali (Inscript)</option>
+						<option value="ben-probhat" {{ values.general.cvm_keyboard_layout|sel:"ben-probhat" }}>Bengali (Probhat)</option>
+						<option value="br-abnt2" {{ values.general.cvm_keyboard_layout|sel:"br-abnt2" }}>Brazilian (ABNT2)</option>
+						<option value="bg" {{ values.general.cvm_keyboard_layout|sel:"bg" }}>Bulgarian</option>
+						<option value="croat" {{ values.general.cvm_keyboard_layout|sel:"croat" }}>Croatian</option>
+						<option value="cz-lat2" {{ values.general.cvm_keyboard_layout|sel:"cz-lat2" }}>Czechoslovakian</option>
+						<option value="cz-us-qwertz" {{ values.general.cvm_keyboard_layout|sel:"cz-us-qwertz" }}>Czechoslovakian (qwertz)</option>
+						<option value="dk" {{ values.general.cvm_keyboard_layout|sel:"dk" }}>Danish</option>
+						<option value="dk-latin1" {{ values.general.cvm_keyboard_layout|sel:"dk-latin1" }}>Danish (latin1)</option>
+						<option value="dev" {{ values.general.cvm_keyboard_layout|sel:"dev" }}>Devanagari (Inscript)</option>
+						<option value="nl" {{ values.general.cvm_keyboard_layout|sel:"nl" }}>Dutch</option>
+						<option value="dvorak" {{ values.general.cvm_keyboard_layout|sel:"dvorak" }}>Dvorak</option>
+						<option value="et" {{ values.general.cvm_keyboard_layout|sel:"et" }}>Estonian</option>
+						<option value="fi" {{ values.general.cvm_keyboard_layout|sel:"fi" }}>Finnish</option>
+						<option value="fi-latin1" {{ values.general.cvm_keyboard_layout|sel:"fi-latin1" }}>Finnish (latin1)</option>
+						<option value="fr" {{ values.general.cvm_keyboard_layout|sel:"fr" }}>French</option>
+						<option value="fr-latin1" {{ values.general.cvm_keyboard_layout|sel:"fr-latin1" }}>French (latin1)</option>
+						<option value="fr-latin9" {{ values.general.cvm_keyboard_layout|sel:"fr-latin9" }}>French (latin9)</option>
+						<option value="fr-pc" {{ values.general.cvm_keyboard_layout|sel:"fr-pc" }}>French (pc)</option>
+						<option value="cf" {{ values.general.cvm_keyboard_layout|sel:"cf" }}>French Canadian</option>
+						<option value="de" {{ values.general.cvm_keyboard_layout|sel:"de" }}>German</option>
+						<option value="de-latin1-nodeadkeys" {{ values.general.cvm_keyboard_layout|sel:"de-latin1-nodeadkeys" }}>German (latin1 w/ no deadkeys)</option>
+						<option value="de-latin1" {{ values.general.cvm_keyboard_layout|sel:"de-latin1" }}>German (latin1)</option>
+						<option value="gr" {{ values.general.cvm_keyboard_layout|sel:"gr" }}>Greek</option>
+						<option value="guj" {{ values.general.cvm_keyboard_layout|sel:"guj" }}>Gujarati (Inscript)</option>
+						<option value="hu" {{ values.general.cvm_keyboard_layout|sel:"hu" }}>Hungarian</option>
+						<option value="hu101" {{ values.general.cvm_keyboard_layout|sel:"hu101" }}>Hungarian (101 key)</option>
+						<option value="is-latin1" {{ values.general.cvm_keyboard_layout|sel:"is-latin1" }}>Icelandic</option>
+						<option value="it" {{ values.general.cvm_keyboard_layout|sel:"it" }}>Italian</option>
+						<option value="it-ibm" {{ values.general.cvm_keyboard_layout|sel:"it-ibm" }}>Italian (IBM)</option>
+						<option value="it2" {{ values.general.cvm_keyboard_layout|sel:"it2" }}>Italian (it2)</option>
+						<option value="jp106" {{ values.general.cvm_keyboard_layout|sel:"jp106" }}>Japanese</option>
+						<option value="la-latin1" {{ values.general.cvm_keyboard_layout|sel:"la-latin1" }}>Latin American</option>
+						<option value="mk-utf" {{ values.general.cvm_keyboard_layout|sel:"mk-utf" }}>Macedonian</option>
+						<option value="no" {{ values.general.cvm_keyboard_layout|sel:"no" }}>Norwegian</option>
+						<option value="pl2" {{ values.general.cvm_keyboard_layout|sel:"pl2" }}>Polish</option>
+						<option value="pt-latin1" {{ values.general.cvm_keyboard_layout|sel:"pt-latin1" }}>Portuguese</option>
+						<option value="gur" {{ values.general.cvm_keyboard_layout|sel:"gur" }}>Punjabi (Inscript)</option>
+						<option value="ro_win" {{ values.general.cvm_keyboard_layout|sel:"ro_win" }}>Romanian</option>
+						<option value="ru" {{ values.general.cvm_keyboard_layout|sel:"ru" }}>Russian</option>
+						<option value="ru-ms" {{ values.general.cvm_keyboard_layout|sel:"ru-ms" }}>Russian (Microsoft)</option>
+						<option value="ru-cp1251" {{ values.general.cvm_keyboard_layout|sel:"ru-cp1251" }}>Russian (cp1251)</option>
+						<option value="ru1" {{ values.general.cvm_keyboard_layout|sel:"ru1" }}>Russian (ru1)</option>
+						<option value="ru2" {{ values.general.cvm_keyboard_layout|sel:"ru2" }}>Russian (ru2)</option>
+						<option value="ru.map.utf8ru" {{ values.general.cvm_keyboard_layout|sel:"ru.map.utf8ru" }}>Russian (utf8ru)</option>
+						<option value="ru_win" {{ values.general.cvm_keyboard_layout|sel:"ru_win" }}>Russian (win)</option>
+						<option value="sr-cy" {{ values.general.cvm_keyboard_layout|sel:"sr-cy" }}>Serbian</option>
+						<option value="sk-qwerty" {{ values.general.cvm_keyboard_layout|sel:"sk-qwerty" }}>Slovakian</option>
+						<option value="slovene" {{ values.general.cvm_keyboard_layout|sel:"slovene" }}>Slovenian</option>
+						<option value="es" {{ values.general.cvm_keyboard_layout|sel:"es" }}>Spanish</option>
+						<option value="sv-latin1" {{ values.general.cvm_keyboard_layout|sel:"sv-latin1" }}>Swedish</option>
+						<option value="fr_CH" {{ values.general.cvm_keyboard_layout|sel:"fr_CH" }}>Swiss French</option>
+						<option value="fr_CH-latin1" {{ values.general.cvm_keyboard_layout|sel:"fr_CH-latin1" }}>Swiss French (latin1)</option>
+						<option value="sg" {{ values.general.cvm_keyboard_layout|sel:"sg" }}>Swiss German</option>
+						<option value="sg-latin1" {{ values.general.cvm_keyboard_layout|sel:"sg-latin1" }}>Swiss German (latin1)</option>
+						<option value="tml-inscript" {{ values.general.cvm_keyboard_layout|sel:"tml-inscript" }}>Tamil (Inscript)</option>
+						<option value="tml-uni" {{ values.general.cvm_keyboard_layout|sel:"tml-uni" }}>Tamil (Typewriter)</option>
+						<option value="trq" {{ values.general.cvm_keyboard_layout|sel:"trq" }}>Turkish</option>
+						<option value="us" {{ values.general.cvm_keyboard_layout|sel:"us" }}>U.S. English</option>
+						<option value="us-acentos" {{ values.general.cvm_keyboard_layout|sel:"us-acentos" }}>U.S. International</option>
+						<option value="ua-utf" {{ values.general.cvm_keyboard_layout|sel:"ua-utf" }}>Ukrainian</option>
+						<option value="uk" {{ values.general.cvm_keyboard_layout|sel:"uk" }}>United Kingdom</option>
                     </select>
 				</td>
 			</tr>
-			<tr class="cvmo-disclose-model-desktop">
+			<tr class="cvmo-disclose-model-Desktop">
 				<th>&nbsp;</th>
 				<td colspan="2">
 					<input id="startx" type="checkbox" name="values[general][cvm_startx]" value="1" {{values.general.cvm_startx|chk}}><label for="startx"> Start X on startup</label>
 				</td>
 			</tr>
-			<tr class="cvmo-disclose-model-desktop cvmo-disclose-model-basic long-text">
+			<tr class="cvmo-disclose-model-Desktop cvmo-disclose-model-Basic long-text">
 				<th width="150">Admin password:</th>
 				<td colspan="2"><input type="password" name="values[general][cvm_raa_password]" value="{{ values.general.cvm_raa_password }}" /></td>			
 			</tr>

@@ -492,6 +492,16 @@ input.invalid {
     margin-bottom: 15px;
 }
 
+table.no-hover td:hover, tr.no-hover td, td.no-hover {
+    background: inherit;
+}
+
+.script-controls {
+    text-align: right;
+    border-top: solid 1px #bbb;
+    padding: 10px;
+}
+
 .handle { cursor: move; };
 .gray { color: #666; }
 .red { color: #FF0000; }
