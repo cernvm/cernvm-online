@@ -54,8 +54,7 @@ def api_get(request, context_id):
     # Fetch the specified context
     try:
         context = ContextStorage.objects.get(id=context_id)
-        return HttpResponse(context.data, content_type="text/plain")
-        
+        return HttpResponse(context.data, content_type="text/plain")        
     except:
         return HttpResponse("not-found", content_type="text/plain")
 

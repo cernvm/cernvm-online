@@ -1,7 +1,7 @@
 {% extends "core/class_context.html" %}
+{% block title %}Cluster Definition{% endblock %}
 {% load formutils %}
 {% load static %}
-{% block title %}Cluster Definition{% endblock %}
 {% block head %}<script type="text/javascript" src="{% static "scripts/cvmocluster.js" %}"></script>{% endblock %}
 {% block body %}
 <form action="/cluster/create" method="post">{% csrf_token %}
@@ -29,6 +29,14 @@
 				<th>&nbsp</th>
 				<td><input type="checkbox"  name="values[agent]" value="1" id="agent" {{values.agent|chk}} {{disabled|dis}}><label for="agent"> Enable CernVM Agent infrastructure</label></td>
 			</tr>
+			<tr>
+				<th>Secret key:</th>
+				<td><input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>			
+			</tr>
+			<tr>
+				<th>&nbsp</th>
+				<td><input type="checkbox" class="cvmo-disabling" name="values[protect]" value="1" id="protect" {{values.protect|chk}} {{disabled|dis}}><label for="protect"> Protect this context with a secret key</label></td>
+			</tr>
 		</table>
 	</div>
 
@@ -42,7 +50,8 @@
 					<th width="25">Order</th>
 					{% endif %}
 					<th>Contextualization Template</th>
-					<th width="50">Instances</th>
+					<th width="50">From Amount</th>
+					<th width="50">To Amount</th>
 					<th width="30">Elastic</th>
 					{% if not disabled %}
 					<th width="150">Operations</th>
@@ -50,16 +59,18 @@
 				</tr>
 			</thead>
 			<tbody id="table_cluster_body">
-				{% for inst in values.instances %}
+				{% for index, inst in values.instances.iteritems %}
 				<tr id="instancePre{{forloop.counter}}" class="cvm-cluster-entry">
 					{% if not disabled %}
 					<td align="center"><img  id="instance_handle{{forloop.counter}}" class="cvm-context-handle handle" src="{% static "images/handle.png" %}" alt="=" /></td>
 					<td><input type="hidden" name="values[instances][{{forloop.counter}}][context]" value="{{inst.context}}" />{{inst.context}}</td>
-					<td align="center"><input type="text" style="width:50px" name="values[instances][{{forloop.counter}}][instances]" value="{{inst.instances}}" /></td>
+					<td align="center"><input type="text" style="width:50px" name="values[instances][{{forloop.counter}}][from_amt]" value="{{inst.from_amt}}" /></td>
+					<td align="center"><input type="text" style="width:50px" name="values[instances][{{forloop.counter}}][to_amt]" value="{{inst.to_amt}}" /></td>
 					<td align="center"><input type="checkbox" name="values[instances][{{forloop.counter}}][elastic]" value="1" {{inst.elastic|chk}} {{disabled|dis}} /></td>
 					{% else %}
 					<td><input type="hidden" name="values[instances][{{forloop.counter}}][context]" value="{{inst.context}}" />{{inst.context}}</td>
-					<td align="center"><input type="hidden" style="width:50px" name="values[instances][{{forloop.counter}}][instances]" value="{{inst.instances}}" />{{inst.instances}}</td>
+					<td align="center"><input type="hidden" style="width:50px" name="values[instances][{{forloop.counter}}][from_amt]" value="{{inst.from_amt}}" />{{inst.from_amt}}</td>
+					<td align="center"><input type="hidden" style="width:50px" name="values[instances][{{forloop.counter}}][to_amt]" value="{{inst.to_amt}}" />{{inst.to_amt}}</td>
 					<td align="center"><input type="hidden" name="values[instances][{{forloop.counter}}][elastic]" value="{{inst.elastic}}" />{% if inst.elastic %}Yes{% else %}No{% endif %}</td>
 					{% endif %}
 					{% if not disabled %}
@@ -73,7 +84,8 @@
 				<tr id="newcontext_row" class="tr-newuser">
 					<td>&nbsp;</td>
 					<td><input type="text" id="new_context" style="width:98%" /></td>			
-					<td><input type="text" maxchars="3" style="width:50px" id="new_count" value="1" /></td>
+					<td><input type="text" maxchars="3" style="width:50px" id="new_from_amt" value="1" /></td>
+					<td><input type="text" maxchars="3" style="width:50px" id="new_to_amt" value="1" /></td>
 					<td align="center"><input type="checkbox" value="1" id="new_elastic" /></td>
 					<td align="center"><a href="javascript:;" onclick="CVMO.ClusterUI.AddInstanceFromForm()" class="softbutton"><img border="0" src="{% static "images/vm_add.png" %}" align="absmiddle"> Add instance</a></td>
 				</tr>
@@ -81,7 +93,6 @@
 			{% endif %}
 		</table>
 	</div>
-
 	<div class="accordion-header separator"><h2>Environment</h2></div>
 	<div class="accordion-content">
 		<p class="description">Here you can specify the environment variables your scripts might be using. These variables will be shared along the VM instances.</p>

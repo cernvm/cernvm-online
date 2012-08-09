@@ -1,8 +1,9 @@
 {% extends "core/class_context.html" %}
 {% block title %}Context Definition{% endblock %}
-{% block body %}
 {% load formutils %}
 {% load static %}
+{% block head %}<script type="text/javascript" src="{% static "scripts/cvmocontext.js" %}"></script>{% endblock %}
+{% block body %}
 <form action="/context/create" method="post">{% csrf_token %}
 <h1>Context template</h1>
 <p>Please fill the following parameters and click create in order to create a new virtual machine context definition</p>

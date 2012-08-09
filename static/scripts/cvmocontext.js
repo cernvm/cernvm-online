@@ -148,7 +148,11 @@ CVMO.ContextUI.UpdateGroups = function(selected_group) {
 };
 
 // API => Add environment variable from the form
-CVMO.ContextUI.AddEnvFromForm = function() {        
+CVMO.ContextUI.AddEnvFromForm = function() {
+	// Do not let environment variables without a name
+	if( $('new_env_var').getProperty('value') == "" ) {
+		return;
+	}
     // Create instance
     CVMO.ContextUI.AddEnv(
             $('new_env_var').getProperty('value'),

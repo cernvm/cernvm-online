@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/var/www/html/db.sqlite3',             # Or path to database file if using sqlite3.
+        'NAME': '/home/cvmo/domains/cernvm-online.cern.ch/db.sqlite3',             # Or path to database file if using sqlite3.
         'USER': '',                                     # Not used with sqlite3.
         'PASSWORD': '',                                 # Not used with sqlite3.
         'HOST': '',                                     # Set to empty string for localhost. Not used with sqlite3.
@@ -70,7 +70,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    ( 'static', '/var/www/html/cvmo/static' )
+    ( 'static', '/home/cvmo/domains/cernvm-online.cern.ch/public_html/static' )
 )
 
 # List of finder classes that know how to find static files in
@@ -111,7 +111,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/var/www/html/cvmo/templates'
+    '/home/cvmo/domains/cernvm-online.cern.ch/public_html/templates'
 )
 
 INSTALLED_APPS = (
@@ -205,6 +205,7 @@ SHIBBOLETH_SSO = {
         r'/register_action$',
         r'/account_activation$',
         r'/api/fetch/?$',
+        r'/api/cluster/.*$'
     ]
 }
 

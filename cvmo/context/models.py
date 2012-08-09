@@ -79,8 +79,8 @@ class ClusterDefinition(models.Model):
     description = models.TextField()
     owner       = models.ForeignKey(User)
     key         = models.CharField(max_length=100, blank=True)
-    checksum    = models.CharField(max_length=40)
     public      = models.BooleanField(verbose_name='Visible on public lists')
+    agent       = models.BooleanField(verbose_name='Activate iAgent')
     data        = models.TextField()
 
     def __str__(self):

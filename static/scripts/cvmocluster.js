@@ -46,15 +46,17 @@ window.addEvent('domready', function(){  // Run only when we are fully loaded
         // Create instance
         CVMO.ClusterUI.AddInstance(
                 $('new_context').getProperty('value'),
-                $('new_count').getProperty('value'),
+                $('new_from_amt').getProperty('value'),
+                $('new_to_amt').getProperty('value'),
                 $('new_elastic').getProperty('checked')
             );
         $('new_context').setProperty('value','');
-        $('new_count').setProperty('value','1');
+        $('new_from_amt').setProperty('value','1');
+        $('new_to_amt').setProperty('value','1');
     }
 
     // API => Add instance row
-    CVMO.ClusterUI.AddInstance = function(context, instances, elastic) {
+    CVMO.ClusterUI.AddInstance = function(context, fromAmt, toAmt, elastic) {
         var table = $('table_cluster_body'),
             id = $$('#table_cluster tbody tr').length+1;
 
@@ -64,7 +66,8 @@ window.addEvent('domready', function(){  // Run only when we are fully loaded
         var row = new Element('tr', { 'class':'cvm-cluster-entry', 'id': 'instance'+id});
         new Element('td', { align: 'center', html: '<img  id="instance_handle{{forloop.counter}}" class="cvm-context-handle handle" src="/static/images/handle.png" alt="=" />' }).inject(row);
         new Element('td', { html: '<input type="hidden" name="values[instances]['+id+'][context]" value="'+context+'" />'+context }).inject(row);
-        new Element('td', { html: '<input type="text" style="width:50px" name="values[instances]['+id+'][instances]" value="'+instances+'" />' }).inject(row);
+        new Element('td', { html: '<input type="text" style="width:50px" name="values[instances]['+id+'][from_amt]" value="'+fromAmt+'" />' }).inject(row);
+        new Element('td', { html: '<input type="text" style="width:50px" name="values[instances]['+id+'][to_amt]" value="'+toAmt+'" />' }).inject(row);
         new Element('td', { align: 'center', html: '<input type="checkbox" name="values[instances]['+id+'][elastic]" value="1" '+(elastic?'checked="checked"':'')+'" />' }).inject(row);
         new Element('td', { align: 'center', 'class': 'v-center', html: '<a href="javascript:;" onclick="CVMO.ClusterUI.RemoveInstance(\'instance'+id+'\');" class="softbutton"><img border="0" src="/static/images/vm_remove.png" align="absmiddle"> Remove instance</a>' }).inject(row);
         row.inject(table);
@@ -89,14 +92,18 @@ window.addEvent('domready', function(){  // Run only when we are fully loaded
 
     
     // API => Add environment variable from the form
-    CVMO.ClusterUI.AddEnvFromForm = function() {        
+    CVMO.ClusterUI.AddEnvFromForm = function() {
+    	// Do not let environment variables without a name
+    	if( $('new_env_var').getProperty('value') == "" ) {
+    		return;
+    	}
         // Create instance
         CVMO.ClusterUI.AddEnv(
                 $('new_env_var').getProperty('value'),
                 $('new_env_value').getProperty('value')
             );
         $('new_env_var').setProperty('value','');
-        $('new_env_var').setProperty('value','');
+        $('new_env_value').setProperty('value','');
         
     }
 

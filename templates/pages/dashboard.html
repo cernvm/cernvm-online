@@ -41,8 +41,8 @@
 	<tr>
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
-		<th>ID</th>
-		<th>Key</th>
+		<th width="240">ID</th>
+		<!-- <th>Key</th> -->
 		<th width="200">Operations</th>		
 	</tr>
 	{% for item in cluster_list %}
@@ -53,21 +53,22 @@
 				<img alt="Private" title="Private definition" src="{% static "images/lock.png" %}" /></td>
 				{% endif %}
 			<td>{{ item.name }}</td>
-			<td>{{ item.cid }}</td>
-			<td>{{ item.key }}</td>
+			<td>{{ item.id }}</td>
+			<!-- <td>{{ item.key }}</td> -->
 			<td>
-				<a href="#" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
-				<a href="#" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a>
+				<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
+				<a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a>
 			</td>
 		</tr>
 	{% empty %}
 		<tr>
-			<td colspan="5" align="center">No clusters defined yet</tr>
+			<!-- <td colspan="5" align="center">No clusters defined yet</tr> -->
+			<td colspan="4" align="center">No clusters defined yet</tr>
 		</tr>
 	{% endfor %}
 </table>
 <br />
-<p><a href="#" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/package_add.png" %}" /> Create new cluster</a></p>
+<p><a href="{% url "cluster_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/package_add.png" %}" /> Create new cluster</a></p>
 
 <h2>Your virtual machines</h2>
 <table class="pad-5">

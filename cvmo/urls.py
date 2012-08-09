@@ -26,7 +26,7 @@ urlpatterns += patterns('cvmo.context.views.cluster',
     url(r'^cluster/clone/(?P<cluster_id>[-\w]+)$', 'clone',     name="cluster_clone"),
     url(r'^cluster/delete/(?P<cluster_id>[-\w]+)$','delete',    name="cluster_delete"),
     url(r'^cluster/view/(?P<cluster_id>[-\w]+)$',  'view',      name="cluster_view"),
-    url(r'^api/cluster/(?P<cluster_id>[-\w]+)/$',  'api_get')
+    url(r'^api/cluster/(?P<cluster_id>[-\w]+)/$',  'api_get_definition')
 )
 
 urlpatterns += patterns('cvmo.context.views.machine',
