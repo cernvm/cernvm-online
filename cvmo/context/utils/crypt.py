@@ -17,12 +17,12 @@ def encrypt(plaintext, secret, mode=AES.MODE_CFB):
     salt = Random.new().read(8)
     
     # Salt the password
-    passTheSalt = secret + salt
+    passTheSalt = str(secret) + salt
     
     # Generate hashes that will produce the KEY and the IV
     hashes = [hashlib.md5(passTheSalt).digest()]
-    for i in range(1,3):
-       hashes.append(hashlib.md5(hashes[i-1] + passTheSalt).digest())
+    for i in range(1, 3):
+       hashes.append(hashlib.md5(hashes[i - 1] + passTheSalt).digest())
 
     # Extract Key and IV
     key = hashes[0] + hashes[1]
@@ -52,12 +52,12 @@ def decrypt(ciphertext, secret, mode=AES.MODE_CFB):
     salt = ciphertext[8:16]
     
     # Salt the password
-    passTheSalt = secret + salt
+    passTheSalt = str(secret) + salt
 
     # Generate hashes that will produce the KEY and the IV
     hashes = [hashlib.md5(passTheSalt).digest()]
-    for i in range(1,3):
-       hashes.append(hashlib.md5(hashes[i-1] + passTheSalt).digest())
+    for i in range(1, 3):
+       hashes.append(hashlib.md5(hashes[i - 1] + passTheSalt).digest())
     
     # Extract Key and IV
     key = hashes[0] + hashes[1]

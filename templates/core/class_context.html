@@ -21,7 +21,7 @@
 	<h3 class="title">Recent Definitions</h3>
 	<div class="content sidenav">
 		<ul>
-			{% for item in last_definitions %}
+			{% for item in last_context_definitions %}
 			<li><a href="{% url "context_view" context_id=item.id %}"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
 			{% empty %}
 			<li class="empty">No context definitions</li>
@@ -35,7 +35,12 @@
 	<div class="content sidenav">
 		<ul>
 			{% block last_clusters %}
+			{% for item in last_cluster_definitions %}
+			<!-- <li><a href="{% url "cluster_view" cluster_id=item.id %}"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li> -->
+			<li><a href="#"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
+			{% empty %}
 			<li class="empty">No cluster definitions</li>
+			{% endfor %}			
 			{% endblock %}
 		</ul>
 	</div>

@@ -395,6 +395,17 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
         query = null,
         index = -1,
         self = this;
+    
+    /* Set browser autocomplete to off */
+    $( el ).set( "autocomplete", "off" );
+    $( el ).addEvent( "change", 
+		function( event )
+		{
+    		if( $( el ).get( "value" ) == "" ) {
+    			set_valid( true );
+    		}
+		}
+    );
 
     // Prepare dropdown element
     if (CVMO.Widgets.AutoCompleteDropdown == null) {
@@ -424,7 +435,7 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
                     siz = $(items[i][0]).getSize(),
                     scr = $(dropdown).getScroll(),
                     osz = $(dropdown).getSize();
-                window.console.log(pos,siz,scr,osz);
+//                window.console.log(pos,siz,scr,osz);
             };
         }
     };
@@ -485,16 +496,17 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
                         select_item(id);
                     });
                     elm.addEvent('click', function(e) {
-                        $(el).set('value', item.label);
-                        set_valid(true);
-                        reset_list();
+                        if( select_value( [ elm, item.label, item.attributes ] ) ) {
+	                        set_valid(true);
+	                        reset_list();
+                        }
                     });
                     
                     // Store to container
                     $(elm).inject(container)
 
                     // Push item in the list
-                    items.push([ elm, item.label ]);
+                    items.push([ elm, item.label, item.attributes ]);
                 });
                 
                 // Select first item
@@ -533,7 +545,29 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
         reset_list();
         update_list();
     }
-
+    
+    // UI -> Select an item from the list
+    var select_value = function( item ) {
+    	/** 
+    	 * Item:
+    	 * 	0: element (li)
+    	 * 	1: label
+    	 * 	2: attributes map
+    	 * 		attr_name: attr_value	
+    	 */
+    	
+    	/* Is there callback ? */
+    	if( typeof options["onSelectChoice"] == "function" ) {
+    		res = options["onSelectChoice"]( item[1], item[2] );
+    	} else {
+    		res = true;
+    	}
+    	
+    	/* Set value */
+    	if( res ) $( el ).set( "value", item[1] );
+    	
+    	return res;
+    }
     
     // Prepare timer var
     var timer=0;
@@ -543,20 +577,21 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
         setTimeout(reset_list, 300);
     });
     $(el).addEvent('keydown', function(e) {
-        if (e.code == 13) {
-            if (index != -1) {
-                $(el).set('value', items[index][1]);
-                set_valid(true);
-                reset_list();
-                return false;
+        if (e.code == 13) { /* enter */
+            if( index != -1 && select_value( items[index] ) ) {
+	            set_valid(true);
+	            reset_list();
+	            return false;
             }
-        } else if (e.code == 40) {
+        } else if (e.code == 40) { /* down arrow */
             return false;
-        } else if (e.code == 38) {
+        } else if (e.code == 38) { /* up arrow */
             return false;
+        } else if (e.code == 9) { /* tab */
+        	/* Do nothing - tab is ignored! */
         } else {
             set_valid(false);
-        }
+        }        
     });
     $(el).addEvent('keyup', function(e) {
         clearTimeout(timer);
@@ -578,7 +613,7 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
                 if (index<0) index=items.length-1;
                 select_item(index);
             }
-        } else if (e.code == 13) {
+        } else if (e.code == 13) { /* enter */
             // Passthru
         } else {
             var value = $(el).get('value');

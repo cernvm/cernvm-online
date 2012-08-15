@@ -57,7 +57,7 @@
 			<!-- <td>{{ item.key }}</td> -->
 			<td>
 				<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
-				<a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a>
+				<!-- <a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a> -->
 			</td>
 		</tr>
 	{% empty %}
@@ -83,12 +83,13 @@
 		<tr>
 			<td>
 				{% if item.status == "C" %}
-				<img alt="VM Cloud" title="Instance contextualized on the cloud" src="{% static "images/vm_cloud.png" %}" /></td>
+					<img alt="VM Cloud" title="Instance contextualized on the cloud" src="{% static "images/vm_cloud.png" %}" />
 				{% elif item.status == "P" %}
-				<img alt="VM" title="Instance contextualized via pairing" src="{% static "images/vm_user.png" %}" /></td>
+					<img alt="VM" title="Instance contextualized via pairing" src="{% static "images/vm_user.png" %}" />
 				{% else %}
-				<img alt="VM" src="{% static "images/vm.png" %}" /></td>
+					<img alt="VM" src="{% static "images/vm.png" %}" />
 				{% endif %}
+			</td>
 			<td>{{ item.uuid }}</td>
 			<td>{{ item.version }}</td>
 			<td>{{ item.context.name }}</td>
@@ -98,7 +99,7 @@
 		</tr>
 	{% empty %}
 		<tr>
-			<td colspan="4" align="center">No instances paired yet</tr>
+			<td colspan="5" align="center">No instances paired yet</tr>
 		</tr>
 	{% endfor %}
 </table>

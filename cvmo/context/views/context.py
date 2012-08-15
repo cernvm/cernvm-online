@@ -18,6 +18,7 @@ from cvmo.querystring_parser import parser
 from cvmo.context.utils.views import uncache_response, render_error, render_confirm, render_password_prompt
 from cvmo.context.utils.context import gen_context_key, salt_context_key
 from cvmo.context.utils import crypt
+import pprint
 
 def get_cernvm_config():
     """ Download the latest configuration parameters from CernVM """
@@ -29,15 +30,15 @@ def get_cernvm_config():
     _config = _config.split("\n")
     for line in _config:
         if line:
-            (k, v) = line.split('=',1)
-            _params[k]=v
+            (k, v) = line.split('=', 1)
+            _params[k] = v
     
     
     # Generate JSON map for the CERNVM_REPOSITORY_MAP
     _cvmMap = {}
     _map = _params['CERNVM_REPOSITORY_MAP'].split(",")
     for m in _map:
-        (name, _optlist) = m.split(":",1)
+        (name, _optlist) = m.split(":", 1)
         options = _optlist.split("+")
         _cvmMap[name] = options
     
@@ -69,21 +70,36 @@ def ajax_list(request):
 
     # Query database
     _ans = []
-    resultset = ContextDefinition.objects.filter(Q(name__contains=query), Q(public=True) | Q(owner=request.user))[:10]
+    resultset = ContextDefinition.objects.filter(Q(name__contains=query), Q(public=True) | Q(owner=request.user), Q(inherited=False))[:10]
     for c in resultset:
         
         # Check for key and add the image suffix
-        suffix=''
+        suffix = ''
         if c.key != '':
-            suffix='_key'
+            suffix = '_key'
         
         # Define the icon
-        icon='<img src="/static/images/user'+suffix+'.png" style="width:14px;height:14px" align="baseline" /> '
+        icon = '<img src="/static/images/user' + suffix + '.png" style="width:14px;height:14px" align="baseline" /> '
         if (c.public):
-            icon = '<img src="/static/images/public'+suffix+'.png" style="width:14px;height:14px" align="baseline" /> '
+            icon = '<img src="/static/images/public' + suffix + '.png" style="width:14px;height:14px" align="baseline" /> '
+            
+        # Define if the 
+        has_key = False
+        if c.key != "":
+            has_key = True
         
         # Push the result
-        _ans.append({ 'label':c.name, 'text':icon+c.name+'<br /><small>Author: <em>'+c.owner.first_name+' '+c.owner.last_name+'</em><br />Description: <em>'+c.description+'</em></small>' })
+        _ans.append(
+            { 
+                'label':c.name,
+                'text':icon + c.name + '<br /><small>Author: <em>' 
+                    + c.owner.first_name + ' ' + c.owner.last_name + '</em><br />Description: <em>' 
+                    + c.description + '</em></small>',
+                'attributes': {
+                   "has_key": has_key
+                } 
+            }
+        )    
 
     # Return response
     return uncache_response(HttpResponse(json.dumps(_ans), content_type="application/json"))
@@ -125,12 +141,12 @@ def create(request):
     # Get the possible secret key
     c_key = ""
     if ('protect' in values) and (values['protect']):
-        c_key = values['secret']
+        c_key = str(values['secret'])
     
     # If the content is encrypted process the data now
     if (c_key != ''):
         c_values = base64.b64encode(crypt.encrypt(c_values, c_key))
-        c_config = "ENCRYPTED:"+base64.b64encode(crypt.encrypt(c_config, c_key))
+        c_config = "ENCRYPTED:" + base64.b64encode(crypt.encrypt(c_config, c_key))
         c_key = salt_context_key(c_uuid, c_key)
     
     # Check if this is public
@@ -140,20 +156,21 @@ def create(request):
     
     # Save context definition
     e_context = ContextDefinition.objects.create(
-            id = c_uuid,
-            name = values['name'],
-            description = values['description'],
-            owner = request.user,
-            key = c_key,
-            public = c_public,
-            data = c_values,
-            checksum = c_checksum
+            id=c_uuid,
+            name=str(values['name']),
+            description=str(values['description']),
+            owner=request.user,
+            key=c_key,
+            public=c_public,
+            data=c_values,
+            checksum=c_checksum,
+            inherited=False
         )
     
     # Save context data (Should go to key/value store for speed-up)
     e_data = ContextStorage.objects.create(
-            id = c_uuid,
-            data = c_config
+            id=c_uuid,
+            data=c_config
         )
     
     # Go to dashboard
@@ -167,7 +184,7 @@ def clone(request, context_id):
     
     # Check if the data are encrypted
     if item.key == '':
-        data = pickle.loads( str(item.data) )
+        data = pickle.loads(str(item.data))
         
     else:
         
@@ -177,24 +194,24 @@ def clone(request, context_id):
             # Validate password
             try:
                 if salt_context_key(item.id, request.POST['password']) != item.key:
-                    return render_password_prompt(request, 'Context encrypted', 
+                    return render_password_prompt(request, 'Context encrypted',
                         'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
                         reverse('context_clone', kwargs={'context_id':context_id}),
                         { 'msg_error': 'Password mismatch' }
                         )
             except Exception as ex:
-                return render_password_prompt(request, 'Context encrypted', 
+                return render_password_prompt(request, 'Context encrypted',
                     'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
                     reverse('context_clone', kwargs={'context_id':context_id}),
                     { 'msg_error': 'Decryption error: %s' % str(ex) }
                     )
                 
             # Decode data
-            data = pickle.loads( crypt.decrypt( base64.b64decode(str(item.data)), request.POST['password'].decode("utf-8").encode('ascii','ignore') ) )
+            data = pickle.loads(crypt.decrypt(base64.b64decode(str(item.data)), request.POST['password'].decode("utf-8").encode('ascii', 'ignore')))
             
         else:
             # Key does not exist in session? 
-            return render_password_prompt(request, 'Context encrypted', 
+            return render_password_prompt(request, 'Context encrypted',
                 'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
                 reverse('context_clone', kwargs={'context_id':context_id})
                 )
@@ -219,7 +236,7 @@ def view(request, context_id):
     
     # Check if the data are encrypted
     if item.key == '':
-        data = pickle.loads( str(item.data) )
+        data = pickle.loads(str(item.data))
         
     else:
         
@@ -229,24 +246,24 @@ def view(request, context_id):
             # Validate password
             try:
                 if salt_context_key(item.id, request.POST['password']) != item.key:
-                    return render_password_prompt(request, 'Context encrypted', 
+                    return render_password_prompt(request, 'Context encrypted',
                         'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
                         reverse('context_view', kwargs={'context_id':context_id}),
                         { 'msg_error': 'Password mismatch' }
                         )
             except Exception as ex:
-                return render_password_prompt(request, 'Context encrypted', 
+                return render_password_prompt(request, 'Context encrypted',
                     'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
                     reverse('context_view', kwargs={'context_id':context_id}),
                     { 'msg_error': 'Decryption error: %s' % str(ex) }
                     )
                 
             # Decode data
-            data = pickle.loads( crypt.decrypt( base64.b64decode(str(item.data)), request.POST['password'].decode("utf-8").encode('ascii','ignore') ) )
+            data = pickle.loads(crypt.decrypt(base64.b64decode(str(item.data)), request.POST['password'].decode("utf-8").encode('ascii', 'ignore')))
             
         else:
             # Key does not exist in session? 
-            return render_password_prompt(request, 'Context encrypted', 
+            return render_password_prompt(request, 'Context encrypted',
                 'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
                 reverse('context_view', kwargs={'context_id':context_id})
                 )
@@ -269,15 +286,14 @@ def delete(request, context_id):
     if ('confirm' in request.GET) and (request.GET['confirm'] == 'yes'):
         # Delete the specified contextualization entry
         ContextDefinition.objects.filter(id=context_id).delete()
-        ContextStorage.objects.filter(id=context_id).delete()
-        
+
         # Go to dashboard
         return redirect('dashboard')
         
     else:
         # Show the confirmation screen
-        return render_confirm(request, 'Delete context', 
+        return render_confirm(request, 'Delete context',
                               'Are you sure you want to delete this contextualization information? This action is not undoable!',
-                              reverse('context_delete', kwargs={'context_id':context_id})+'?confirm=yes',
+                              reverse('context_delete', kwargs={'context_id':context_id}) + '?confirm=yes',
                               reverse('dashboard')
                               )

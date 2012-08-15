@@ -6,12 +6,29 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
 from cvmo.context.plugins import ContextPlugins
-from cvmo.context.models import ClusterDefinition, ContextDefinition
+from cvmo.context.models import ClusterDefinition, ContextDefinition, \
+    ContextStorage, ClusterInstance
 from cvmo.querystring_parser import parser
 
-from cvmo.context.utils.context import gen_context_key
+from cvmo.context.utils.context import gen_context_key, salt_context_key
 from cvmo.context.utils.views import uncache_response, render_confirm
 from django.core.urlresolvers import reverse
+from cvmo.context.utils import crypt
+import base64
+import pprint
+from django.db.models.query_utils import Q
+
+"""
+    Django template engine does not support the dictionary lookup
+    using a variable as a key. Therefore service_offerings is a list of
+    hashes instead of a dictionary (which would make much more sense)...
+"""
+service_offerings = [
+    { "value": "small", "label": "Small" },
+    { "value": "medium", "label": "Medium" },
+    { "value": "large", "label": "Large" },
+    { "value": "xlarge", "label": "Extra large" }
+]
 
 def api_get_definition(request, cluster_id):
     # Is cluster id defined?
@@ -64,6 +81,7 @@ def blank(request):
         "values": {
             "instances": []
         },
+         "service_offerings": service_offerings,
         "disabled": False
     }, RequestContext(request))
 
@@ -96,72 +114,152 @@ def create(request):
     if "agent" in values and values["agent"]:
         c_agent = True
         
-    # Create the instances structure
-    c_instances = []
+    # Get serialized context data
+    c_data = pickle.dumps({ "values": values, "enabled": enabled })
     
+    # Encrypt data?
+    if c_key != "":
+        c_data = base64.b64encode(crypt.encrypt(c_data, c_key))
+        
+    # Save context definition
+    cluster = ClusterDefinition.objects.create(
+        id=c_uuid,
+        name=str(values['name']),
+        description=str(values['description']),
+        owner=request.user,
+        key="",
+        public=c_public,
+        agent=c_agent,
+        data=c_data
+    )      
+        
     # Get instances
+    i = 0
     for index in values["instances"]:
         instance = values["instances"][index]
         
         # Get the context definition
         try:
-            context = ContextDefinition.objects.get(name=instance["context"])
+            context = ContextDefinition.objects.get(name=str(instance["context"]))
         except Exception:
             # Context not found for this instance
+            cluster.delete()
             return render_to_response('pages/cluster.html', {
                 "values" : post_dict['values'],
+                "service_offerings": service_offerings,
                 "disabled": False,
                 "msg_info": "",
                 "msg_warning": instance["context"] + " context was not found!"
             }, RequestContext(request))
+            
+        # Get old key
+        if "key" not in instance:
+            old_key = ""
+        else:
+            old_key = str(instance["key"])
         
-        # Get the data
-        data = pickle.loads(context.data)
+        # Check if it has a key
+        if context.key is not None \
+            and context.key != "":
+            # User should had define the key of the context
+            if old_key == "":
+                cluster.delete()
+                return render_to_response('pages/cluster.html', {
+                    "values" : post_dict['values'],
+                    "service_offerings": service_offerings,
+                    "disabled": False,
+                    "msg_info": "",
+                    "msg_warning": str(instance["context"]) + " context is encrypted. Please provide the key!"
+                }, RequestContext(request))                        
+                
+            # Check that key is correct
+            if context.key != salt_context_key(context.id, old_key):
+                cluster.delete()
+                return render_to_response('pages/cluster.html', {
+                    "values" : post_dict['values'],
+                    "service_offerings": service_offerings,
+                    "disabled": False,
+                    "msg_info": "",
+                    "msg_warning": str(instance["context"]) + " context key is invalid!"
+                }, RequestContext(request))
+                            
+            # User had defined the correct key, get data by decrypting
+            decryption_key = old_key.decode("utf-8").encode("ascii", "ignore")
+            unencrypted_data = crypt.decrypt(base64.b64decode(context.data), decryption_key)            
+            data = pickle.loads(unencrypted_data)
+        else:        
+            # Get the data
+            data = pickle.loads(context.data)
 
         # Set the agent
         if c_agent:
-            data["values"]["agent"] = False
+            data["values"]["agent"] = True
             
         # Add the environment variables
-        if "environment" not in data["values"]["general"]:
-            data["values"]["general"]["environment"] = {}
-        for var in values["environment"]:
-            data["values"]["general"]["environment"][var] = values["environment"][var]
+        if "environment" in values:
+            if "environment" not in data["values"]["general"]:
+                data["values"]["general"]["environment"] = {}
+            for var in values["environment"]:
+                data["values"]["general"]["environment"][str(var)] = str(values["environment"][var])
             
-        # Create cluster_instance object
-        cluster_instance = {
-            "from_amt": instance["from_amt"],
-            "to_amt": instance["to_amt"],
-            "elastic": False,
-            "contextid": context.id,
-            "context_name": context.name
-        }               
+        # Create new cluster declaration
+        cont_uuid = gen_context_key()
+        cont_key = c_key
+        cont_values = pickle.dumps(data)
+        cont_config = ContextPlugins().renderContext(cont_uuid, data["values"], data["enabled"])
+        # Generate checksum of the configuration 
+        cont_checksum = hashlib.sha1(cont_config).hexdigest()            
+        
+        # If the content is encrypted process the data now
+        if cont_key != '':
+            cont_values = base64.b64encode(crypt.encrypt(cont_values, cont_key))
+            cont_config = "ENCRYPTED:" + base64.b64encode(crypt.encrypt(cont_config, cont_key))
+            cont_key = salt_context_key(cont_uuid, cont_key)
+            
+        # Save context definition
+        e_context = ContextDefinition.objects.create(
+            id=cont_uuid,
+            name=cluster.name + ": " + context.name,
+            description=context.description,
+            owner=request.user,
+            key=cont_key,
+            public=False,
+            data=cont_values,
+            checksum=cont_checksum,
+            inherited=True
+        )
+        
+        # Save context data (Should go to key/value store for speed-up)
+        ContextStorage.objects.create(
+            id=cont_uuid,
+            data=cont_config
+        )       
+        
+        # Get elastic value
+        cont_elastic = False
         if "elastic" in instance and instance["elastic"]:
-            cluster_instance["elastic"] = True
-            
-        # Get Context AMI
-        cluster_instance["data"] = ContextPlugins().renderContext(context.id, data["values"], data["enabled"])        
-        # Create new checksum
-        cluster_instance["checksum"] = hashlib.sha1(cluster_instance["data"]).hexdigest()
+            cont_elastic = True
         
-        c_instances.append(cluster_instance)
+        # Save instance
+        ClusterInstance.objects.create(
+            cluster=cluster,
+#            order=instance["order"],
+            order=i,
+            context=e_context,
+            from_amt=instance["from_amt"],
+            to_amt=instance["to_amt"],
+            elastic=cont_elastic,
+            service_offering=str(instance["service_offering"])
+        )             
+        i += 1
         
-    # Get serialized context data
-    c_data = pickle.dumps({ "values": values, "enabled": enabled, "instances": c_instances })
-        
-    # Save context definition
-    ClusterDefinition.objects.create(
-        id=c_uuid,
-        name=values['name'],
-        description=values['description'],
-        owner=request.user,
-        key=c_key,
-        public=c_public,
-        agent=c_agent,
-        data=c_data
-    )  
+    if c_key != "":
+        # Store key, hashed
+        c_key = salt_context_key(c_uuid, c_key)
+        cluster.key = c_key
+        cluster.save()                
     
-    # Go to dashboard
+    # Go to dash board
     return redirect('dashboard')
         
 def clone(request, cluster_id):
@@ -171,12 +269,28 @@ def view(request, cluster_id):
     pass
 
 def delete(request, cluster_id):
-    # Is it confirmed?
-    if ('confirm' in request.GET) and (request.GET['confirm'] == 'yes'):
-        # Delete the specified cluster definiton
-        ClusterDefinition.objects.filter(id=cluster_id).delete()        
+    # Get the cluster
+    try:
+        cluster = ClusterDefinition.objects.get(id=cluster_id)
+    except:
         # Go to dashboard
-        return redirect('dashboard')        
+        request.session["redirect_msg_error"] = "Requested cluster id not found!"
+        return redirect('dashboard')
+    
+    # Check the user
+    if cluster.owner != request.user:
+        # Go to dashboard
+        request.session["redirect_msg_error"] = "You are not authorized to remove the cluster."
+        return redirect('dashboard')
+    
+    # Is it confirmed?
+    if ('confirm' in request.GET) and (request.GET['confirm'] == 'yes'):        
+        # Delete the specified cluster definition
+        cluster.delete()
+        
+        # Redirect to dashboard
+        request.session["redirect_msg_success"] = "Cluster " + cluster_id + " was removed successfully!"
+        return redirect( 'dashboard' )
     else:
         # Show the confirmation screen
         return render_confirm(

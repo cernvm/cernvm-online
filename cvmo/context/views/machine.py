@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from cvmo.context.models import ClaimRequests, Machines, ContextDefinition, ContextStorage
 from cvmo.context.utils.views import render_error, render_confirm, uncache_response
 from cvmo.context.utils.context import gen_pin, get_uuid_salt, salt_context_key
+from django.db.models.query_utils import Q
 
 ##############
 REQUEST_TIMEOUT = timedelta(minutes=5)
@@ -188,7 +189,7 @@ def pair_status(request, claim_key):
 def pair_begin(request):
     # First screen of the pairing process: Show the available contextualization options
     return uncache_response(render_to_response('pages/machine_pair.html', {
-            'context_list': ContextDefinition.objects.filter(owner=request.user),
+            'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False)),
             'context_public': ContextDefinition.objects.filter(public=True).exclude(owner=request.user)
         }, RequestContext(request)))
     

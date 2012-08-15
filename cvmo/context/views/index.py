@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.db.models import Q
 
 from cvmo.context.models import ContextDefinition, Machines, ClusterDefinition
 
@@ -12,7 +13,7 @@ def welcome(request):
 
 def dashboard(request):
     context = {
-        'context_list': ContextDefinition.objects.filter(owner=request.user),
+        'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False)),
         'cluster_list': ClusterDefinition.objects.filter(owner=request.user),
         'machine_list': Machines.objects.filter(owner=request.user),
     }

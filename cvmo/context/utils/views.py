@@ -1,7 +1,8 @@
-from cvmo.context.models import ContextDefinition
+from cvmo.context.models import ContextDefinition, ClusterDefinition
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, loader
 from django.http import HttpResponse
+from django.db.models.query_utils import Q
 
 def global_context(request):
     
@@ -12,7 +13,8 @@ def global_context(request):
     # Read user-specific information
     return {
         'ip_address': request.META['REMOTE_ADDR'],
-        'last_definitions': ContextDefinition.objects.filter(owner=request.user).order_by('-id')[:5]
+        'last_context_definitions': ContextDefinition.objects.filter(Q(Q(owner=request.user) | Q(public=True)) & Q(inherited=False)).order_by('-id')[:5],
+        'last_cluster_definitions': ClusterDefinition.objects.filter(Q(owner=request.user) | Q(public=True)).order_by('-id')[:5]
     }
 
 def uncache_response(response):

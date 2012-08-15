@@ -4,7 +4,7 @@
 {% load static %}
 {% block head %}<script type="text/javascript" src="{% static "scripts/cvmocluster.js" %}"></script>{% endblock %}
 {% block body %}
-<form action="/cluster/create" method="post">{% csrf_token %}
+<form action="/cluster/create" id="cluster_create_form" method="post">{% csrf_token %}
 <h1>Cluster template</h1>
 <p>Please fill the following parameters and click create in order to create a new cluster definition</p>
 
@@ -31,7 +31,7 @@
 			</tr>
 			<tr>
 				<th>Secret key:</th>
-				<td><input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>			
+				<td><input type="text" maxlength="100" class="cvmo-disabling-protect" id="cluster_key" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>			
 			</tr>
 			<tr>
 				<th>&nbsp</th>
@@ -47,13 +47,15 @@
 			<thead>
 				<tr>
 					{% if not disabled %}
-					<th width="25">Order</th>
+					<!-- <th width="25">Order</th> -->
 					{% endif %}
 					<th>Contextualization Template</th>
 					<th width="50">From Amount</th>
 					<th width="50">To Amount</th>
 					<th width="30">Elastic</th>
+					<th width="100">Service offering</th>
 					{% if not disabled %}
+					<th width="100">Key</th>
 					<th width="150">Operations</th>
 					{% endif %}
 				</tr>
@@ -62,19 +64,40 @@
 				{% for index, inst in values.instances.iteritems %}
 				<tr id="instancePre{{forloop.counter}}" class="cvm-cluster-entry">
 					{% if not disabled %}
-					<td align="center"><img  id="instance_handle{{forloop.counter}}" class="cvm-context-handle handle" src="{% static "images/handle.png" %}" alt="=" /></td>
-					<td><input type="hidden" name="values[instances][{{forloop.counter}}][context]" value="{{inst.context}}" />{{inst.context}}</td>
-					<td align="center"><input type="text" style="width:50px" name="values[instances][{{forloop.counter}}][from_amt]" value="{{inst.from_amt}}" /></td>
-					<td align="center"><input type="text" style="width:50px" name="values[instances][{{forloop.counter}}][to_amt]" value="{{inst.to_amt}}" /></td>
-					<td align="center"><input type="checkbox" name="values[instances][{{forloop.counter}}][elastic]" value="1" {{inst.elastic|chk}} {{disabled|dis}} /></td>
+						<!-- <td align="center"><img  id="instance_handle{{forloop.counter}}" class="cvm-context-handle handle" src="{% static "images/handle.png" %}" alt="=" /></td> -->
+						<td><input type="hidden" name="values[instances][{{forloop.counter}}][context]" value="{{inst.context}}" />{{inst.context}}</td>
+						<td align="center"><input type="text" style="width:50px" name="values[instances][{{forloop.counter}}][from_amt]" value="{{inst.from_amt}}" /></td>
+						<td align="center"><input type="text" style="width:50px" name="values[instances][{{forloop.counter}}][to_amt]" value="{{inst.to_amt}}" /></td>
+						<td align="center"><input type="checkbox" name="values[instances][{{forloop.counter}}][elastic]" value="1" {{inst.elastic|chk}} {{disabled|dis}} /></td>
+						<td align="center">
+							<select name="values[instances][{{forloop.counter}}][service_offering]">
+								{% for option in service_offerings %}
+									{% if inst.service_offering == option.value %}
+										<option selected="selected" value="{{option.value}}">{{option.label}}</option>
+									{% else %}
+										<option value="{{option.value}}">{{option.label}}</option>
+									{% endif %}
+								{% endfor %}
+							</select>
+						</td>			
+						<td align="center">
+							{% if inst.key != "" %}*****{% endif %}
+							<input type="hidden" name="values[instances][{{forloop.counter}}][key]" value="{{inst.key}}" />
+						</td>					
+						<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.ClusterUI.RemoveInstance('instancePre{{forloop.counter}}');" class="softbutton"><img border="0" src="{% static "images/vm_remove.png" %}" align="absmiddle"> Remove instance</a></td>
 					{% else %}
-					<td><input type="hidden" name="values[instances][{{forloop.counter}}][context]" value="{{inst.context}}" />{{inst.context}}</td>
-					<td align="center"><input type="hidden" style="width:50px" name="values[instances][{{forloop.counter}}][from_amt]" value="{{inst.from_amt}}" />{{inst.from_amt}}</td>
-					<td align="center"><input type="hidden" style="width:50px" name="values[instances][{{forloop.counter}}][to_amt]" value="{{inst.to_amt}}" />{{inst.to_amt}}</td>
-					<td align="center"><input type="hidden" name="values[instances][{{forloop.counter}}][elastic]" value="{{inst.elastic}}" />{% if inst.elastic %}Yes{% else %}No{% endif %}</td>
-					{% endif %}
-					{% if not disabled %}
-					<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.ClusterUI.RemoveInstance('instancePre{{forloop.counter}}');" class="softbutton"><img border="0" src="{% static "images/vm_remove.png" %}" align="absmiddle"> Remove instance</a></td>
+						<td><input type="hidden" name="values[instances][{{forloop.counter}}][context]" value="{{inst.context}}" />{{inst.context}}</td>
+						<td align="center"><input type="hidden" style="width:50px" name="values[instances][{{forloop.counter}}][from_amt]" value="{{inst.from_amt}}" />{{inst.from_amt}}</td>
+						<td align="center"><input type="hidden" style="width:50px" name="values[instances][{{forloop.counter}}][to_amt]" value="{{inst.to_amt}}" />{{inst.to_amt}}</td>
+						<td align="center"><input type="hidden" name="values[instances][{{forloop.counter}}][elastic]" value="{{inst.elastic}}" />{% if inst.elastic %}Yes{% else %}No{% endif %}</td>
+						<td align="center">
+							{% for option in service_offerings %}
+								{% if option.value == inst.service_offering %}
+									{{option.label}}
+								{% endif %}
+							{% endfor %}
+							<input type="hidden" name="values[instances][{{forloop.counter}}][service_offering]" value="{{inst.service_offering}}" />
+						</td>
 					{% endif %}
 				</tr>
 				{% endfor %}
@@ -82,12 +105,24 @@
 			{% if not disabled %}
 			<thead>
 				<tr id="newcontext_row" class="tr-newuser">
-					<td>&nbsp;</td>
+					<!-- <td>&nbsp;</td> -->
 					<td><input type="text" id="new_context" style="width:98%" /></td>			
 					<td><input type="text" maxchars="3" style="width:50px" id="new_from_amt" value="1" /></td>
 					<td><input type="text" maxchars="3" style="width:50px" id="new_to_amt" value="1" /></td>
 					<td align="center"><input type="checkbox" value="1" id="new_elastic" /></td>
-					<td align="center"><a href="javascript:;" onclick="CVMO.ClusterUI.AddInstanceFromForm()" class="softbutton"><img border="0" src="{% static "images/vm_add.png" %}" align="absmiddle"> Add instance</a></td>
+					<td align="center">
+						<select name="new_service_offering" id="new_service_offering">
+							{% for option in service_offerings %}
+								{% if inst.service_offering == option.value %}
+									<option selected="selected" value="{{option.value}}">{{option.label}}</option>
+								{% else %}
+									<option value="{{option.value}}">{{option.label}}</option>
+								{% endif %}
+							{% endfor %}
+						</select>
+					</td>		
+					<td align="center"><input type="password" style="display:none" name="new_key" value="" id="new_key" /></td>
+					<td align="center"><a href="javascript:;" onclick="CVMO.ClusterUI.AddInstanceFromForm()" class="softbutton"><img border="0" src="{% static "images/vm_add.png" %}" align="absmiddle"> Add instance</a></td>					
 				</tr>
 			</thead>
 			{% endif %}
