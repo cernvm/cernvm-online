@@ -30,6 +30,18 @@ service_offerings = [
     { "value": "xlarge", "label": "Extra large" }
 ]
 
+cernvm_versions = [
+    { "value": "", "label": "Any" },
+    { "value": "2.5.3", "label": "2.5.3" },
+    { "value": "2.5.1", "label": "2.5.1" },
+    { "value": "2.4.0", "label": "2.4.0" },
+    { "value": "2.3.0", "label": "2.3.0" },
+    { "value": "2.2.0", "label": "2.2.0" },
+    { "value": "2.1.0", "label": "2.1.0" },
+    { "value": "2.0.7", "label": "2.0.7" },
+    { "value": "2.0.5", "label": "2.0.5" }                   
+]
+
 def api_get_definition(request, cluster_id):
     # Is cluster id defined?
     if cluster_id == "":
@@ -82,6 +94,7 @@ def blank(request):
             "instances": []
         },
          "service_offerings": service_offerings,
+         "cernvm_versions": cernvm_versions,
         "disabled": False
     }, RequestContext(request))
 
@@ -126,6 +139,7 @@ def create(request):
         id=c_uuid,
         name=str(values['name']),
         description=str(values['description']),
+        cernvm_version = str(values["cernvm_version"]),
         owner=request.user,
         key="",
         public=c_public,
@@ -147,6 +161,7 @@ def create(request):
             return render_to_response('pages/cluster.html', {
                 "values" : post_dict['values'],
                 "service_offerings": service_offerings,
+                "cernvm_versions": cernvm_versions,
                 "disabled": False,
                 "msg_info": "",
                 "msg_warning": instance["context"] + " context was not found!"
@@ -167,6 +182,7 @@ def create(request):
                 return render_to_response('pages/cluster.html', {
                     "values" : post_dict['values'],
                     "service_offerings": service_offerings,
+                    "cernvm_versions": cernvm_versions,
                     "disabled": False,
                     "msg_info": "",
                     "msg_warning": str(instance["context"]) + " context is encrypted. Please provide the key!"
@@ -178,6 +194,7 @@ def create(request):
                 return render_to_response('pages/cluster.html', {
                     "values" : post_dict['values'],
                     "service_offerings": service_offerings,
+                    "cernvm_versions": cernvm_versions,
                     "disabled": False,
                     "msg_info": "",
                     "msg_warning": str(instance["context"]) + " context key is invalid!"

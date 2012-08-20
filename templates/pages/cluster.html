@@ -22,6 +22,20 @@
 				<td><textarea class="code" name="values[description]" name="other" {{disabled|dis}}>{{ values.description }}</textarea></td>			
 			</tr>
 			<tr>
+				<th>CernVM Version:</th>
+				<td>
+					<select name="values[cernvm_version]" {{disabled|dis}}>
+						{% for option in cernvm_versions %}
+							{% if values.cernvm_version == option.value %}
+								<option selected="selected" value="{{option.value}}">{{option.label}}</option>
+							{% else %}
+								<option value="{{option.value}}">{{option.label}}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</td>			
+			</tr>			
+			<tr>
 				<th>&nbsp</th>
 				<td><input type="checkbox"  name="values[public]" value="1" id="public" {{values.public|chk}} {{disabled|dis}}><label for="public"> Make this cluster definition visible on the public lists</label></td>
 			</tr>
