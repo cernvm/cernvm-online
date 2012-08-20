@@ -10,9 +10,10 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.template import loader
 from django.core import urlresolvers 
-from cvmo.context.models import UserActivationKey
 from Crypto.Random import random
 from Crypto.Hash import SHA256
+from cvmo.context.models import UserActivationKey
+from cvmo.context.utils.views import msg_error, msg_warning, msg_confirm, redirect_memory, get_memory
 
 def login(request):
     if user_is_logged(request):
@@ -396,3 +397,71 @@ def push_to_context(sessionName,contextName,context,request):
         context[contextName] = request.session[sessionName]
         del request.session[sessionName]
 
+def bulk_add(request):
+    """
+    Bulk-add users to the system (Originally used for the CSC2012)
+    """
+    if not user_is_logged(request):
+        msg_error(request, "You are not authenticated!")
+        return redirect("dashboard")
+    if not request.user.is_staff:
+        msg_error(request, "You do not have permission to access this resource!")
+        return redirect("dashboard")
+    
+    # Display bulk add screen
+    mem_data = get_memory(request,'data', '')
+    return render_to_response("pages/users_bulkadd.html", { "data": mem_data }, RequestContext(request))
+    
+def bulk_add_commit(request):
+    """
+    Commit the bulky-added users
+    """
+    if not user_is_logged(request):
+        msg_error(request, "You are not authenticated!")
+        return redirect("dashboard")
+    if not request.user.is_staff:
+        msg_error(request, "You do not have permission to access this resource!")
+        return redirect("dashboard")
+    
+    # Parse the users
+    data = request.POST.get('data', '')
+    users = re.split(r'\r?\n', data)
+    line = 0
+    for u in users:
+        u = u.strip()
+        line += 1
+        
+        # Skip empty lines
+        if (u == ''):
+            continue
+        
+        # Process line
+        data = u.split(",")
+        if len(data) < 2:
+            msg_warning(request, "Expected <strong>user,password, ...</strong> syntax on line "+str(line))
+            return redirect_memory('bulk_add', request)
+        
+        # Add user
+        try:
+            u = User(username=data[0])
+            u.set_password(data[1])
+        
+            # Setup optional fields
+            if len(data) >= 3:
+                u.first_name = data[2]
+            if len(data) >= 4:
+                u.last_name = data[3]
+            if len(data) >= 5:
+                u.email = data[4]
+        
+            # Add user
+            u.save()
+            msg_confirm(request, 'User '+data[0]+' added!')
+
+        except Exception as ex:
+            msg_error(request, "Error while adding user "+data[0]+": "+str(ex))
+            return redirect_memory('bulk_add', request)
+                
+    # Go to dashboard
+    return redirect("dashboard")
+    

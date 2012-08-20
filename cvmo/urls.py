@@ -46,13 +46,20 @@ urlpatterns += patterns('cvmo.context.views.user',
     url(r'^logout$', 'logout',                      name="logout"),
     url(r'^profile$', 'profile_edit',               name="profile"),
     url(r'^profile_save$', 'profile_edit_action',   name="profile_save"),
-    url(r'^account_activation$', 'account_activation', name="account_activation")
+    url(r'^account_activation$', 'account_activation', name="account_activation"),
+    url(r'^user/bulk$', 'bulk_add',                 name="bulk_add"),
+    url(r'^user/bulkcommit$', 'bulk_add_commit',    name="bulk_add_commit")
 )
 
 urlpatterns += patterns('cvmo.context.views.actions',
     url(r'^actions/edit$', 'edit',                  name="actions_edit"),
     url(r'^actions/save$', 'save',                  name="actions_save")
 )
+
+#urlpatterns += patterns('cvmo.context.views.csc',
+#    url(r'^csc$', 'csc_login',                  name="csc_login"),
+#    url(r'^csc/do_login$', 'csc_do_login',      name="csc_do_login")
+#)
 
 urlpatterns += patterns('',
     # Examples:

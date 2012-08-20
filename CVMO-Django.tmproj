@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>cvmo/context/plugins.py</string>
+	<string>cvmo/context/views/cluster.py</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,14 +21,86 @@
 	<integer>262</integer>
 	<key>metaData</key>
 	<dict>
-		<key>cvmo/context/plugin/condor.py</key>
+		<key>cvmo/context/utils/context.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>23</integer>
-				<key>line</key>
 				<integer>12</integer>
+				<key>line</key>
+				<integer>105</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>76</integer>
+		</dict>
+		<key>cvmo/context/views/cluster.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>13</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>194</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>4</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>22</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
+		</dict>
+		<key>cvmo/context/views/context.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>125</integer>
+				<key>line</key>
+				<integer>72</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>cvmo/settings.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>1</integer>
+				<key>line</key>
+				<integer>210</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>190</integer>
+		</dict>
+		<key>cvmo/urls.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>70</integer>
+				<key>line</key>
+				<integer>28</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
@@ -39,52 +111,56 @@
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>13</integer>
+				<integer>52</integer>
 				<key>line</key>
-				<integer>12</integer>
+				<integer>28</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>26</integer>
+				<integer>70</integer>
 				<key>line</key>
-				<integer>12</integer>
+				<integer>28</integer>
 			</dict>
 		</dict>
-		<key>cvmo/context/plugins.py</key>
+		<key>cvmo/wsgi.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>32</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>167</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>163</integer>
+			<integer>0</integer>
 		</dict>
-		<key>templates/pages/context.html</key>
+		<key>templates/pages/login.html</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>131</integer>
+				<integer>33</integer>
 				<key>line</key>
-				<integer>114</integer>
+				<integer>44</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>172</integer>
+			<integer>8</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>cvmo/context/plugin/condor.py</string>
-		<string>cvmo/context/plugins.py</string>
-		<string>templates/pages/context.html</string>
+		<string>cvmo/context/views/cluster.py</string>
+		<string>cvmo/wsgi.py</string>
+		<string>cvmo/urls.py</string>
+		<string>cvmo/context/views/context.py</string>
+		<string>cvmo/settings.py</string>
+		<string>templates/pages/login.html</string>
+		<string>cvmo/context/utils/context.py</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>

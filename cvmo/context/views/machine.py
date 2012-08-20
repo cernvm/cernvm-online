@@ -20,6 +20,27 @@ REQUEST_TIMEOUT = timedelta(minutes=5)
 ##############
 
 ############################################
+## Helpers
+############################################
+
+def source_ip(request):
+    """ Try to detect the real source IP """
+    if 'HTTP_X_FORWARDED_FOR' in request.META:
+        
+        # Fetch the proxy headers
+        ip = request.META['HTTP_X_FORWARDED_FOR']
+        
+        # Get the very first ip if we have a list
+        if ',' in ip:
+            ip = ip.split(', ')[0]
+        
+    else:
+        ip = request.META['REMOTE_ADDR']
+    
+    # Return the guessed IP
+    return ip
+
+############################################
 ## API Entry points
 ############################################
 
@@ -42,7 +63,7 @@ def context_fetch(request):
     checksum = request.GET['checksum']
     uuid = request.GET['uuid']
     ver = request.GET['ver']
-    ip = request.META['REMOTE_ADDR']
+    ip = source_ip(request)
         
     # Check if we are using PIN or CONTEXT_ID
     if ('pin' in request.GET):
@@ -82,7 +103,7 @@ def context_fetch(request):
                 if (claimed_vm.owner != claim_request.requestby):
                     claim_request.status='E'
                     claim_request.save()
-                    return uncache_response(HttpResponse('invalid-request', content_type="text/plain"))
+                    return uncache_response(HttpResponse('not-authorized', content_type="text/plain"))
 
             except:
                 claimed_vm = Machines(uuid=uuid, ip=ip, version=ver, owner=claim_request.requestby)

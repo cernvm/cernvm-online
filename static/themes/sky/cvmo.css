@@ -509,3 +509,12 @@ table.no-hover td:hover, tr.no-hover td, td.no-hover {
 .w50px { width: 50px !important; }
 
 .cvmo-validator-invalid { border: solid 1px red; }
+
+a.imglink {
+    margin-bottom: 4px;
+}
+
+a.imglink:hover {
+    margin-bottom: 0px;
+    border-bottom: solid 4px #aaa;
+}

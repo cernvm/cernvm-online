@@ -1,4 +1,5 @@
 {% extends "core/main.html" %}
+{% load static %}
 {% block body_class %}single_column{% endblock %}
 {% block title %}Login{% endblock %}
 
@@ -39,6 +40,13 @@
 		<div class="field clearfix button-container center">
 			<input type="button" onclick="window.location='https://cernvm-online.cern.ch/Shibboleth.sso/?target=https://cernvm-online.cern.ch/dashboard'" value="Login with CERN Account" />
 		</div>
+		<!--
+		<div class="field clearfix button-container center">
+			<a href="[% url "csc_login" %]" class="imglink">
+				<img src="{% static "images/csc-login-lite.png" %}" />
+			</a>
+		</div>
+		-->
 	</div>
 </div>
 

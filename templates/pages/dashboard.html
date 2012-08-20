@@ -42,7 +42,6 @@
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
 		<th width="240">ID</th>
-		<!-- <th>Key</th> -->
 		<th width="200">Operations</th>		
 	</tr>
 	{% for item in cluster_list %}
@@ -54,7 +53,6 @@
 				{% endif %}
 			<td>{{ item.name }}</td>
 			<td>{{ item.id }}</td>
-			<!-- <td>{{ item.key }}</td> -->
 			<td>
 				<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
 				<!-- <a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a> -->
@@ -62,7 +60,6 @@
 		</tr>
 	{% empty %}
 		<tr>
-			<!-- <td colspan="5" align="center">No clusters defined yet</tr> -->
 			<td colspan="4" align="center">No clusters defined yet</tr>
 		</tr>
 	{% endfor %}
@@ -74,7 +71,7 @@
 <table class="pad-5">
 	<tr>
 		<th width="20">&nbsp;</th>
-		<th>UUID</th>
+		<th>Machine</th>
 		<th width="50">CernVM</th>
 		<th width="170">Context</th>
 		<th width="100">Operations</th>

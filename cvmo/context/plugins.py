@@ -186,7 +186,7 @@ class ContextPlugins(object):
         _ans+= "config_url=%s\n" % values['general']['config_url']
         
         # Prepare contextualization_command
-        if 'context_cmd' in values['general']:
+        if ('context_cmd' in values['general']) and (values['general']['context_cmd'] != ''):
             if 'context_cmd_user' in values['general']:
                 _ans+= "contextualization_command=%s:%s\n" % (values['general']['context_cmd_user'], values['general']['context_cmd'])
         
@@ -222,6 +222,11 @@ class ContextPlugins(object):
             # Set hostname/port
             _proxy+= values['general']['http_proxy']+":"
             _proxy+= str(values['general']['http_proxy_port'])
+            
+            # Check for fallback
+            if ('http_fallback' in values['general']) and (values['general']['http_fallback']):
+                _proxy+=";DIRECT"
+            
         _ans+= "proxy=%s\n" % _proxy
         
         # Setup environment
@@ -239,7 +244,7 @@ class ContextPlugins(object):
             _ans+="edition=%s\n" % values['general']['cvm_edition']
             
             # If we have desktop, setup X and resolution
-            if (values['general']['cvm_edition'] == 'desktop'):
+            if (values['general']['cvm_edition'] == 'Desktop'):
             
                 # Setup resolution
                 if 'cvm_resolution' in values['general']:

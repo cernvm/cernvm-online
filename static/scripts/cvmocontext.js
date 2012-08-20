@@ -96,6 +96,7 @@ CVMO.ContextUI.SelectServices = function(services) {
     CVMO.ContextUI.services.select(1, services);
 }
 
+var i=1;
 CVMO.ContextUI.AddUserFromForm = function() {
     CVMO.ContextUI.AddUser(
             $('new_user_name').getProperty('value'),
@@ -103,8 +104,9 @@ CVMO.ContextUI.AddUserFromForm = function() {
             $('new_user_home').getProperty('value'),
             $('new_user_password').getProperty('value')
         );
-    $('new_user_name').setProperty('value','');
-    $('new_user_home').setProperty('value','');
+    i++;
+    $('new_user_name').setProperty('value','user'+i);
+    $('new_user_home').setProperty('value','/home/user'+i);
     $('new_user_password').setProperty('value','');
 }
 
@@ -142,8 +144,8 @@ CVMO.ContextUI.AddUser = function(name, group, home, password) {
 CVMO.ContextUI.UpdateGroups = function(selected_group) {
     var grp = String(selected_group).toUpperCase();
     var groups = CVMO.ContextUI.groups;
+    $('new_user_group').setProperty('value', String(selected_group).toLowerCase());
     if (groups[grp] == undefined) return;
-     $('new_user_group').setProperty('value', String(selected_group).toLowerCase());
     CVMO.ContextUI.repositories.select(1, groups[grp]); // Select that options on list #1
 };
 

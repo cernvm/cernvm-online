@@ -113,7 +113,7 @@
 				{% endfor %}
 				{% if not disabled %}
 				<tr id="newuser_row" class="tr-newuser">
-					<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value); $('f_contextcmduser).setProperty('value', this.value);" /></td>			
+					<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value); $('f_contextcmduser').setProperty('value', this.value);" /></td>			
 					<td><input type="text" id="new_user_group" /></td>
 					<td><input type="text" id="new_user_home" value="/home/user" /></td>
 					<td><input type="password" id="new_user_password" value="" /></td>
@@ -279,6 +279,12 @@
 					<input {{disabled|dis}} type="checkbox" name="values[general][http_usecredentials]" {{values.general.http_usecredentials|chk}} class="cvmo-disabling" id="http_anon"><label for="http_anon"> Proxy requires authentication</label>
 				</td>
 			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td colspan="2">
+					<input {{disabled|dis}} type="checkbox" name="values[general][http_fallback]" {{values.general.http_fallback|chk}} class="cvmo-disabling" id="http_fallback"><label for="http_fallback"> Fallback to direct</label>
+				</td>
+			</tr>
 			<tr>
 				<td colspan="3">&nbsp;</td>
 			</tr>
@@ -286,7 +292,7 @@
 				<th width="150">CernVM Edition:</th>
 				<td colspan="2">
 					<select class="cvmo-disclose" id="model" name="values[general][cvm_edition]">
-                    	<option value="Batch" {{ values.general.cvm_edition|sel:"Batch" }}>Batch</option>
+                    	<option value="Batch" {{ values.general.cvm_edition|sel_default:"Batch" }}>Batch</option>
                     	<option value="Basic" {{ values.general.cvm_edition|sel:"Basic" }}>Basic</option>
 						<option value="Desktop" {{ values.general.cvm_edition|sel:"Desktop" }}>Desktop</option>
                     </select>
@@ -298,7 +304,7 @@
 					<select name="values[general][cvm_resolution]"> 
 	                    <option value="640x480" {{ values.general.cvm_resolution|sel:"640x480" }}>640x480</option>
 						<option value="800x600" {{ values.general.cvm_resolution|sel:"800x600" }}>800x600</option>
-						<option value="1024x768" {{ values.general.cvm_resolution|sel:"1024x768" }}>1024x768</option>
+						<option value="1024x768" {{ values.general.cvm_resolution|sel_default:"1024x768" }}>1024x768</option>
 						<option value="1280x700" {{ values.general.cvm_resolution|sel:"1280x700" }}>1280x700</option>
 						<option value="1280x800" {{ values.general.cvm_resolution|sel:"1280x800" }}>1280x800</option>
 						<option value="1440x900" {{ values.general.cvm_resolution|sel:"1440x900" }}>1440x900</option>
@@ -380,7 +386,7 @@
 						<option value="tml-uni" {{ values.general.cvm_keyboard_layout|sel:"tml-uni" }}>Tamil (Typewriter)</option>
 						<option value="trq" {{ values.general.cvm_keyboard_layout|sel:"trq" }}>Turkish</option>
 						<option value="us" {{ values.general.cvm_keyboard_layout|sel:"us" }}>U.S. English</option>
-						<option value="us-acentos" {{ values.general.cvm_keyboard_layout|sel:"us-acentos" }}>U.S. International</option>
+						<option value="us-acentos" {{ values.general.cvm_keyboard_layout|sel_default:"us-acentos" }}>U.S. International</option>
 						<option value="ua-utf" {{ values.general.cvm_keyboard_layout|sel:"ua-utf" }}>Ukrainian</option>
 						<option value="uk" {{ values.general.cvm_keyboard_layout|sel:"uk" }}>United Kingdom</option>
                     </select>

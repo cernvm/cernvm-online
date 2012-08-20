@@ -1,0 +1,18 @@
+{% extends "core/class_context.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block body %}{% load url from future %}
+<h1>Bulk add users</h1>
+<form action="{% url "bulk_add_commit" %}" method="post">{% csrf_token %}
+	<p>
+		Enter the list of users you want to add in the database. Each line must be in the following format:
+		<pre>login_name,password[,first name][,last name][,email]</pre>
+	</p>
+	<p>
+		<textarea name="data" style="font-family: Courier" cols="98" rows="20">{{ data }}</textarea>
+		<br />
+		<input type="submit" value="Create users" />
+	</p>
+</form>
+{% endblock %}
