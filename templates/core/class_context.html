@@ -11,8 +11,10 @@
 			<li><a href="{% url "dashboard" %}">Dashboard</a></li>
 			<li><a href="{% url "vm_pair_begin" %}">Pair an instance</a></li>
 			<li><a href="{% url "context_new" %}">Create Context</a></li>
+			{% if enable_cloud %}
 			<li><a href="{% url "cluster_new" %}">Create Cluster</a></li>
 			<li><a href="#">Live Console</a></li>
+			{% endif %}
 		</ul>
 	</div>
 </div>
@@ -30,6 +32,7 @@
 	</div>
 </div>
 
+{% if enable_cloud %}
 <div class="block block-views block-odd region-odd clearfix">
 	<h3 class="title">Cluster Definitions</h3>
 	<div class="content sidenav">
@@ -45,4 +48,6 @@
 		</ul>
 	</div>
 </div>
+{% endif %}
+
 {% endblock %}

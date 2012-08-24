@@ -125,3 +125,14 @@ def salt_context_key(uuid, key):
     
     # Return the salted result
     return hashlib.sha1(salt + key + salt).hexdigest()
+
+
+def sanitize_env(variable):
+    
+    # Sanitize stuff
+    res = variable.replace("\\", "\\\\")
+    for v in '!;&|<>()[]{}"\'':
+        res = res.replace(v, "\\"+v)
+        
+    # Return result
+    return res

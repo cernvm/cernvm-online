@@ -1,6 +1,7 @@
 import base64
 from django.conf import settings
 from django.template import RequestContext, loader
+from cvmo.context.utils.context import sanitize_env
 
 #######################################################################
 #
@@ -233,7 +234,7 @@ class ContextPlugins(object):
         if 'environment' in values['general']:
             _env = ""
             for k in values['general']['environment'].keys():
-                v = values['general']['environment'][k]
+                v = sanitize_env(values['general']['environment'][k])
                 if _env != "":
                     _env+= ","
                 _env += "%s=%s" % (k,v)

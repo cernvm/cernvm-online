@@ -216,6 +216,13 @@ SESSION_COOKIE_AGE = 3600
 # Expire session at browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+# Whether to enable or disable cloud UI
+ENABLE_CLOUD = False
+
+# Whether to enable or disable the CSC UI
+ENABLE_CSC = False
+
+# Recaptcha information for the user registration
 GOOGLE_RECAPTCHA = {
     # cernvm-online.cern.ch keys
 #    "public_key": "6LdG6tMSAAAAAMDBse8Dzze0Wz_3WGTwfUdyz60Z",
@@ -225,6 +232,7 @@ GOOGLE_RECAPTCHA = {
     "private_key": "6Lf-6tMSAAAAAIAMH0F6OLvySp--S6aPWoQGW_bU"    
 }
 
+# Where to send activation mail
 ACTIVATION_EMAIL = {
     "sender": "CernVM Online",
     "sender_email": "info@cernvm-online.cern.ch",

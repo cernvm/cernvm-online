@@ -2,6 +2,7 @@ from cvmo.context.models import ContextDefinition, ClusterDefinition
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, loader
 from django.http import HttpResponse
+from django.conf import settings
 from django.db.models.query_utils import Q
 
 def global_context(request):
@@ -32,7 +33,9 @@ def global_context(request):
         'msg_error': msg_error,
         'msg_warning': msg_warning,
         'msg_confirm': msg_confirm,
-        'msg_info': msg_info
+        'msg_info': msg_info,
+        'enable_cloud' : settings.ENABLE_CLOUD,
+        'enable_csc': settings.ENABLE_CSC
     }
     
     # Append some extra info if we are authenticated

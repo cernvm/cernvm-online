@@ -36,6 +36,7 @@
 <br />
 <p><a href="{% url "context_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Create new context</a></p>
 
+{% if enable_cloud %}
 <h2>Your cluster definitions</h2>
 <table class="pad-5">
 	<tr>
@@ -66,6 +67,7 @@
 </table>
 <br />
 <p><a href="{% url "cluster_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/package_add.png" %}" /> Create new cluster</a></p>
+{% endif %}
 
 <h2>Your virtual machines</h2>
 <table class="pad-5">

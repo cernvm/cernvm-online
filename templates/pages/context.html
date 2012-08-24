@@ -25,10 +25,12 @@
 			<th>&nbsp</th>
 			<td><input type="checkbox"  name="values[public]" value="1" id="public" {{values.public|chk}} {{disabled|dis}}><label for="public"> Make this context visible on the public lists</label></td>
 		</tr>
+		<!--
 		<tr>
 			<th>&nbsp</th>
 			<td><input type="checkbox"  name="values[agent]" value="1" id="agent" {{values.agent|chk}} {{disabled|dis}}><label for="agent"> Enable CernVM Agent infrastructure</label></td>
 		</tr>
+		-->
 		<tr>
 			<th>Secret key:</th>
 			<td><input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>			
@@ -40,14 +42,14 @@
 	</table>
 	</div>
 
-	<div class="accordion-header separator"><h2>Repository</h2></div>
+	<div class="accordion-header separator"><h2>CVMFS Configuration</h2></div>
 	<div class="accordion-content">
 		<p class="description">Select the repositories you want your virtual machine to use.</p>
 
 		<table class="plain">
 			<tr>
 				<th width="150"><label for="organisation">Main group:</label></th>
-				<td>
+				<td colspan="2">
 					<select {{disabled|dis}} id="organisation" name="values[general][organization]" onchange="javascript:CVMO.ContextUI.UpdateGroups(this.value)">   
 						{% for o in cernvm.CERNVM_ORGANISATION_LIST %}
 						<option value="{{ o }}" {{values.general.organization|sel:o}}>{{ o }}</options>
@@ -57,7 +59,7 @@
 			</tr>
 			<tr>
 				<th>Additional groups:</th>
-				<td>
+				<td colspan="2">
 
 					<div id="cvmo_proxies">
 
@@ -80,6 +82,49 @@
 
 					</div>
 						
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>
+			<tr>
+				<th>CVMFS HTTP Proxy:</th>
+				<td colspan="2">
+					<select {{disabled|dis}} class="cvmo-disclose" name="values[general][http_proxy_mode]" id="proxy">
+						<option value="direct" {{ values.general.http_proxy_mode|sel:"direct" }}>Do not use proxy (Direct connection)</option>
+						<option value="http" {{ values.general.http_proxy_mode|sel:"http" }}>HTTP Proxy</option>
+						<option value="https" {{ values.general.http_proxy_mode|sel:"https" }}>HTTPS (Secure) Proxy</option>
+					</select>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td width="30">Host:</td>
+				<td>
+					<input {{disabled|dis}} type="text" name="values[general][http_proxy]" value="{{values.general.http_proxy}}" />
+					&nbsp; Port: <input {{disabled|dis}} type="text" style="width: 40px" name="values[general][http_proxy_port]" value="{{values.general.http_proxy_port}}" /></td>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td>Username:</td>
+				<td><input {{disabled|dis}} type="text" style="width: 150px" name="values[general][http_username]" value="{{values.general.http_username}}" class="cvmo-disabling-http_anon" /></td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td><label for="http_password">Password:</label></td>
+				<td><input {{disabled|dis}} id="http_password" type="text" style="width: 150px" name="values[general][http_password]" value="{{values.general.http_password}}" class="cvmo-disabling-http_anon" /></td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td colspan="2">
+					<input {{disabled|dis}} type="checkbox" name="values[general][http_usecredentials]" {{values.general.http_usecredentials|chk}} class="cvmo-disabling" id="http_anon"><label for="http_anon"> Proxy requires authentication</label>
+				</td>
+			</tr>
+			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+				<td>&nbsp;</td>
+				<td colspan="2">
+					<input {{disabled|dis}} type="checkbox" name="values[general][http_fallback]" {{values.general.http_fallback|chk}} class="cvmo-disabling" id="http_fallback"><label for="http_fallback"> Fallback to direct</label>
 				</td>
 			</tr>
 		</table>
@@ -136,12 +181,10 @@
 		</div>
 	</div>
 	
-	<div class="accordion-header separator"><h2>Contextualization</h2></div>
+	<div class="accordion-header separator"><h2>Services</h2></div>
 	<div class="accordion-content">
-		<h3>Basic configuration</h3>
 		<p class="description">Here you can select an alternative CernVM configuration server and change autoconfigured proxy server and site name settings. Unless you are sure that you know what are you doing, please leave these default values unchanged.</p>
 		<div id="cvmo_proxy">
-
 			<table class="plain long-text">
 				<tr>
 					<th width="150">Services to start</th>
@@ -182,7 +225,10 @@
 				</tr>
 			</table>
 		</div>
-		<h3>Environment variables</h3>
+	</div>
+	
+	<div class="accordion-header separator"><h2>Environment</h2></div>
+	<div class="accordion-content">
 		<p class="description">Environment variables that will be exposed globally to your virtual machine.</p>
 		<table id="table_env" class="pad-5">
 			<thead>
@@ -231,8 +277,8 @@
 			{% endif %}
 		</table>
 	</div>
-		
-	<div class="accordion-header separator"><h2>CernVM</h2></div>
+	
+	<div class="accordion-header separator"><h2>CernVM Preferences</h2></div>
 	<div class="accordion-content">
 		<p class="description">While Basic CernVM is sufficient to run a typical experiment software framework, you can optionally download or upgrade to Development Edition (which will add extra tools and libraries to support software development) or full Desktop Edition which add a full X desktop environment (suitable for event display applications and platforms where native X is not available).</p>
 		<table class="plain" id='cernvm_config'>
@@ -244,49 +290,6 @@
 						<option {{values.general.config_url|sel:"http://cernvm.cern.ch/config/config-sign.cgi"}} value="http://cernvm.cern.ch/config/config-sign.cgi">http://cernvm.cern.ch/config/config-sign.cgi</option>
                     </select>
 				</td>
-			</tr>
-			<tr>
-				<th>CVMFS HTTP Proxy:</th>
-				<td colspan="2">
-					<select {{disabled|dis}} class="cvmo-disclose" name="values[general][http_proxy_mode]" id="proxy">
-						<option value="direct" {{ values.general.http_proxy_mode|sel:"direct" }}>Do not use proxy (Direct connection)</option>
-						<option value="http" {{ values.general.http_proxy_mode|sel:"http" }}>HTTP Proxy</option>
-						<option value="https" {{ values.general.http_proxy_mode|sel:"https" }}>HTTPS (Secure) Proxy</option>
-					</select>
-				</td>
-			</tr>
-			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
-				<td>&nbsp;</td>
-				<td width="30">Host:</td>
-				<td>
-					<input {{disabled|dis}} type="text" name="values[general][http_proxy]" value="{{values.general.http_proxy}}" />
-					&nbsp; Port: <input {{disabled|dis}} type="text" style="width: 40px" name="values[general][http_proxy_port]" value="{{values.general.http_proxy_port}}" /></td>
-				</td>
-			</tr>
-			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
-				<td>&nbsp;</td>
-				<td>Username:</td>
-				<td><input {{disabled|dis}} type="text" style="width: 150px" name="values[general][http_username]" value="{{values.general.http_username}}" class="cvmo-disabling-http_anon" /></td>
-			</tr>
-			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
-				<td>&nbsp;</td>
-				<td><label for="http_password">Password:</label></td>
-				<td><input {{disabled|dis}} id="http_password" type="text" style="width: 150px" name="values[general][http_password]" value="{{values.general.http_password}}" class="cvmo-disabling-http_anon" /></td>
-			</tr>
-			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
-				<td>&nbsp;</td>
-				<td colspan="2">
-					<input {{disabled|dis}} type="checkbox" name="values[general][http_usecredentials]" {{values.general.http_usecredentials|chk}} class="cvmo-disabling" id="http_anon"><label for="http_anon"> Proxy requires authentication</label>
-				</td>
-			</tr>
-			<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
-				<td>&nbsp;</td>
-				<td colspan="2">
-					<input {{disabled|dis}} type="checkbox" name="values[general][http_fallback]" {{values.general.http_fallback|chk}} class="cvmo-disabling" id="http_fallback"><label for="http_fallback"> Fallback to direct</label>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3">&nbsp;</td>
 			</tr>
 			<tr>
 				<th width="150">CernVM Edition:</th>

@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -18,15 +19,6 @@ urlpatterns += patterns('cvmo.context.views.context',
     url(r'^context/view/(?P<context_id>[-\w]+)$',   'view',     name="context_view"),
     url(r'^api/context/(?P<context_id>[-\w]+)/$', 'api_get'),
     url(r'^ajax/context/list$', 'ajax_list',                    name="vm_ajax_listcontexts"),
-)
-
-urlpatterns += patterns('cvmo.context.views.cluster',
-    url(r'^cluster/new$',                          'blank',     name="cluster_new"),
-    url(r'^cluster/create$',                       'create',    name="cluster_create"),
-    url(r'^cluster/clone/(?P<cluster_id>[-\w]+)$', 'clone',     name="cluster_clone"),
-    url(r'^cluster/delete/(?P<cluster_id>[-\w]+)$','delete',    name="cluster_delete"),
-    url(r'^cluster/view/(?P<cluster_id>[-\w]+)$',  'view',      name="cluster_view"),
-    url(r'^api/cluster/(?P<cluster_id>[-\w]+)/$',  'api_get_definition')
 )
 
 urlpatterns += patterns('cvmo.context.views.machine',
@@ -56,20 +48,25 @@ urlpatterns += patterns('cvmo.context.views.actions',
     url(r'^actions/save$', 'save',                  name="actions_save")
 )
 
-#urlpatterns += patterns('cvmo.context.views.csc',
-#    url(r'^csc$', 'csc_login',                  name="csc_login"),
-#    url(r'^csc/do_login$', 'csc_do_login',      name="csc_do_login")
-#)
+# Optional 1) Cloud infrastructure
+if (settings.ENABLE_CLOUD):
+    urlpatterns += patterns('cvmo.context.views.cluster',
+        url(r'^cluster/new$',                          'blank',     name="cluster_new"),
+        url(r'^cluster/create$',                       'create',    name="cluster_create"),
+        url(r'^cluster/clone/(?P<cluster_id>[-\w]+)$', 'clone',     name="cluster_clone"),
+        url(r'^cluster/delete/(?P<cluster_id>[-\w]+)$','delete',    name="cluster_delete"),
+        url(r'^cluster/view/(?P<cluster_id>[-\w]+)$',  'view',      name="cluster_view"),
+        url(r'^api/cluster/(?P<cluster_id>[-\w]+)/$',  'api_get_definition')
+    )
 
+# Optional 2) CSC Login
+if (settings.ENABLE_CSC):
+    urlpatterns += patterns('cvmo.context.views.csc',
+        url(r'^csc$', 'csc_login',                  name="csc_login"),
+        url(r'^csc/do_login$', 'csc_do_login',      name="csc_do_login")
+    )
+
+# Admin UI
 urlpatterns += patterns('',
-    # Examples:
-    # url(r'^$', 'cvmo.views.home', name='home'),
-    # url(r'^cvmo/', include('cvmo.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    #url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    
 )

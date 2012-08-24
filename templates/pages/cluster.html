@@ -39,10 +39,12 @@
 				<th>&nbsp</th>
 				<td><input type="checkbox"  name="values[public]" value="1" id="public" {{values.public|chk}} {{disabled|dis}}><label for="public"> Make this cluster definition visible on the public lists</label></td>
 			</tr>
+			<!--
 			<tr>
 				<th>&nbsp</th>
 				<td><input type="checkbox"  name="values[agent]" value="1" id="agent" {{values.agent|chk}} {{disabled|dis}}><label for="agent"> Enable CernVM Agent infrastructure</label></td>
 			</tr>
+			-->
 			<tr>
 				<th>Secret key:</th>
 				<td><input type="text" maxlength="100" class="cvmo-disabling-protect" id="cluster_key" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>			
