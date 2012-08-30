@@ -66,6 +66,11 @@
 				<li class="leaf first">
 					<a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
 				</li>
+				{% if user.username %}
+				<li class="leaf first">
+					<a href="/wiki/help.html" title="Help">Help</a>
+				</li>
+				{% endif %}
 				{% endblock %}
 			</ul>
 		</div>

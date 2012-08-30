@@ -11,7 +11,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/var/www/html/db.sqlite3',             # Or path to database file if using sqlite3.
+        'NAME': '/var/www/html/dc    b.sqlite3',             # Or path to database file if using sqlite3.
         'USER': '',                                     # Not used with sqlite3.
         'PASSWORD': '',                                 # Not used with sqlite3.
         'HOST': '',                                     # Set to empty string for localhost. Not used with sqlite3.
@@ -126,7 +126,10 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     
     # CernVM Contextualization
-    'cvmo.context'
+    'cvmo.context',
+    
+    # CernVM Online Wiki
+    "cvmo.wiki"
 )
 
 # A sample logging configuration. The only tangible logging
@@ -204,7 +207,8 @@ SHIBBOLETH_SSO = {
         r'/register_action$',
         r'/account_activation$',
         r'/api/fetch/?$',
-        r'/api/cluster/.*$',
+        r'/api/cluster/.*$'#,
+#        r'/wiki/.*$'
 #        r'/csc$',
 #        r'/csc/do_login$',
     ]

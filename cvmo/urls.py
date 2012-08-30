@@ -21,6 +21,15 @@ urlpatterns += patterns('cvmo.context.views.context',
     url(r'^ajax/context/list$', 'ajax_list',                    name="vm_ajax_listcontexts"),
 )
 
+urlpatterns += patterns('cvmo.context.views.cluster',
+    url(r'^cluster/new$',                          'blank',     name="cluster_new"),
+    url(r'^cluster/create$',                       'create',    name="cluster_create"),
+    url(r'^cluster/clone/(?P<cluster_id>[-\w]+)$', 'clone',     name="cluster_clone"),
+    url(r'^cluster/delete/(?P<cluster_id>[-\w]+)$','delete',    name="cluster_delete"),
+    url(r'^cluster/view/(?P<cluster_id>[-\w]+)$',  'view',      name="cluster_view"),
+    url(r'^api/cluster/(?P<cluster_id>[-\w]+)/$',  'api_get_definition')
+)
+
 urlpatterns += patterns('cvmo.context.views.machine',
     url(r'^machine/pair/$', 'pair_begin', name="vm_pair_begin"),
     url(r'^machine/pair/(?P<context_id>[-\w]+)$', 'pair_request', name="vm_pair_request"),
@@ -68,5 +77,11 @@ if (settings.ENABLE_CSC):
 
 # Admin UI
 urlpatterns += patterns('',
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),    
 )
+
+urlpatterns += patterns( "cvmo.wiki.views",    
+    url( r"^wiki/(?P<url>.*)\.[^.]*$", "show_wiki" ),
+    url( r"^wiki/(?P<url>.*)$", "show_wiki" )
+)
+

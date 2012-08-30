@@ -1,0 +1,14 @@
+{% extends "core/class_context.html" %}
+{% block title %}CernVM Online: {{ page.title }}{% endblock %}
+{% block body %}
+	{% load static %}{% load url from future %}
+	<h1>{{ category.title }}</h1>
+	{% if category.description|length > 1 %}
+		<p>{{ category.description }}</p>
+	{% endif %}
+	<ul>
+		{% for page in pages %}
+			<li><a href="/wiki{{ category_path }}/{{ page.alias }}.html">{{ page.title }}</a></li>
+		{% endfor %}
+	</ul>
+{% endblock %}

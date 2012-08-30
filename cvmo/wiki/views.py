@@ -1,0 +1,109 @@
+from django.http import Http404
+import re
+from cvmo.wiki.models import Page, PageCategory
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from wikimarkup import parse
+
+def show_wiki( request, url ):
+    # Check URL
+    url_parts = __get_url_parts( url )
+    
+    # Find the page
+    page = __find_page( url_parts )
+    if page is None:
+        # Try find a category
+        category = __find_category( url_parts )
+        if category is None:
+            raise Http404
+        else:
+            return show_category( request, url, category )
+    else:
+        return show_page( request, url, page )
+
+def show_category( request, url, category ):
+    # Get the category pages
+    pages = Page.objects.filter(categories=category)
+    
+    # Get the category path
+    rev_cat_path_arr = []
+    cat = category
+    while cat is not None:
+        rev_cat_path_arr.append( cat )
+        cat = category.parent
+        
+    # Get category path
+    category_path = ""
+    for i in range( 0, len( rev_cat_path_arr ) ):
+        category_path += "/" + rev_cat_path_arr[len( rev_cat_path_arr ) - i - 1].alias
+    
+    # Render the page
+    context = {
+        "category": category,
+        "parent": category.parent,
+        "pages": pages,
+        "category_path": category_path
+    }
+    return render_to_response( 'pages/wiki_category.html', context, RequestContext( request ) )
+
+def show_page( request, url, page ):        
+    # Render page content
+    if page.contents_type == Page.CT_HTML:
+        page_contents = page.contents
+    elif page.contents_type == Page.CT_WIKI:
+        page_contents = parse( page.contents, False )
+    else:
+        page_contents = page.contents
+
+    # Render the page
+    context = {
+        "page": page,
+        "contents": page_contents,
+        "categories": page.categories
+    }
+    return render_to_response( 'pages/wiki_page.html', context, RequestContext( request ) )
+
+####################################################################################################
+# HELPERS
+####################################################################################################
+
+def __get_url_parts( url ):
+    # Split the URL by "/"
+    temp_url_parts = url.split( "/" )
+    url_parts = []
+    # Remove the empty ones
+    for part in temp_url_parts:
+        if re.match( "^\s*$", part ) is None:
+            url_parts.append( part )
+    return url_parts
+
+def __get_category( alias, parent ):
+    # Find category
+    try:
+        category = PageCategory.objects.get(alias__iexact = alias, parent = parent)
+        return category
+    except Exception:
+        return None
+    
+def __find_category( path ):
+    # Find category
+    category = None
+    for i in range( 0, len( path ) ):
+        category = __get_category( path[i], category )
+        if category == None:
+            return None
+    return category
+
+def __find_page( path ):
+    # Find category
+    category = __find_category( path[ 0 : len( path ) - 1 ] )
+    if category is None:
+        return None
+        
+    # Find page in category
+    try:
+        page = Page.objects.get(alias__iexact = path[len(path) - 1], categories = category)
+        return page 
+    except Exception:
+        return None
+
