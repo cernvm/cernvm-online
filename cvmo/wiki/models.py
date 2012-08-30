@@ -41,6 +41,8 @@ class Page(models.Model):
     last_modfication_on = models.DateTimeField(auto_now=True)
     # Link to categories
     categories = models.ManyToManyField(PageCategory)
+    # Ordering
+    ordering = models.IntegerField(default=0)
     
     def __unicode__(self):
         return self.title
