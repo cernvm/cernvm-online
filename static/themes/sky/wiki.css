@@ -62,23 +62,18 @@ div#wiki_category_container div.pages-container p.page-description {
 
 /***** Page view styles *****/
 
-/** 
- * div#wiki_page_container selector 
- * removed to remove margin from ul li of breadcrumb 
- */
-ul li {
+/* Contents styles */
+div#wiki_page_container div.page-contents ul li {
 	margin-left: 25px;
 }
-
-div#wiki_page_container img.image {
+div#wiki_page_container div.page-contents img.image {
 	float: left;
 	padding: 5px;
-	/* border: 1px solid #ccc; */
 	width: 200px;
 	margin: 5px;
 	margin-left: 0px;	
 }
-div#wiki_page_container img.image.full-width {
+div#wiki_page_container div.page-contents img.image.full-width {
 	float: none;
 	display: block;
 	margin: 0px auto;
