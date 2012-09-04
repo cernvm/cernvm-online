@@ -240,13 +240,13 @@ function addService( service )
 	detailsRowHTML += "</ul>";
 		
 	/* Add hidden fields */
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][uid][]\" value=\"" + service.uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][context_uid][]\" value=\"" + service.context_uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][context_key][]\" value=\"" + service.context_key + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][template_uid][]\" value=\"" + service.template_uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][service_offering_uid][]\" value=\"" + service.service_offering_uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][network_offering_uid][]\" value=\"" + service.network_offering_uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][disk_offering_uid][]\" value=\"" + service.disk_offering_uid + "\" />";	
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][uid]\" value=\"" + service.uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][context_uid]\" value=\"" + service.context_uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][context_key]\" value=\"" + service.context_key + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][template_uid]\" value=\"" + service.template_uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][service_offering_uid]\" value=\"" + service.service_offering_uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][network_offering_uid]\" value=\"" + service.network_offering_uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][disk_offering_uid]\" value=\"" + service.disk_offering_uid + "\" />";	
 	
 	detailsRowHTML += "</td>";
 	var detailsRow = new Element( "tr", { "html": detailsRowHTML, "class": "details-row" }  );

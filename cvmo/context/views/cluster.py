@@ -3,8 +3,6 @@ from django.template import RequestContext
 from cvmo.context.models import ServiceOffering, DiskOffering, NetworkOffering, \
     Template, ServiceDefinition, ClusterDefinition, ContextStorage,\
     ContextDefinition
-import pprint
-from django.http import HttpResponse
 from cvmo.querystring_parser import parser
 import re
 from cvmo.context.utils.context import salt_context_key, gen_context_key
@@ -12,6 +10,7 @@ import base64
 from cvmo.context.utils import crypt
 from cvmo.context.utils.views import render_confirm
 from django.core.urlresolvers import reverse
+from types import StringType
 
 ##################################################
 # Request handlers
@@ -137,19 +136,23 @@ def api_get(request):
 ##################################################
 
 def __transformCreateRequest( values ):
-    # Transform services
-    services = []
-    for i in range( len( values["services"]["uid"][""] ) ):
+    # Are there services?
+    if "services" not in values:
+        values["services"] = []
+        return values
+    
+    # Single service bug fix
+    if type( values["services"]["uid"] ) is StringType:
+        for key in values["services"]:
+            old_value = values["services"][key]
+            values["services"][key] = [ old_value ]
+            
+    services = []            
+    for i in range( len( values["services"]["uid"] ) ):
         # Create service form request values
-        service = {
-            "uid": values["services"]["uid"][""][i],
-            "context_uid": values["services"]["context_uid"][""][i],
-            "context_key": values["services"]["context_key"][""][i],
-            "service_offering_uid": values["services"]["service_offering_uid"][""][i],
-            "disk_offering_uid": values["services"]["disk_offering_uid"][""][i],
-            "network_offering_uid": values["services"]["network_offering_uid"][""][i],
-            "template_uid": values["services"]["template_uid"][""][i]
-        }
+        service = {}
+        for key in values["services"]:
+            service[key] = values["services"][key][i]
         
         # Get the objects
         try:

@@ -104,6 +104,14 @@
 										<li><strong>Network offering:</strong> {{ row.network_offering.name }}</li>
 									{% endif %}																	
 								</ul>
+								
+								<input type="hidden" name="values[services][uid]" value="{{ row.uid }}" />";
+								<input type="hidden" name="values[services][context_uid]" value="{{ row.context_uid }}" />";
+								<input type="hidden" name="values[services][context_key]" value="{{ row.context_key }}" />";
+								<input type="hidden" name="values[services][template_uid]" value="{{ row.template_uid }}" />";
+								<input type="hidden" name="values[services][service_offering_uid]" value="{{ row.service_offering_uid }}" />";
+								<input type="hidden" name="values[services][network_offering_uid]" value="{{ row.network_offering_uid }}" />";
+								<input type="hidden" name="values[services][disk_offering_uid]" value="{{ row.disk_offering_uid }}" />";
 							</td>
 						</tr>
 					{% endfor %}
