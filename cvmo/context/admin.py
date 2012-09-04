@@ -25,3 +25,9 @@ admin.site.register(cvmo.context.models.Machines, MachinesAdmin)
 admin.site.register(cvmo.context.models.ContextDefinition, ContextDefinitionAdmin)
 admin.site.register(cvmo.context.models.ContextStorage, ContextStorageAdmin)
 admin.site.register(cvmo.context.models.ClusterDefinition)
+
+# Cluster admin pages
+admin.site.register(cvmo.context.models.ServiceOffering)
+admin.site.register(cvmo.context.models.DiskOffering)
+admin.site.register(cvmo.context.models.NetworkOffering)
+admin.site.register(cvmo.context.models.Template)

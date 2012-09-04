@@ -1,210 +1,305 @@
-CVMO.ClusterUI = { };
-window.addEvent('domready', function(){  // Run only when we are fully loaded	
-	/* Add event for onSubmit of the form */	
-	var __clusterCreate_onSubmit = function( event )
-	{
-		/* Check if there is context with password */
-		var rows = $$( "tr.cvm-cluster-entry" );
-		/* Are there rows? */
-		if( rows == undefined || rows.length == 0 ) {
-			alert( "Please select some contexts to include in the cluster!" );
-			return false;
-		}
-		
-		/* Forearch row - does it have a key? */
-		var i, row, input;
-		var thereIsContextWithKey = false;
-		for( i = 0; i < rows.length; i++ ) {
-			row = rows[i];
-			input = $( row ).getElements( "input[name=\"values[instances][" + ( i + 1 ) + "][key]\"]" );
-//			assert( typeof input == "object" && input.length == 1 && input[0] != undefined );
-			if( $( input[0] ).getProperty( "value" ) != "" ) {
-				thereIsContextWithKey = true;
-				break;
-			}
-		}
-		
-		/* If there is a context with key, cluster must have a key as well */
-		if( thereIsContextWithKey ) {
-			var input = $( "cluster_key" );
-			if( input.get( "disabled" ) != "" || input.get( "value" ) == "" ) {
-				alert( "Please use a key for the cluster definition!" );
-				return false;
-			}
-		}
-				
-		return true;
+/* Arrows */
+var ServicesUpArrow;
+var ServicesDownArrow;
+var ArrowHideTimeout;
+
+/* Autocomple field */
+var NSContextNameAutocomplete;
+
+/* Add DOM Ready event */
+window.addEvent( "domready", __servicesTable_domReady );
+
+/***** Table events *****/
+
+function __servicesTable_domReady()
+{
+	/* Set Globals */
+	ServicesUpArrow = $$( "#services_container img.up.arrow" )[0];
+	ServicesDownArrow = $$( "#services_container img.down.arrow" )[0];
+	
+	/* Add service rows events */
+	__addServiceRowsEvents();
+	
+	/* Add add row event */
+	$$( "#services_container a.add-row" )[0].addEvent( "click", __addRow_click );
+	
+	/* Set arrows events */
+	$$( "#services_container img.arrow" ).each( function( r ) { r.addEvent( "click", __servicesArrow_click ); } );
+	$$( "#services_container img.arrow" ).each( function( r ) { r.addEvent( "mouseover", __servicesArrow_mouseOver ); } );
+	$$( "#services_container img.arrow" ).each( function( r ) { r.addEvent( "mouseout", __servicesArrow_mouseOut ); } );
+	
+	/* Create autocomplete */
+	NSContextNameAutocomplete = new CVMO.Widgets.AutoComplete( $( "ns_context_name" ), {
+		"url": "/ajax/context/list",
+		"onSelectChoice": __nsContextName_selectChoice
+	} );
+	
+	/* Check tfoot visibility for services table */
+	__checkServicesFooter();
+}
+
+function __addServiceRowsEvents()
+{
+	/* Are there any rows ? */
+	if( $$( "#services_container table#services tr.base-row" ).length == 0 ) return;
+	
+	/* Set mouse over/out events in each */
+	$$( "#services_container table#services tr.base-row" ).each( function( r ) { r.addEvent( "mouseover", __servicesTableRow_mouseOver ); } );
+	$$( "#services_container table#services tr.base-row" ).each( function( r ) { r.addEvent( "mouseout", __servicesTableRow_mouseOut ); } );
+	
+	/* Add row add / remove events */
+	$$( "#services_container table#services tr.base-row a.remove-row" ).each( function( r ) { r.addEvent( "click", __removeRow_click ); } );
+}
+
+function __checkServicesFooter()
+{
+	if( $$( "#services_container table#services tr.base-row" ).length == 0 ) {
+		/* Show tfoot */
+		$$( "#services_container table#services tfoot tr" )[0].setStyle( "display", "table-row" );
+	} else {
+		/* Hide tfoot */
+		$$( "#services_container table#services tfoot tr" )[0].setStyle( "display", "none" );
 	}
-	$( "cluster_create_form" ).addEvent( "submit", __clusterCreate_onSubmit );
-    
-    // Setup auto complete for context
-    var autocomplete_field;
-    if ($('new_context')) {
-    	var contextSelected = function( item, attributes ) {
-    		if( attributes["has_key"] ) {    			
-    			$( "new_key" ).setStyle( "display", "block" );
-    			$( "new_key" ).addClass('invalid');
-    			$( "new_key" ).addEvent( "keyup", 
-					function( event )
-					{    	
-    					var value = $( "new_key" ).get( "value" ) + "";
-    					if( value != "" ) {
-    						$( "new_key" ).removeClass( "invalid" );
-    					} else {
-    						$( "new_key" ).addClass( "invalid" );
-    					}
-					}
-    			);
-    		} else {
-    			$( "new_key" ).tween( "display", "none" );
-    		}
-    		return true;
-    	}
-        autocomplete_field = new CVMO.Widgets.AutoComplete($('new_context'), {
-            url: '/ajax/context/list',
-            onSelectChoice: contextSelected
-        });
-    }
-    
-    // Prepare accordion
-    var accordion = new Fx.Accordion($('content-accordion'), '#content-accordion .accordion-header', '#content-accordion .accordion-content', {
-        alwaysHide: false
-    });
-    
-    // Prepare some helper functions
-    var reorder_names = function() {
-        var id=0;
-        $$('#table_cluster tbody tr').each(function(e) { // Elements will be always scanned top-to-bottom
-            var i=++id;
-            $(e).getElements('input, select').each(function(ie) {
-                var name = ie.get('name');
-                name = name.replace(/\[\d+\]/, '['+i+']');
-                ie.set('name',name);
-            });
-        });
-    };
-    
-    // Setup sortables
-    var sort_list = $$("#table_cluster tbody");
-    var table_sortables = new Sortables(sort_list, { 
-        revert: true,
-        onComplete: function(elm, ev) {
-            // Reorder the names of the fields to match the
-            // new order
-            reorder_names();
-        }
-    });
-    
-    // API => Add instance from the form
-    CVMO.ClusterUI.AddInstanceFromForm = function() {
-        // Require valid auto-completed input
-        if (!autocomplete_field.valid) return;    	
-        if( $( "new_key" ).getStyle( "display" ) != "none" && $( "new_key" ).hasClass( "invalid" ) ) 
-        	return;
-        
-        // Create instance
-        var selectedOption = $$( "#new_service_offering option:selected" )[0];
-        CVMO.ClusterUI.AddInstance(
-                $('new_context').getProperty('value'),
-                $('new_from_amt').getProperty('value'),
-                $('new_to_amt').getProperty('value'),
-                $('new_elastic').getProperty('checked'),
-                $('new_key').getProperty('value'),
-                $( selectedOption ).get( "value" ),
-                $( selectedOption ).text
-            );        
-        $('new_context').setProperty('value','');
-        $('new_from_amt').setProperty('value','1');
-        $('new_to_amt').setProperty('value','1');
-        $('new_elastic').setProperty('checked', "");
-        $('new_key').setProperty('value', "");
-        $( selectedOption ).set( "selected", "" )
-    }
+}
 
-    // API => Add instance row
-    CVMO.ClusterUI.AddInstance = function(context, fromAmt, toAmt, elastic, key, serviceOfferingValue, serviceOfferingLabel) {
-        var table = $('table_cluster_body'),
-            id = $$('#table_cluster tbody tr').length+1;
+/***** Table rows events *****/
 
-        window.console.log(table,id);
+function __servicesTableRow_mouseOver( event )
+{				
+	var row = $( this );
+	if( row.expanded ) {
+		showArrow( ServicesUpArrow, row );
+	} else {
+		showArrow( ServicesDownArrow, row );
+	}
+}
 
-        // Allocate instance entry
-        var row = new Element('tr', { 'class':'cvm-cluster-entry', 'id': 'instance'+id});
-//        new Element('td', { align: 'center', html: '<img  id="instance_handle{{forloop.counter}}" class="cvm-context-handle handle" src="/static/images/handle.png" alt="=" />' }).inject(row);
-        new Element('td', { html: '<input type="hidden" name="values[instances]['+id+'][context]" value="'+context+'" />'+context }).inject(row);
-        new Element('td', { html: '<input type="text" style="width:50px" name="values[instances]['+id+'][from_amt]" value="'+fromAmt+'" />' }).inject(row);
-        new Element('td', { html: '<input type="text" style="width:50px" name="values[instances]['+id+'][to_amt]" value="'+toAmt+'" />' }).inject(row);
-        new Element('td', { align: 'center', html: '<input type="checkbox" name="values[instances]['+id+'][elastic]" value="1" '+(elastic?'checked="checked"':'')+'" />' }).inject(row);
-        new Element('td', { align: 'center', html: serviceOfferingLabel + '<input type="hidden" name="values[instances]['+id+'][service_offering]" value="'+serviceOfferingValue+'" />' }).inject(row);
-        var passwdText = "";
-        if( key != "" ) {
-        	passwdText  = "******";
-        }
-        new Element('td', { align: 'center', html: passwdText  + '<input type="hidden" name="values[instances]['+id+'][key]" value="'+key+'" />' }).inject(row);        
-        new Element('td', { align: 'center', 'class': 'v-center', html: '<a href="javascript:;" onclick="CVMO.ClusterUI.RemoveInstance(\'instance'+id+'\');" class="softbutton"><img border="0" src="/static/images/vm_remove.png" align="absmiddle"> Remove instance</a>' }).inject(row);
-        row.inject(table);
-        new Fx.Reveal(row.getChildren(), {duration: 500, mode: 'vertical', opacity: 0});
-        
-        // Manage by sortables
-        table_sortables.addItems(row);
+function __servicesTableRow_mouseOut( event )
+{
+	var row = $( this );
+	/* Arrow will be visible for half a second */
+	ArrowHideTimeout = setTimeout( function(){ hideArrows( row ); }, 500 );
+}
 
-    }
+/***** Arrows events *****/
 
-    // API => Remove instance row
-    CVMO.ClusterUI.RemoveInstance = function(id) {
-        // Unmanage from sortables
-        table_sortables.removeItems($(id));
-        
-        // Dispose
-        $(id).dispose();
-        
-        // Calculate new order
-        reorder_names();
-    }
+function __servicesArrow_click( event ) 
+{
+	var row = $( this ).shown_for;
+	var detailsRow = row.getSiblings( "tr.details-row" )[0];
+	
+	/* Hide instantly arrow */
+	hideArrows( row );
+	
+	/* Is expanded? */
+	if( row.expanded ) {
+		/* Hide details */		
+		detailsRow.setStyle( "display", "none" );
+		/* Change arrow */
+		row.expanded = false;
+		showArrow( ServicesDownArrow, row );
+	} else {
+		/* Show details */
+		detailsRow.setStyle( "display", "table-row" );
+		/* Change arrow */
+		row.expanded = true;
+		showArrow( ServicesUpArrow, row );
+	}	
+}
 
-    
-    // API => Add environment variable from the form
-    CVMO.ClusterUI.AddEnvFromForm = function() {
-    	// Do not let environment variables without a name
-    	if( $('new_env_var').getProperty('value') == "" ) {
-    		return;
-    	}
-        // Create instance
-        CVMO.ClusterUI.AddEnv(
-                $('new_env_var').getProperty('value'),
-                $('new_env_value').getProperty('value')
-            );
-        $('new_env_var').setProperty('value','');
-        $('new_env_value').setProperty('value','');
-        
-    }
+function __servicesArrow_mouseOver( event ) 
+{
+	/* Clear timeout */
+	clearTimeout( ArrowHideTimeout );
+}
 
-    // API => Add environment variable row
-    CVMO.ClusterUI.AddEnv = function(variable, value) {
-        var table = $('table_env_body'),
-            id = 'env-entry-'+variable;
+function __servicesArrow_mouseOut( event ) 
+{
+	/* Arrow will be visible for half a second */	
+	var arrow = $( this );
+	ArrowHideTimeout = setTimeout( function(){ hideArrows( arrow.shown_for ); }, 500 );	
+}
 
-        // Allocate environment variable entry
-        var row = new Element('tr', { 'class':'cvm-environment-entry', 'id': id});
-        
-        // Validate name
-        variable = String(variable).replace(/['"]/g, '');
-        variable = String(variable).replace(/\s/g, '_');
-        
-        // Create the element
-        new Element('td', { align: 'right',  html: '<strong>'+variable+'</strong>' }).inject(row);
-        new Element('td', { html: '=' }).inject(row);
-        new Element('td', { align: 'left',   html: '<input type="hidden" name="values[environment]['+variable+']" value="'+value+'" />'+value }).inject(row);
-        new Element('td', { align: 'center', 'class': 'v-center', html: '<a href="javascript:;" onclick="CVMO.ClusterUI.RemoveEnv(\''+id+'\');" class="softbutton"><img border="0" src="/static/images/page_delete.png" align="absmiddle"> Remove variable</a>' }).inject(row);
-        row.inject(table);
-        new Fx.Reveal(row.getChildren(), {duration: 500, mode: 'vertical', opacity: 0});
-        
-    }
+/***** Add / remove row events *****/
 
-    // API => Remove environment variable row
-    CVMO.ClusterUI.RemoveEnv = function(id) {
-        // Dispose
-        $(id).dispose();
-    }
-        
-});
+function __removeRow_click( event )
+{
+	event.preventDefault();
+	
+	/* Get rows */
+	var baseRow = $( this ).getParent( "tr" );
+	if( !baseRow ) return;
+	var detailsRow = baseRow.getSiblings( "tr.details-row" )[0];
+	
+	/* Remove row and next row */
+	baseRow.dispose();
+	detailsRow.dispose();	
+	
+	/* Check tfoot visibility for services table */
+	__checkServicesFooter();
+	
+	/* Hide the arrows */
+	hideArrows();
+}
+
+function __addRow_click( event )
+{
+	event.preventDefault();
+	
+	/* Get the service object */
+	var service = {
+		"uid": $( "ns_uid" ).value,
+		"context_name": $( "ns_context_name" ).value,
+		"context_uid": $( "ns_context_uid" ).value,
+		"context_has_key": $( "ns_context_has_key" ).value,
+		"context_key": $( "ns_context_key" ).value,
+		"template_uid": $( "ns_template_uid" ).value,
+		"service_offering_uid": $( "ns_service_offering_uid" ).value,
+		"disk_offering_uid": $( "ns_disk_offering_uid" ).value,
+		"network_offering_uid": $( "ns_network_offering_uid" ).value
+	};
+		
+	try {
+		/* Validate the service */
+		validateService( service );
+		
+		/* Add row */
+		addService( service );
+		
+		/* Check tfoot visibility for services table */
+		__checkServicesFooter();
+		
+		/* Reset the fields */ 
+		$( "ns_uid" ).value = "";
+		$( "ns_context_name" ).value = "";
+		$( "ns_context_uid" ).value = "";
+		$( "ns_context_has_key" ).value = "0";
+		$( "ns_context_key" ).value = "";
+		$( "ns_context_key_container" ).setStyle( "display", "none" );
+		$( "ns_service_offering_uid" ).value = DefaultServiceOffering;
+		$( "ns_disk_offering_uid" ).value = DefaultDiskOffering;
+		$( "ns_network_offering_uid" ).value = DefaultNetworkOffering;
+		$( "ns_template_uid" ).value = DefaultTemplate;
+	} catch( exception ) {
+		/* Display error */
+		alert( exception );
+	}	
+}
+
+/***** New service context name field events *****/
+
+function __nsContextName_selectChoice( item, attributes ) 
+{
+	$( "ns_context_uid" ).value = attributes["uid"];
+	if( attributes["has_key"] ) {   
+		$( "ns_context_has_key" ).value = "1";
+		$( "ns_context_key_container" ).setStyle( "display", "table-row" );
+		$( "ns_context_key" ).addClass( 'invalid' );
+		$( "ns_context_key" ).addEvent( "keyup", 
+			function( event )
+			{    	
+				var value = $( "ns_context_key" ).get( "value" ) + "";
+				if( value != "" ) {
+					$( "ns_context_key" ).removeClass( "invalid" );
+				} else {
+					$( "ns_context_key" ).addClass( "invalid" );
+				}
+			}
+		);
+	} else {
+		$( "ns_context_has_key" ).value = "0";
+		$( "ns_context_key_container" ).setStyle( "display", "none" );
+	}
+	return true;
+}
+
+/***** Add service *****/
+
+function addService( service )
+{
+	/* Create Base Row */
+	var baseRowHTML = "<td>" + service.uid + "</td>";
+	baseRowHTML += "<td>" + Templates[service.template_uid] + "</td>";
+	baseRowHTML += "<td>" + service.context_name + "</td>";
+	baseRowHTML += "<td class=\"operations\">" +
+		"<a href=\"#\" class=\"softbutton remove-row\">" +
+		"<img border=\"0\" src=\"" + DeleteImgPath + "\" align=\"absmiddle\" />" +
+		" Remove Service" +
+		"</a>" +
+		"</td>";
+	var baseRow = new Element( "tr", { "html": baseRowHTML, "class": "base-row" }  );	
+	
+	/* Create Details row */
+	var detailsRowHTML = "<td colspan=\"4\">";
+	detailsRowHTML += "<ul class=\"offerings\">";
+	detailsRowHTML += "<li><strong>Service offering:</strong> " + ServiceOfferings[service.service_offering_uid] + "</li>";
+	if( DiskOfferings[service.disk_offering_uid] )
+		detailsRowHTML += "<li><strong>Disk offering:</strong> " + DiskOfferings[service.disk_offering_uid] + "</li>";
+	if( NetworkOfferings[service.network_offering_uid] )
+		detailsRowHTML += "<li><strong>Network offering:</strong> " + NetworkOfferings[service.network_offering_uid] + "</li>";
+	detailsRowHTML += "</ul>";
+		
+	/* Add hidden fields */
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][uid][]\" value=\"" + service.uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][context_uid][]\" value=\"" + service.context_uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][context_key][]\" value=\"" + service.context_key + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][template_uid][]\" value=\"" + service.template_uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][service_offering_uid][]\" value=\"" + service.service_offering_uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][network_offering_uid][]\" value=\"" + service.network_offering_uid + "\" />";
+	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][disk_offering_uid][]\" value=\"" + service.disk_offering_uid + "\" />";	
+	
+	detailsRowHTML += "</td>";
+	var detailsRow = new Element( "tr", { "html": detailsRowHTML, "class": "details-row" }  );
+	
+	/* Add rows to table */
+	var tbody = $$( "#services_container table#services tbody" )[0];
+	baseRow.inject( tbody );
+	detailsRow.inject( tbody );	
+	
+	/* Add events */
+	__addServiceRowsEvents();
+}
+
+function validateService( service )
+{
+	if( service.uid.length == 0 ) throw "Service key is required";
+	if( service.uid.length > 16 ) throw "Service key should be less than 16 characters.";
+	if( service.context_uid.length == 0 ) throw "Context is required";
+	if( service.context_has_key == 1 && service.context_key.length == 0 ) 
+		throw "Context is encrypted, please provide key";
+	if( service.template_uid.length == 0 ) throw "Template is required";
+	if( service.service_offering_uid.length == 0 ) throw "Service offering is required";
+}
+
+/***** Arrow Show / Hide methods *****/
+
+function showArrow( arrow, row )
+{
+	/* Clear timeout */
+	clearTimeout( ArrowHideTimeout );
+	
+	/* Get row position and height */
+	var rowPosition = row.getPosition();
+	var rowHeight = row.getHeight();
+	
+	/* Get height and position of the arrow */
+	var arrowHeight = arrow.getHeight();
+	var arrowWidth = arrow.getWidth();
+	var arrowPosition = rowPosition;	
+	arrowPosition.x -= arrowWidth + 5;
+	arrowPosition.y += ( rowHeight - arrowHeight ) / 2;
+	
+	/* Show the arrow */	
+	arrow.setStyle( "visibility", "visible" );
+	arrow.setPosition( arrowPosition );
+	arrow.shown_for = row; // arrow should know next to which row is shown
+	row.arrow_shown = true; // flag that arrow is shown	
+}
+
+function hideArrows( row )
+{
+	$$( "#services_container img.arrow" ).each( function( r ) { r.setStyle( "visibility", "collapse" ); } );	
+	$$( "#services_container img.arrow" ).each( function( r ) { r.shown_for = 0; } );
+	if( row ) row.arrow_shown = false;
+	clearTimeout( ArrowHideTimeout );
+}

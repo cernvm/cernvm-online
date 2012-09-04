@@ -518,3 +518,28 @@ a.imglink:hover {
     margin-bottom: 0px;
     border-bottom: solid 4px #aaa;
 }
+
+/***** Cluster styles *****/
+div#services_container img.arrow {
+	position: absolute;
+	visibility: collapse;
+} 
+div#services_container table#services {
+}
+div#services_container table#services tr.base-row {
+}
+div#services_container table#services tr.details-row {
+	display: none;
+}
+div#services_container tr#ns_context_key_container {
+	display: none;
+}
+div#services_container table.add-service {
+	border: 1px solid #ddd;
+}
+div#services_container table.add-service tr.buttons-container td {
+	padding: 5px;
+}
+div#services_container div.buttons-container {
+	margin-top: 10px;
+}

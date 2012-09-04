@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-import pprint
+
+##################################################
+# Context related models
+##################################################
 
 class ContextDefinition(models.Model):
     id = models.CharField(max_length=64, primary_key=True)
@@ -30,6 +33,20 @@ class ContextDefinition(models.Model):
     
     def __unicode__(self):
         return self.name
+
+class ContextStorage(models.Model):
+    id = models.CharField(max_length=64, primary_key=True)
+    data = models.TextField()    
+
+    def __str__(self):
+        return self.id
+    
+    def __unicode__(self):
+        return self.id
+        
+##################################################
+# Pairing related models
+##################################################
     
 class Machines(models.Model):
     """ Instantiated machines """
@@ -75,69 +92,92 @@ class ClaimRequests(models.Model):
     
     def __unicode__(self):
         return self.pin
-
-class ContextStorage(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)
-    data = models.TextField()    
-
-    def __str__(self):
-        return self.id
     
-    def __unicode__(self):
-        return self.id
+##################################################
+# Cluster related models
+##################################################
 
 class ClusterDefinition(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    owner = models.ForeignKey(User)    
-    cernvm_version = models.CharField(max_length=15)
-    key = models.CharField(max_length=100, blank=True)
-    public = models.BooleanField(verbose_name='Visible on public lists')
-    agent = models.BooleanField(verbose_name='Activate iAgent')
-    data = models.TextField()
-    
-    def delete(self, using=None):                
-        # Delete the linked contexts
-        cluster_instances = ClusterInstance.objects.filter(cluster=self)
-        for cluster_instance in cluster_instances:
-            cluster_instance.delete()
-        
-        # Delete base    
-        models.Model.delete(self, using=using)
-
-    def __str__(self):
-        return self.name
+    uid = models.CharField(max_length=128, db_index=True, unique=True)
+    name = models.CharField(max_length=250)
+    description = models.TextField(null=True, blank=True)
+    owner = models.ForeignKey(User)
+    key = models.CharField(max_length=64, blank=True)
+    public = models.BooleanField(default=False)
     
     def __unicode__(self):
-        return self.name
-
-class ClusterInstance(models.Model):
-    cluster = models.ForeignKey(ClusterDefinition)
-    order = models.PositiveIntegerField()
+        return self.uid
+    
+    def __str__(self):
+        return self.uid
+   
+class ServiceOffering(models.Model):
+    uid = models.CharField(max_length=16, db_index=True, unique=True)
+    name = models.CharField(max_length=250)
+    
+    def __unicode__(self):
+        return self.uid
+    
+    def __str__(self):
+        return self.uid
+    
+class DiskOffering(models.Model):
+    uid = models.CharField(max_length=16, db_index=True, unique=True)
+    name = models.CharField(max_length=250)
+    
+    def __unicode__(self):
+        return self.uid
+    
+    def __str__(self):
+        return self.uid
+    
+class NetworkOffering(models.Model):
+    uid = models.CharField(max_length=16, db_index=True, unique=True)
+    name = models.CharField(max_length=250)
+    
+    def __unicode__(self):
+        return self.uid
+    
+    def __str__(self):
+        return self.uid
+    
+class Template(models.Model):
+    uid = models.CharField(max_length=128, db_index=True, unique=True)
+    name = models.CharField(max_length=250)
+    
+    def __unicode__(self):
+        return self.uid
+    
+    def __str__(self):
+        return self.uid
+    
+class ServiceDefinition(models.Model):
+    uid = models.CharField(max_length=16, db_index=True)
+    cluster = models.ForeignKey(ClusterDefinition)    
+    service_offering = models.ForeignKey(ServiceOffering)
+    disk_offering = models.ForeignKey(DiskOffering, null = True, blank = True)
+    network_offering = models.ForeignKey(NetworkOffering, null = True, blank = True)
+    template = models.ForeignKey(Template)
     context = models.ForeignKey(ContextDefinition)
-    from_amt = models.PositiveIntegerField()
-    to_amt = models.PositiveIntegerField()    
-    elastic = models.BooleanField()
-    service_offering = models.CharField(max_length=100)
-    
-    def delete(self, using=None):
-        # Delete base
-        models.Model.delete(self, using=using)
-        
-        # Remove the context
-        self.context.delete()
-
-    def __str__(self):
-        return '#' + self.context.name + ' (' + self.cluster.name + ')'
     
     def __unicode__(self):
-        return '#' + self.context.name + ' (' + self.cluster.name + ')'
+        return self.cluster.uid + " service "  + self.id
+    
+    def __str__(self):
+        return self.cluster.uid + " service "  + self.id
+    
+##################################################
+# User related models
+##################################################
 
 class UserActivationKey(models.Model):
     user = models.OneToOneField(User)
     key = models.CharField(max_length=150)
     created_on = models.DateTimeField(auto_now_add=True)
+    
+##################################################
+# Deprecated models
+##################################################
 
 class ActionDefinition(models.Model):
     id = models.CharField(max_length=64, primary_key=True)

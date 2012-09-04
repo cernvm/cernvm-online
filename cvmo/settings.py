@@ -220,8 +220,8 @@ SESSION_COOKIE_AGE = 3600
 # Expire session at browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# Whether to enable or disable cloud UI
-ENABLE_CLOUD = False
+# Weather to enable or disable the cloud
+ENABLE_CLOUD = True
 
 # Whether to enable or disable the CSC UI
 ENABLE_CSC = False

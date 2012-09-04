@@ -96,7 +96,8 @@ def ajax_list(request):
                     + c.owner.first_name + ' ' + c.owner.last_name + '</em><br />Description: <em>' 
                     + c.description + '</em></small>',
                 'attributes': {
-                   "has_key": has_key
+                   "has_key": has_key,
+                   "uid": c.id
                 } 
             }
         )    

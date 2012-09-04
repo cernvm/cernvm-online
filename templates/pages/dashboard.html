@@ -53,10 +53,9 @@
 				<img alt="Private" title="Private definition" src="{% static "images/lock.png" %}" /></td>
 				{% endif %}
 			<td>{{ item.name }}</td>
-			<td>{{ item.id }}</td>
+			<td>{{ item.uid }}</td>
 			<td>
 				<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
-				<!-- <a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a> -->
 			</td>
 		</tr>
 	{% empty %}
@@ -66,7 +65,7 @@
 	{% endfor %}
 </table>
 <br />
-<p><a href="{% url "cluster_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/package_add.png" %}" /> Create new cluster</a></p>
+<p><a href="{% url "cluster_create" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/package_add.png" %}" /> Create new cluster</a></p>
 {% endif %}
 
 <h2>Your virtual machines</h2>

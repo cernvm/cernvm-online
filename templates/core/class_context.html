@@ -12,8 +12,8 @@
 			<li><a href="{% url "vm_pair_begin" %}">Pair an instance</a></li>
 			<li><a href="{% url "context_new" %}">Create Context</a></li>
 			{% if enable_cloud %}
-			<li><a href="{% url "cluster_new" %}">Create Cluster</a></li>
-			<li><a href="#">Live Console</a></li>
+			<li><a href="{% url "cluster_create" %}">Create Cluster</a></li>
+			<!-- <li><a href="#">Live Console</a></li> -->
 			{% endif %}
 		</ul>
 	</div>
@@ -39,7 +39,6 @@
 		<ul>
 			{% block last_clusters %}
 			{% for item in last_cluster_definitions %}
-			<!-- <li><a href="{% url "cluster_view" cluster_id=item.id %}"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li> -->
 			<li><a href="#"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
 			{% empty %}
 			<li class="empty">No cluster definitions</li>
