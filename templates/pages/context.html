@@ -91,6 +91,7 @@
 				<th>CVMFS HTTP Proxy:</th>
 				<td colspan="2">
 					<select {{disabled|dis}} class="cvmo-disclose" name="values[general][http_proxy_mode]" id="proxy">
+						<option value="auto" {{ values.general.http_proxy_mode|sel:"auto" }}>Auto</option>
 						<option value="direct" {{ values.general.http_proxy_mode|sel:"direct" }}>Do not use proxy (Direct connection)</option>
 						<option value="http" {{ values.general.http_proxy_mode|sel:"http" }}>HTTP Proxy</option>
 						<option value="https" {{ values.general.http_proxy_mode|sel:"https" }}>HTTPS (Secure) Proxy</option>

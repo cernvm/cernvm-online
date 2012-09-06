@@ -283,12 +283,25 @@ def view(request, context_id):
     }, RequestContext(request))
 
 def delete(request, context_id):
+    # Try to find the context
+    try:
+        context = ContextDefinition.objects.get(id=context_id)
+    except:
+        request.session["redirect_msg_error"] = "Context with id " + context_id + " does not exist!"
+        return redirect("dashboard")
+                
+    # Check if context belongs to calling user
+    if request.user.id is not context.owner.id:
+        request.session["redirect_msg_error"] = "Cluster with id " + context_id + " does not belong to you!"
+        return redirect("dashboard")
+    
     # Is it confirmed?
     if ('confirm' in request.GET) and (request.GET['confirm'] == 'yes'):
         # Delete the specified contextualization entry
         ContextDefinition.objects.filter(id=context_id).delete()
 
         # Go to dashboard
+        request.session["redirect_msg_info"] = "Context removed successfully!"
         return redirect('dashboard')
         
     else:

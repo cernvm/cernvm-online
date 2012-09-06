@@ -211,25 +211,26 @@ class ContextPlugins(object):
             _ans+= "users=%s\n" % _userstr
         
         # Prepare proxy
-        _proxy="DIRECT"
-        if values['general']['http_proxy_mode'] != 'direct':
-            _proxy = values['general']['http_proxy_mode']+"://"
-            
-            # Check if we should add a user
-            if ('http_usecredentials' in values['general']) and (values['general']['http_usecredentials']):
-                _proxy+= values['general']['http_username']+":"
-                _proxy+= str(values['general']['http_password'])+"@"
+        if values['general']['http_proxy_mode'] != 'auto':
+            _proxy="DIRECT"
+            if values['general']['http_proxy_mode'] != 'direct':
+                _proxy = values['general']['http_proxy_mode']+"://"
                 
-            # Set hostname/port
-            _proxy+= values['general']['http_proxy']+":"
-            _proxy+= str(values['general']['http_proxy_port'])
+                # Check if we should add a user
+                if ('http_usecredentials' in values['general']) and (values['general']['http_usecredentials']):
+                    _proxy+= values['general']['http_username']+":"
+                    _proxy+= str(values['general']['http_password'])+"@"
+                    
+                # Set hostname/port
+                _proxy+= values['general']['http_proxy']+":"
+                _proxy+= str(values['general']['http_proxy_port'])
+                
+                # Check for fallback
+                if ('http_fallback' in values['general']) and (values['general']['http_fallback']):
+                    _proxy+=";DIRECT"
+                
+            _ans+= "proxy=%s\n" % _proxy
             
-            # Check for fallback
-            if ('http_fallback' in values['general']) and (values['general']['http_fallback']):
-                _proxy+=";DIRECT"
-            
-        _ans+= "proxy=%s\n" % _proxy
-        
         # Setup environment
         if 'environment' in values['general']:
             _env = ""

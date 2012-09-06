@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from cvmo.context.models import ServiceOffering, DiskOffering, NetworkOffering, \
-    Template, ServiceDefinition, ClusterDefinition, ContextStorage,\
+    Template, ServiceDefinition, ClusterDefinition, ContextStorage, \
     ContextDefinition
 from cvmo.querystring_parser import parser
 import re
@@ -11,6 +11,9 @@ from cvmo.context.utils import crypt
 from cvmo.context.utils.views import render_confirm
 from django.core.urlresolvers import reverse
 from types import StringType
+from django.http import HttpResponse
+import json
+import hashlib
 
 ##################################################
 # Request handlers
@@ -63,8 +66,9 @@ def save( request ):
         for service in values["services"]:
             ob = ServiceDefinition()
             ob.uid = service["uid"]
-            ob.cluster = cluster
-            ob.context = service["context"] 
+            ob.cluster = cluster            
+            # Create new context
+            ob.context = __createNewContext( cluster, service["context"], service["context_key"], values["secret"] )              
             ob.template = service["template"] 
             ob.service_offering = service["service_offering"] 
             if service["disk_offering"] is not None:
@@ -128,8 +132,36 @@ def delete( request, cluster_id ):
             reverse( 'cluster_delete', kwargs = { 'cluster_id': cluster_id } ) + '?confirm=yes', \
             reverse( 'dashboard' ) )
 
-def api_get(request):
-    pass
+def api_get( request, cluster_uid ):        
+    # Try to find the cluster
+    try:
+        cluster = ClusterDefinition.objects.get( uid = cluster_uid )
+        
+        # Find the services
+        services = ServiceDefinition.objects.filter( cluster = cluster )
+        
+        # Add services to response
+        response = {}
+        for service in services:
+            response[service.uid] = {
+                "service_offering_uid": service.service_offering.uid,
+                "template_uid": service.template.uid            
+            }
+            context = ContextStorage.objects.get( id = service.context.id )
+            response[service.uid]["context"] = context.data
+            if service.disk_offering is not None:
+                response[service.uid]["disk_offering_uid"] = service.disk_offering.uid
+            if service.network_offering is not None:
+                response[service.uid]["network_offering_uid"] = service.network_offering.uid
+    except:
+        response = {}
+        
+    # Transform response contents
+    json_contents = json.dumps( response ) 
+        
+    # Send response
+    http_response = HttpResponse( json_contents, content_type = "application/json" )
+    return http_response
 
 ##################################################
 # Helpers
@@ -152,7 +184,7 @@ def __transformCreateRequest( values ):
         # Create service form request values
         service = {}
         for key in values["services"]:
-            service[key] = values["services"][key][i]
+            service[key] = str( values["services"][key][i] )
         
         # Get the objects
         try:
@@ -257,4 +289,65 @@ def __getCreateViewContext():
     }        
     context["default_template"] = context["templates"][0].uid;
     context["default_service_offering"] = context["service_offerings"][0].uid;
+    return context
+
+def __createNewContext( cluster, base_context, base_key, new_key ):
+    ## Get the base context definition data and context data
+    
+    # Get the un encrypted base context definition data
+    if base_key is not None \
+        and base_key is not "":
+        context_def_data = crypt.decrypt( base64.b64decode( base_context.data ), base_key )
+    else:
+        context_def_data = base_context.data
+    
+    # Get base context storage enty
+    cs_row = ContextStorage.objects.get( id = base_context.id )
+    
+    # Get the un encrypted base context data
+    if base_key is not None \
+        and base_key is not "":
+        m = re.match( r"^ENCRYPTED:(.*)$", cs_row.data )
+        temp = m.group( 1 )
+        context_data_plain = crypt.decrypt( base64.b64decode( temp ), base_key )
+    else:
+        context_data_plain = cs_row.data
+    
+    # Create new context    
+    context = ContextDefinition()
+    context.id = gen_context_key()
+    context.name = "Cluster: " + cluster.name + ", context: " + base_context.name
+    context.description = base_context.description
+    context.owner = base_context.owner
+    context.inherited = True
+    context.public = False
+    context.agent = base_context.agent
+    context.checksum = hashlib.sha1( context_data_plain ).hexdigest()
+        
+    # Set the definition data
+    if new_key is not None \
+        and new_key is not "":
+        context.data = base64.b64encode( crypt.encrypt( context_def_data, new_key ) )
+        context.key = salt_context_key( context.id, new_key )
+    else:
+        context.data = context_def_data
+        context.key = ""
+        
+    # Store the context
+    context.save()
+    
+    # Create storage entry
+    context_storage = ContextStorage()
+    context_storage.id = context.id
+    
+    # Set the context data
+    if new_key is not None \
+        and new_key is not "":
+        context_storage.data = "ENCRYPTED:" + base64.b64encode( crypt.encrypt( context_data_plain, new_key ) )
+    else:
+        context_storage.data = context_data_plain 
+    
+    # Store context storage entry
+    context_storage.save()
+    
     return context
