@@ -14,6 +14,7 @@ from types import StringType
 from django.http import HttpResponse
 import json
 import hashlib
+import pprint
 
 ##################################################
 # Request handlers
@@ -53,37 +54,43 @@ def save( request ):
         cluster.uid = gen_context_key()
         cluster.name = values["name"]
         cluster.description = values["description"]
+        cluster_secret = ""
+        if "secret" in values:
+            cluster_secret = cluster_secret["secret"]        
         if "protect" in values \
             and values["protect"] \
-            and values["secret"] is not "":
-            cluster.key = salt_context_key( cluster.uid, values["secret"] )
+            and cluster_secret is not "":
+            cluster.key = salt_context_key( cluster.uid, cluster_secret )
         else:
             cluster.key = ""
         cluster.owner = request.user
         cluster.save()
         
         # Create services
-        for service in values["services"]:
+        for service in values["services"]:            
             ob = ServiceDefinition()
             ob.uid = service["uid"]
-            ob.cluster = cluster            
+            ob.cluster = cluster                        
             # Create new context
-            ob.context = __createNewContext( cluster, service["context"], service["context_key"], values["secret"] )              
+            context_key = ""
+            if "context_key" in service:
+                context_key = service["context_key"]                
+            ob.context = __createNewContext( cluster, service["context"], context_key, cluster_secret )              
             ob.template = service["template"] 
             ob.service_offering = service["service_offering"] 
             if service["disk_offering"] is not None:
                 ob.disk_offering = service["disk_offering"]
             if service["network_offering"] is not None:             
-                ob.network_offering = service["network_offering"]
-            ob.save()
-            services.append( ob )
+                ob.network_offering = service["network_offering"]                                
+            ob.save()            
+            services.append( ob )            
              
     except Exception as ex:
         # Remove what partialy stored...        
         if cluster is not None:
             if len( services ) is not 0:
                 for serv in services:
-                    ob.delete()
+                    serv.delete()
             cluster.delete()
         
         # Show template again
