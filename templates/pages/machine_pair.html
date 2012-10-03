@@ -30,6 +30,7 @@
 			<td colspan="3" align="center">You haven't defined any context yet</tr>
 		</tr>
 	{% endfor %}
+	<!-- Future version =====
 	{% if context_public %}
 		<tr>
 			<td colspan="3" class="split"></tr>
@@ -44,6 +45,7 @@
 		</td>
 	</tr>
 	{% endfor %}
+	-->
 </table>
 <br />
 <p><a href="{% url "context_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Create new context</a></p>

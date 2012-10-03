@@ -225,6 +225,7 @@ ENABLE_CLOUD = True
 
 # Whether to enable or disable the CSC UI
 ENABLE_CSC = False
+CSC_USER_CONFIG_FILE="/var/www/html/cvmo/students.conf"
 
 # Recaptcha information for the user registration
 GOOGLE_RECAPTCHA = {

@@ -22,32 +22,39 @@ import pprint
 
 def get_cernvm_config():
     """ Download the latest configuration parameters from CernVM """
-    response = urllib2.urlopen('http://cernvm.cern.ch/config/')
-    _config = response.read()
     
-    # Parse response
-    _params = {}
-    _config = _config.split("\n")
-    for line in _config:
-        if line:
-            (k, v) = line.split('=', 1)
-            _params[k] = v
+    try:
+        response = urllib2.urlopen('http://cernvm.cern.ch/config/')
+        _config = response.read()
+    
+        # Parse response
+        _params = {}
+        _config = _config.split("\n")
+        for line in _config:
+            if line:
+                (k, v) = line.split('=', 1)
+                _params[k] = v
     
     
-    # Generate JSON map for the CERNVM_REPOSITORY_MAP
-    _cvmMap = {}
-    _map = _params['CERNVM_REPOSITORY_MAP'].split(",")
-    for m in _map:
-        (name, _optlist) = m.split(":", 1)
-        options = _optlist.split("+")
-        _cvmMap[name] = options
+        # Generate JSON map for the CERNVM_REPOSITORY_MAP
+        _cvmMap = {}
+        _map = _params['CERNVM_REPOSITORY_MAP'].split(",")
+        for m in _map:
+            (name, _optlist) = m.split(":", 1)
+            options = _optlist.split("+")
+            _cvmMap[name] = options
     
-    # Update CERNVM_REPOSITORY_MAP
-    _params['CERNVM_REPOSITORY_MAP'] = json.dumps(_cvmMap)
-    _params['CERNVM_ORGANISATION_LIST'] = _params['CERNVM_ORGANISATION_LIST'].split(',')
+        # Update CERNVM_REPOSITORY_MAP
+        _params['CERNVM_REPOSITORY_MAP'] = json.dumps(_cvmMap)
+        _params['CERNVM_ORGANISATION_LIST'] = _params['CERNVM_ORGANISATION_LIST'].split(',')
+
+        # Return parameters
+        return _params
     
-    # Return parameters
-    return _params
+    except Exception as ex:
+        print "Got error: %s\n" % str(ex)
+        return {
+        }
     
 def api_get(request, context_id):
     """ Return the context definition in text format """

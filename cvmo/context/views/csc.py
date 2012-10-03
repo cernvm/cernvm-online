@@ -16,7 +16,6 @@ from cvmo.context.models import UserActivationKey
 from cvmo.context.utils.views import msg_error, msg_warning, msg_confirm, redirect_memory, get_memory, uncache_response
 from django.contrib.auth import login
 
-CSC_USER_CONFIG_FILE="/var/www/html/cvmo/students.conf"
 
 def csc_login(request):
     """ Display screen """
@@ -42,7 +41,7 @@ def csc_do_login(request):
     
     # Open config file
     config = ConfigParser.RawConfigParser()
-    config.read(CSC_USER_CONFIG_FILE)
+    config.read(settings.CSC_USER_CONFIG_FILE)
 
     # Read user parameter
     try:
