@@ -3,6 +3,7 @@ from django.template import RequestContext
 from cvmo.context.models import ServiceOffering, DiskOffering, NetworkOffering, \
     Template, ServiceDefinition, ClusterDefinition, ContextStorage, \
     ContextDefinition
+from cvmo.context.utils.views import msg_info, msg_error
 from cvmo.querystring_parser import parser
 import re
 from cvmo.context.utils.context import salt_context_key, gen_context_key
@@ -102,7 +103,7 @@ def save( request ):
            RequestContext( request ) )
     
     # Go to dashboard
-    request.session["redirect_msg_info"] = "Cluster was created successfully!"
+    msg_info( request, "Cluster was created successfully!" )
     return redirect( "dashboard" )
 
 def delete( request, cluster_id ):
@@ -110,12 +111,12 @@ def delete( request, cluster_id ):
     try:
         cluster = ClusterDefinition.objects.get( id = cluster_id )
     except:
-        request.session["redirect_msg_error"] = "Cluster with id " + cluster_id + " does not exist!"
+        msg_error( "Cluster with id " + cluster_id + " does not exist!" )
         return redirect( "dashboard" )
                 
     # Check if cluster belongs to calling user
     if request.user.id is not cluster.owner.id:
-        request.session["redirect_msg_error"] = "Cluster with id " + cluster_id + " does not belong to you!"
+        msg_error( "Cluster with id " + cluster_id + " does not belong to you!" )
         return redirect( "dashboard" )
     
     # Is it confirmed?
@@ -130,7 +131,7 @@ def delete( request, cluster_id ):
         cluster.delete()
 
         # Go to dashboard
-        request.session["redirect_msg_info"] = "Cluster removed successfully!" 
+        msg_info( request, "Cluster removed successfully!" )
         return redirect('dashboard')        
     else:
         # Show the confirmation screen
@@ -192,7 +193,7 @@ def api_cloudinfo(request):
             
             # Append details
             ans_clusters.append({
-                'services': ans_services
+                'services': ans_services,
                 'uid': cluster.uid,
                 'name': cluster.name
             })

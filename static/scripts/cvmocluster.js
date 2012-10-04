@@ -8,6 +8,19 @@ var NSContextNameAutocomplete;
 
 /* Add DOM Ready event */
 window.addEvent( "domready", __servicesTable_domReady );
+window.addEvent( "domready", __clusterCreatePage_domReady );
+
+/***** Page events ******/
+
+function __clusterCreatePage_domReady()
+{
+    /* Prepare accordion */
+    var accordion = new Fx.Accordion( $( 'content-accordion'), '#content-accordion .accordion-header', 
+    		'#content-accordion .accordion-content', {
+        		alwaysHide: false
+    		}
+    );	
+}
 
 /***** Table events *****/
 

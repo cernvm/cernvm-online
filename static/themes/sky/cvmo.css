@@ -525,6 +525,7 @@ div#services_container img.arrow {
 	visibility: collapse;
 } 
 div#services_container table#services {
+	margin-top: 10px;
 }
 div#services_container table#services tr.base-row {
 }
@@ -534,8 +535,17 @@ div#services_container table#services tr.details-row {
 div#services_container tr#ns_context_key_container {
 	display: none;
 }
-div#services_container table.add-service {
+div#services_container h3.add-service-header {
+	margin-top: 10px;
+}
+div#services_container div.add-service-container {
 	border: 1px solid #ddd;
+	padding: 5px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+}
+div#services_container table.add-service {	
 }
 div#services_container table.add-service tr.buttons-container td {
 	padding: 5px;
