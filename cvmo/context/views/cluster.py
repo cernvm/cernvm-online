@@ -8,7 +8,7 @@ import re
 from cvmo.context.utils.context import salt_context_key, gen_context_key
 import base64
 from cvmo.context.utils import crypt
-from cvmo.context.utils.views import render_confirm
+from cvmo.context.utils.views import render_confirm, uncache_response
 from django.core.urlresolvers import reverse
 from types import StringType
 from django.http import HttpResponse
@@ -169,6 +169,49 @@ def api_get( request, cluster_uid ):
     # Send response
     http_response = HttpResponse( json_contents, content_type = "application/json" )
     return http_response
+
+def api_cloudinfo(request):
+    
+    # Build response
+    response = { }
+    
+    try:
+        # Fetch cloud information for this user
+        lst_clusters = ClusterDefinition.objects.filter(owner=request.user)
+        
+        ans_clusters = []
+        for cluster in lst_clusters:
+            ans_services = []
+            
+            # Build services
+            lst_services = ServiceDefinition.objects.filter(cluster=cluster)
+            for service in lst_services:
+                ans_services.append({
+                    'uid': service.uid
+                })
+            
+            # Append details
+            ans_clusters.append({
+                'services': ans_services
+                'uid': cluster.uid,
+                'name': cluster.name
+            })
+        
+        # Set to response
+        response['status'] = 'ok'
+        response['clusters'] = ans_clusters
+    
+    except Exception as ex:
+        response['status'] = 'error'
+        response['message'] = str(ex)
+    
+    # Fetch the function to call for the API call
+    u_call = request.GET.get('call', 'iagent_cloudinfo')
+    
+    # Render response
+    return uncache_response(HttpResponse( 
+        u_call+'('+json.dumps( response )+');', 
+        content_type = "application/javascript" ))
 
 ##################################################
 # Helpers

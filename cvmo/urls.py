@@ -54,8 +54,9 @@ if settings.ENABLE_CLOUD:
         url(r'^cluster/create$', 'create', name="cluster_create"),
         url(r'^cluster/save$', 'save', name="cluster_save"),
         url(r'^cluster/delete/(?P<cluster_id>[-\w]+)$','delete', name="cluster_delete"),
-        url(r'^api/cluster/(?P<cluster_uid>[-\w]*)/{0,1}$', 'api_get')
-    )
+        url(r'^api/cluster/(?P<cluster_uid>[-\w]*)/{0,1}$', 'api_get'),
+        url(r'^api/cloudinfo\.js$', 'api_cloudinfo'),
+     )
 
 # Optional 2) CSC Login
 if (settings.ENABLE_CSC):
