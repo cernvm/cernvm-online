@@ -17,6 +17,7 @@ class ContextPlugin(object):
     DESCRIPTION     = ""
     CONFIG_GROUP    = "undefined"
     CONFIG_VARS     = { }
+    REMOVE_BLANK    = False
     
     def render(self, request, values):
         """ Render the module template into a string """
@@ -61,9 +62,10 @@ class ContextPlugin(object):
                 _val = values[safeK]
 
             # Render the variable
-            v = self.renderContextVariable(k, _val)
-            if (v != False):
-                ans += v
+            if (_val != "") or not self.REMOVE_BLANK:
+                v = self.renderContextVariable(k, _val)
+                if (v != False):
+                    ans += v
                 
         return ans+"\n"
     

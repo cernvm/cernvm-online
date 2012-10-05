@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>cvmo/context/views/cluster.py</string>
+	<string>cvmo/context/plugins.py</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,34 +21,34 @@
 	<integer>289</integer>
 	<key>metaData</key>
 	<dict>
-		<key>cvmo/context/models.py</key>
+		<key>cvmo/context/plugins.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>8</integer>
+				<integer>16</integer>
 				<key>line</key>
-				<integer>159</integer>
+				<integer>19</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>145</integer>
+			<integer>0</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
 				<integer>4</integer>
 				<key>line</key>
-				<integer>159</integer>
+				<integer>19</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>12</integer>
+				<integer>16</integer>
 				<key>line</key>
-				<integer>159</integer>
+				<integer>19</integer>
 			</dict>
 		</dict>
 		<key>cvmo/context/views/cluster.py</key>
@@ -56,70 +56,24 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>29</integer>
+				<integer>40</integer>
 				<key>line</key>
-				<integer>58</integer>
+				<integer>187</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>42</integer>
-		</dict>
-		<key>cvmo/urls.py</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>32</integer>
-				<key>line</key>
-				<integer>57</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>4</integer>
-		</dict>
-		<key>templates/pages/cluster.html</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>22</integer>
-				<key>line</key>
-				<integer>61</integer>
-			</dict>
-			<key>columnSelection</key>
-			<false/>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>145</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>13</integer>
-				<key>line</key>
-				<integer>61</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>26</integer>
-				<key>line</key>
-				<integer>61</integer>
-			</dict>
+			<integer>164</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>cvmo/urls.py</string>
 		<string>cvmo/context/views/cluster.py</string>
-		<string>templates/pages/cluster.html</string>
-		<string>cvmo/context/models.py</string>
+		<string>cvmo/context/plugins.py</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{-1, 71}, {1141, 807}}</string>
+	<string>{{0, 71}, {1141, 807}}</string>
 </dict>
 </plist>

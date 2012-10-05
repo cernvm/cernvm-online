@@ -5,6 +5,7 @@ class Condor(ContextPlugin):
     TITLE           = "Condor Batch"
     DESCRIPTION     = "Setup Condor batch system"
     TEMPLATE        = "plugins/context-condor.html"
+    REMOVE_BLANK    = True
     
     CONFIG_GROUP    = "condor"
     CONFIG_VARS     = {
