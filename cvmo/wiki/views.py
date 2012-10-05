@@ -77,6 +77,9 @@ def show_page(request, url, page):
         cat = rev_category_path[len(rev_category_path) - i - 1]
         cat.url = __get_category_url(cat)
         category_path.append(cat)
+        
+    # Set page URL
+    page.url = __get_page_url(page, page.selected_category)
 
     # Render the page
     context = {
