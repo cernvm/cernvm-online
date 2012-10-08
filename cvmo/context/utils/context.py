@@ -130,7 +130,7 @@ def salt_context_key(uuid, key):
 def sanitize_env(variable):
     
     # Sanitize stuff
-    res = variable.replace("\\", "\\\\")
+    res = str(variable).replace("\\", "\\\\")
     for v in '!;&|<>()[]{}"\'':
         res = res.replace(v, "\\"+v)
         
