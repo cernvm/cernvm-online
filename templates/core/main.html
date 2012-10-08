@@ -66,11 +66,15 @@
 				<li class="leaf first">
 					<a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
 				</li>
-				{% if user.username %}
 				<li class="leaf first">
-					<a href="/wiki/help.html" title="Help">Help</a>
+					<a href="http://cernvm.cern.ch/portal/online/documentation" title="Documentation">Documentation</a>
 				</li>
-				{% endif %}
+				<li class="leaf first">
+					<a href="http://cernvm.cern.ch/portal/online/downloads" title="Downloads">Downloads</a>
+				</li>
+				<li class="leaf first">
+					<a href="http://cernvm.cern.ch/portal/online/publications" title="Publications">Publications</a>
+				</li>
 				{% endblock %}
 			</ul>
 		</div>
