@@ -95,7 +95,7 @@ CVMO.Widgets.ValidateInput = function( element ) {
         error_msg = "Field '%' is required!";
         
         // Prepare the validation function
-        validate = function() { return (e.get('value') != ''); };
+        validate = function() { return (e.get('value') != '' || e.get('disabled')); };
         
     // Simple required and 'EQUALS' validation
     } else if (validation.substr(0,7) == 'equals:') {
@@ -108,7 +108,7 @@ CVMO.Widgets.ValidateInput = function( element ) {
         var elm = $$(validation.substr(7))[0];
         if (elm != undefined) {
             validate = function() { 
-                return (e.get('value') != '') && (e.get('value') == elm.get('value')); 
+                return (e.get('value') != '') && (e.get('value') == elm.get('value')) || e.get('disabled'); 
             };
         }
 
@@ -122,7 +122,7 @@ CVMO.Widgets.ValidateInput = function( element ) {
         // Prepare the validation function
         validate = function() {
             var r = new RegExp(validation.substr(6),'i');
-            return (String(e.get('value')).match(r) != null); 
+            return (String(e.get('value')).match(r) != null) || e.get('disabled'); 
         };
 
     }
@@ -235,10 +235,16 @@ CVMO.Widgets.DisclosureList = function( list ) {
                 $$('.cvmo-disclose-'+id+'-'+options[i].get('value')).each(function(e) {
                     $(e).addClass('cvmo-disclosed');
                 });
+                $$('.cvmo-disclose-'+id+'-'+options[i].get('value')+' input').each(function(e) {                	
+                	$(e).set('disabled',true);
+                });
             }
             // Activate only the ones that have that value
             $$('.cvmo-disclose-'+id+'-'+value).each(function(el) {
                 el.removeClass('cvmo-disclosed');
+            });
+            $$('.cvmo-disclose-'+id+'-'+value+' input').each(function(el) {
+            	el.set('disabled',false);
             });
         };
     
