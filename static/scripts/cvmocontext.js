@@ -15,7 +15,7 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
     ]);
     
     // Prepare accordion
-    var accordion = new Fx.Accordion($('content-accordion'), '#content-accordion .accordion-header', '#content-accordion .accordion-content', {
+    CVMO.ContextUI.Accordion = new Fx.Accordion($('content-accordion'), '#content-accordion .accordion-header', '#content-accordion .accordion-content', {
         alwaysHide: false
     });
     
@@ -31,24 +31,24 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
                     content.addClass('accordion-content');
                     header.removeClass('accordion-inactive-header');
                     content.removeClass('accordion-inactive-content');
-                    accordion.addSection(header, content);
-                    accordion.display(content);
+                    CVMO.ContextUI.Accordion.addSection(header, content);
+                    CVMO.ContextUI.Accordion.display(content);
                 } else {
                     
                     // Locate the previous element to display, only if we were
                     // selected
                     var select_index = -1;
-                    for (var i=0; i<accordion.elements.length; i++) {
-                        if (accordion.elements[i] == content) {
-                            if (accordion.previous != i) { select_index = -1; }
+                    for (var i=0; i<CVMO.ContextUI.Accordion.elements.length; i++) {
+                        if (CVMO.ContextUI.Accordion.elements[i] == content) {
+                            if (CVMO.ContextUI.Accordion.previous != i) { select_index = -1; }
                             break;
                         } else {
                             select_index=i;
                         }
                     }
                     
-                    accordion.removeSection(header);
-                    if (select_index!=-1) accordion.display(select_index);
+                    CVMO.ContextUI.Accordion.removeSection(header);
+                    if (select_index!=-1) CVMO.ContextUI.Accordion.display(select_index);
                     
                     fx.start({
                         'height': [content.getSize().y, 0]
@@ -89,6 +89,62 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
         });
     }
     
+    // Add validation command for custom command user
+    jQuery.validator.addMethod( "except_value", 
+    	function( value, element, forbiddenVal ) {
+    		if( typeof forbiddenVal == "undefined" ) {
+    			return true;
+    		} else {
+	    		return this.optional( element )
+	    			|| value != forbiddenVal 
+    		}
+    	}, "Please check field value." );
+    jQuery( "#create_context_form" ).validate(
+    	{
+    		rules: {
+    			"values[name]": "required",
+    			"values[general][cvm_raa_password]": "required",
+    			"values[general][context_cmd_user]": {
+    				required: "#f_contextcmd:filled",
+    				except_value: "root"
+    			}
+    		},
+    		messages: {
+    			"values[general][context_cmd_user]": {    				
+    				except_value: "Please do not use user root here."
+    			}
+    		},
+    		highlight: function( element, errorClass, validClass ) 
+    			{
+    				jQuery( element ).addClass( errorClass ).removeClass( validClass );
+    				/* Find block */
+    				if( jQuery( element ).parents( "div.accordion-content" ).length == 0 )
+    					return;
+    				var block = jQuery( element ).parents( "div.accordion-content" )[0];
+    				/* Does block has invalid inputs? */
+    				if( jQuery( "input.error", block ).length > 0 ) {
+    					CVMO.ContextUI.BlockSetError( block );
+    				} else {
+    					CVMO.ContextUI.BlockRemoveError( block );
+    				}
+    			},
+
+    		unhighlight: function( element, errorClass, validClass ) 
+    			{
+    				jQuery( element ).addClass( validClass ).removeClass( errorClass );
+    				/* Find block */
+    				if( jQuery( element ).parents( "div.accordion-content" ).length == 0 )
+    					return;
+    				var block = jQuery( element ).parents( "div.accordion-content" )[0];
+    				/* Does block has invalid inputs? */
+    				if( jQuery( "input.error", block ).length > 0 ) {
+    					CVMO.ContextUI.BlockSetError( block );
+    				} else {
+    					CVMO.ContextUI.BlockRemoveError( block );
+    				}
+    			}
+    	}
+    );
 })};
 
 CVMO.ContextUI.SelectServices = function(services) {
@@ -190,4 +246,55 @@ CVMO.ContextUI.AddEnv = function(variable, value) {
 CVMO.ContextUI.RemoveEnv = function(id) {
     // Dispose
     $(id).dispose();
+}
+
+/**************************************************
+ * Blocks error set
+ **************************************************/
+
+CVMO.ContextUI.BlockSetError = function( block )
+{
+	/* Check that block has correct CSS class */
+	if( !jQuery( block ).is( ".accordion-content" ) ) {
+		return;
+	}
+	
+	/* Find header */
+	var header = jQuery( block ).prev( ".accordion-header" );
+	
+	/* Add classes */
+	jQuery( block ).addClass( "error" );
+	jQuery( header ).addClass( "error" );
+	
+	/* Show first with error */
+	CVMO.ContextUI.ShowFirstErrorBlock();
+}
+
+CVMO.ContextUI.BlockRemoveError = function( block )
+{
+	/* Check that block has correct CSS class */
+	if( !jQuery( block ).is( ".accordion-content" ) ) {
+		return;
+	}
+	
+	/* Find header */
+	var header = jQuery( block ).prev( ".accordion-header" );
+	
+	/* Remove classes */
+	jQuery( block ).removeClass( "error" );
+	jQuery( header ).removeClass( "error" );
+}
+
+CVMO.ContextUI.ShowFirstErrorBlock = function()
+{
+	/* Are there any blocks with error? */
+	if( jQuery( "div.accordion-content.error" ).length == 0 ) {
+		return;
+	}
+	
+	/* Find the first one */
+	var firstBlock = jQuery( "div.accordion-content.error" )[0];
+	
+	/* Display it */
+	CVMO.ContextUI.Accordion.display( firstBlock );
 }

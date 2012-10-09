@@ -519,6 +519,23 @@ a.imglink:hover {
     border-bottom: solid 4px #aaa;
 }
 
+/***** Validation library classes *****/
+label.error {
+	margin-left: 5px;
+	color: 5px;
+	color: red;
+}
+input.error {
+	border-color: red;
+}
+div.accordion-header h2 span.error {
+	display: none;
+	color: red;
+}
+div.accordion-header.error h2 span.error {
+	display: inline;
+}
+
 /***** Cluster styles *****/
 div#services_container img.arrow {
 	position: absolute;
