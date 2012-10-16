@@ -1,0 +1,23 @@
+<table class="plain long-text">
+	<tr>
+		<th>Server:</th>
+		<td><input type="text" name="values[openvpn][search]" value="{{ values.openvpn.search }}" /> GB</td>			
+	</tr>
+	<tr>
+		<th width="150">Protocol:</th>
+		<td>
+			<select class="cvmo-disclose" name="values[openvpn][proto]" id="openvpnproto">
+				<option value="hostname" {{ values.openvpn.proto|sel:"tcp" }}>TCP</option>
+				<option value="prefix" {{ values.openvpn.proto|sel:"udp" }}>UDP</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th>Nameserver:</th>
+		<td><input type="text" name="values[openvpn][nameserver]" value="{{ values.openvpn.nameserver }}" /></td>			
+	</tr>
+	<tr>
+		<th>Search:</th>
+		<td><input type="text" name="values[openvpn][search]" placeholder="foo.example.com bar.example.com" value="{{ values.openvpn.search }}" /> GB</td>			
+	</tr>
+</table>

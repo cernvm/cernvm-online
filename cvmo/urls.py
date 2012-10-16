@@ -59,7 +59,7 @@ if settings.ENABLE_CLOUD:
      )
 
 # Optional 2) CSC Login
-if (settings.ENABLE_CSC):
+if settings.ENABLE_CSC:
     urlpatterns += patterns('cvmo.context.views.csc',
         url(r'^csc$', 'csc_login',                  name="csc_login"),
         url(r'^csc/do_login$', 'csc_do_login',      name="csc_do_login")

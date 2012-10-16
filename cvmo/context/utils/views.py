@@ -34,7 +34,7 @@ def global_context(request):
         'msg_warning': msg_warning,
         'msg_confirm': msg_confirm,
         'msg_info': msg_info,
-        'enable_cloud' : settings.ENABLE_CLOUD,
+        'enable_cloud' : settings.ENABLE_CLOUD and is_cloud_enabled(request),
         'enable_csc': settings.ENABLE_CSC
     }
     
@@ -197,4 +197,32 @@ def render_error(request, code=400, title="", body=""):
     
     # Return the error page
     return HttpResponse(_html, status=code)
+
+
+def is_cloud_enabled(request):
+    """
+    Check if the current user has cloud permissions
+    """
+    if request.user:
+        return request.user.groups.filter(name='cloud').count() != 0
+    return False
+
+def for_cloud(fn):
+    """
+    Decorator to reject access if the user is not owner of the cloud group
+    """
+    def wrapped(*args, **kwargs):
+
+        # Fetch request object
+        request = args[0]
+
+        # Check if user is not member of cloud
+        if not is_cloud_enabled(request):
+            msg_info(request, "This is an experimental feature. Access is granted only to beta testers!")
+            return redirect('dashboard')
+
+        # It looks OK, run the view
+        return fn(*args, **kwargs)
     
+    # Return the wrapped function
+    return wrapped

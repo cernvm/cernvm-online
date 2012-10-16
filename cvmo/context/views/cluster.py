@@ -9,7 +9,7 @@ import re
 from cvmo.context.utils.context import salt_context_key, gen_context_key
 import base64
 from cvmo.context.utils import crypt
-from cvmo.context.utils.views import render_confirm, uncache_response
+from cvmo.context.utils.views import render_confirm, uncache_response, for_cloud
 from django.core.urlresolvers import reverse
 from types import StringType
 from django.http import HttpResponse
@@ -21,6 +21,7 @@ import pprint
 # Request handlers
 ##################################################
 
+@for_cloud
 def create( request ):
     """
         Cluster create view
@@ -31,6 +32,7 @@ def create( request ):
        __getCreateViewContext(), 
        RequestContext( request ) )
 
+@for_cloud
 def save( request ):
     """
         Storage of cluster
@@ -106,6 +108,7 @@ def save( request ):
     msg_info( request, "Cluster was created successfully!" )
     return redirect( "dashboard" )
 
+@for_cloud
 def delete( request, cluster_id ):
     # Try to find the cluster
     try:
@@ -140,6 +143,7 @@ def delete( request, cluster_id ):
             reverse( 'cluster_delete', kwargs = { 'cluster_id': cluster_id } ) + '?confirm=yes', \
             reverse( 'dashboard' ) )
 
+@for_cloud
 def api_get( request, cluster_uid ):        
     # Try to find the cluster
     try:
@@ -171,6 +175,7 @@ def api_get( request, cluster_uid ):
     http_response = HttpResponse( json_contents, content_type = "application/json" )
     return http_response
 
+@for_cloud
 def api_cloudinfo(request):
     
     # Build response
@@ -337,9 +342,11 @@ def __getCreateViewContext():
         "disk_offerings": DiskOffering.objects.all(),
         "network_offerings": NetworkOffering.objects.all(),
         "templates": Template.objects.all(),        
-    }        
-    context["default_template"] = context["templates"][0].uid;
-    context["default_service_offering"] = context["service_offerings"][0].uid;
+    }
+    if context["templates"].count() > 0:
+        context["default_template"] = context["templates"][0].uid;
+    if context["service_offerings"].count() > 0:
+        context["default_service_offering"] = context["service_offerings"][0].uid;
     return context
 
 def __createNewContext( cluster, base_context, base_key, new_key ):
