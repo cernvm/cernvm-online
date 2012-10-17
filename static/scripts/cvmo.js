@@ -505,6 +505,7 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
                         if( select_value( [ elm, item.label, item.attributes ] ) ) {
 	                        set_valid(true);
 	                        reset_list();
+	                        $(el).focus();
                         }
                     });
                     
@@ -587,6 +588,7 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
             if( index != -1 && select_value( items[index] ) ) {
 	            set_valid(true);
 	            reset_list();
+                $(el).focus();
 	            return false;
             }
         } else if (e.code == 40) { /* down arrow */

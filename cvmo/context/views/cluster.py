@@ -26,10 +26,20 @@ def create( request ):
     """
         Cluster create view
     """
+    post_dict = parser.parse( request.POST.urlencode() )
+    
+    context = __getCreateViewContext()
+    context['values'] = {
+        'services': {
+            'fixed': ServiceDefinition.objects.filter(service_type='Fx').order_by('order'),
+            'scalable': ServiceDefinition.objects.filter(service_type='Sx'),
+        }
+    }
+    context['debug'] = str(post_dict)
     
     # Send response
-    return render_to_response( "pages/cluster_create.html", 
-       __getCreateViewContext(), 
+    return render_to_response( "pages/cluster.html", 
+       context, 
        RequestContext( request ) )
 
 @for_cloud

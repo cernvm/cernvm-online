@@ -1,318 +1,307 @@
-/* Arrows */
-var ServicesUpArrow;
-var ServicesDownArrow;
-var ArrowHideTimeout;
-
-/* Autocomple field */
-var NSContextNameAutocomplete;
-
-/* Add DOM Ready event */
-window.addEvent( "domready", __servicesTable_domReady );
-window.addEvent( "domready", __clusterCreatePage_domReady );
-
-/***** Page events ******/
-
-function __clusterCreatePage_domReady()
-{
-    /* Prepare accordion */
-    var accordion = new Fx.Accordion( $( 'content-accordion'), '#content-accordion .accordion-header', 
-    		'#content-accordion .accordion-content', {
-        		alwaysHide: false
-    		}
-    );	
-}
-
-/***** Table events *****/
-
-function __servicesTable_domReady()
-{
-	/* Set Globals */
-	ServicesUpArrow = $$( "#services_container img.up.arrow" )[0];
-	ServicesDownArrow = $$( "#services_container img.down.arrow" )[0];
-	
-	/* Add service rows events */
-	__addServiceRowsEvents();
-	
-	/* Add add row event */
-	$$( "#services_container a.add-row" )[0].addEvent( "click", __addRow_click );
-	
-	/* Set arrows events */
-	$$( "#services_container img.arrow" ).each( function( r ) { r.addEvent( "click", __servicesArrow_click ); } );
-	$$( "#services_container img.arrow" ).each( function( r ) { r.addEvent( "mouseover", __servicesArrow_mouseOver ); } );
-	$$( "#services_container img.arrow" ).each( function( r ) { r.addEvent( "mouseout", __servicesArrow_mouseOut ); } );
-	
-	/* Create autocomplete */
-	NSContextNameAutocomplete = new CVMO.Widgets.AutoComplete( $( "ns_context_name" ), {
-		"url": "/ajax/context/list",
-		"onSelectChoice": __nsContextName_selectChoice
-	} );
-	
-	/* Check tfoot visibility for services table */
-	__checkServicesFooter();
-}
-
-function __addServiceRowsEvents()
-{
-	/* Are there any rows ? */
-	if( $$( "#services_container table#services tr.base-row" ).length == 0 ) return;
-	
-	/* Set mouse over/out events in each */
-	$$( "#services_container table#services tr.base-row" ).each( function( r ) { r.addEvent( "mouseover", __servicesTableRow_mouseOver ); } );
-	$$( "#services_container table#services tr.base-row" ).each( function( r ) { r.addEvent( "mouseout", __servicesTableRow_mouseOut ); } );
-	
-	/* Add row add / remove events */
-	$$( "#services_container table#services tr.base-row a.remove-row" ).each( function( r ) { r.addEvent( "click", __removeRow_click ); } );
-}
-
-function __checkServicesFooter()
-{
-	if( $$( "#services_container table#services tr.base-row" ).length == 0 ) {
-		/* Show tfoot */
-		$$( "#services_container table#services tfoot tr" )[0].setStyle( "display", "table-row" );
-	} else {
-		/* Hide tfoot */
-		$$( "#services_container table#services tfoot tr" )[0].setStyle( "display", "none" );
-	}
-}
-
-/***** Table rows events *****/
-
-function __servicesTableRow_mouseOver( event )
-{				
-	var row = $( this );
-	if( row.expanded ) {
-		showArrow( ServicesUpArrow, row );
-	} else {
-		showArrow( ServicesDownArrow, row );
-	}
-}
-
-function __servicesTableRow_mouseOut( event )
-{
-	var row = $( this );
-	/* Arrow will be visible for half a second */
-	ArrowHideTimeout = setTimeout( function(){ hideArrows( row ); }, 500 );
-}
-
-/***** Arrows events *****/
-
-function __servicesArrow_click( event ) 
-{
-	var row = $( this ).shown_for;
-	var detailsRow = row.getSiblings( "tr.details-row" )[0];
-	
-	/* Hide instantly arrow */
-	hideArrows( row );
-	
-	/* Is expanded? */
-	if( row.expanded ) {
-		/* Hide details */		
-		detailsRow.setStyle( "display", "none" );
-		/* Change arrow */
-		row.expanded = false;
-		showArrow( ServicesDownArrow, row );
-	} else {
-		/* Show details */
-		detailsRow.setStyle( "display", "table-row" );
-		/* Change arrow */
-		row.expanded = true;
-		showArrow( ServicesUpArrow, row );
-	}	
-}
-
-function __servicesArrow_mouseOver( event ) 
-{
-	/* Clear timeout */
-	clearTimeout( ArrowHideTimeout );
-}
-
-function __servicesArrow_mouseOut( event ) 
-{
-	/* Arrow will be visible for half a second */	
-	var arrow = $( this );
-	ArrowHideTimeout = setTimeout( function(){ hideArrows( arrow.shown_for ); }, 500 );	
-}
-
-/***** Add / remove row events *****/
-
-function __removeRow_click( event )
-{
-	event.preventDefault();
-	
-	/* Get rows */
-	var baseRow = $( this ).getParent( "tr" );
-	if( !baseRow ) return;
-	var detailsRow = baseRow.getSiblings( "tr.details-row" )[0];
-	
-	/* Remove row and next row */
-	baseRow.dispose();
-	detailsRow.dispose();	
-	
-	/* Check tfoot visibility for services table */
-	__checkServicesFooter();
-	
-	/* Hide the arrows */
-	hideArrows();
-}
-
-function __addRow_click( event )
-{
-	event.preventDefault();
-	
-	/* Get the service object */
-	var service = {
-		"uid": $( "ns_uid" ).value,
-		"context_name": $( "ns_context_name" ).value,
-		"context_uid": $( "ns_context_uid" ).value,
-		"context_has_key": $( "ns_context_has_key" ).value,
-		"context_key": $( "ns_context_key" ).value,
-		"template_uid": $( "ns_template_uid" ).value,
-		"service_offering_uid": $( "ns_service_offering_uid" ).value,
-		"disk_offering_uid": $( "ns_disk_offering_uid" ).value,
-		"network_offering_uid": $( "ns_network_offering_uid" ).value
-	};
+(function(mt) {
+    var $ = jQuery; 
+    // ============================
+    // |  jQuery - Friendly Code  |
+    // ============================
+    // Import mootools '$' as 'mt'
+    // Alias jQuery to '$'
+    
+    function __nsContextName_selectChoice( item, attributes )  {
+    	window.console.log(item,attributes,'OK?');
+    	return true;
+    }
+    
+    /**
+     * Update the 'order' data fields of each service entry in a
+     * first-found seuence.
+     */
+    function __nsUpdateOrderField() {
+        var container = $('#services_container'),
+            elements = container.find(".services-list .service-row");
+        for (var i=0; i<elements.length; i++) {
+            __svcUpdateData($(elements[i]), { order: i });
+        }
+    }
+    
+    /**
+     * Show or hide the '(no xxxx services defined)' placeholders, depending
+     * on if we have items in that particular list or not.
+     */
+    function __nsUpdateEmptyPlaceholders() {
+        if ($('#scalable-services-sortable').children().length == 1) {
+            $('#label-no-scalable').show();
+        } else {
+            $('#label-no-scalable').hide();
+        }
+        if ($('#fixed-services-sortable').children().length == 1) {
+            $('#label-no-fixed').show();
+        } else {
+            $('#label-no-fixed').hide();
+        }
+    }
+    
+    /**
+     * Parse the data field of the given <tr /> entry and return a hash
+     * with the stored values. 
+     */
+    function __svcParseData(tr) {
+        var e_data = tr.find(".service-data input[type=hidden]"),
+            ans = { };
+        for (var i=0; i<e_data.length; i++) {
+            var elm_name = e_data[i].get('name'),
+                elm_value = e_data[i].get('value'),
+                p = elm_name.split("][");
+            elm_name = p[p.length-1];
+            elm_name = elm_name.substr(0,elm_name.length-1);
+            ans[elm_name] = elm_value;
+        }
+        return ans;
+    }
+    
+    /**
+     * Update the UI and /or the data fields of the given <tr /> using the given
+     * visual and/or data information.
+     */
+    function __svcUpdateData(tr, data) {
+        var e_data = tr.find(".service-data input[type=hidden]"),
+            ans = { };
+        
+        // Update data fields (easy part)
+        for (var i=0; i<e_data.length; i++) {
+            var elm_name = e_data[i].get('name'),
+                p = elm_name.split("][");
+            
+            // Update the UID
+            if (data['uid'] != undefined) {
+                p[p.length-2] = data['uid'];
+                e_data[i].set('name', p.join(']['));
+            }
+            
+            elm_name = p[p.length-1];
+            elm_name = elm_name.substr(0,elm_name.length-1);
+            if (data[elm_name] != undefined)
+                e_data[i].set('value', data[elm_name]);
+        }
+        
+        // Update UI fields (we hope for the best!)
+        var e_visual = tr.find("td, th");
+        for (var i=0; i<e_visual.length; i++) {
+            var e = $(e_visual[i]);
+            window.console.log(i);
+            switch (i) {
+                case 1: if (data['uid']!=undefined) e.html(data['uid'] || ''); break;
+                case 2: if (data['template']!=undefined) e.html(data['template'] || ''); break;
+                case 3: if (data['context']!=undefined) e.html(data['context'] || ''); break;
+                case 4: if (data['network_offering']!=undefined) e.html(data['network_offering'] || ''); break;
+                case 5: if (data['disk_offering']!=undefined) e.html(data['disk_offering'] || ''); break;
+                case 6: if (data['service_offering']!=undefined) e.html(data['service_offering'] || ''); break;
+            }
+        }
+    }
+    
+    /**
+     * Create a new <tr /> compatible with the previously mentioned format
+     * You can also provide the path of the static directory (assumed to be: /static/)
+     */
+    function __svcNewRow(d_static) {
+        if (!d_static) d_static='/static/';
+        return jQuery('<tr class="service-row">\
+			<td class="handle"><img src="'+d_static+'images/handle.png" /></td>\
+			<th>&nbsp;</th>\
+			<td>&nbsp;</td>\
+			<td>&nbsp;</td>\
+			<td>&nbsp;</td>\
+			<td>&nbsp;</td>\
+			<td>&nbsp;</td>\
+			<td class="operations">\
+				<a href="javascript:;" onclick="deleteService(this)" class="softbutton">\
+					<img border="0" src="'+d_static+'images/delete.png" align="absmiddle" /> Del\
+				</a>\
+				&nbsp;\
+				<a href="javascript:;" onclick="editService(this)" class="softbutton">\
+					<img border="0" src="'+d_static+'images/edit.png" align="absmiddle" /> Edit\
+				</a>\
+				<span class="service-data">\
+				    <input type="hidden" name="values[services][placeholder][uid]" value="placeholder" />\
+					<input type="hidden" name="values[services][placeholder][context]" value="placeholder" />\
+					<input type="hidden" name="values[services][placeholder][template]" value="placeholder" />\
+					<input type="hidden" name="values[services][placeholder][network_offering]" value="placeholder" />\
+					<input type="hidden" name="values[services][placeholder][disk_offering]" value="placeholder" />\
+					<input type="hidden" name="values[services][placeholder][service_offering]" value="placeholder" />\
+					<input type="hidden" name="values[services][placeholder][order]" value="placeholder" />\
+					<input type="hidden" name="values[services][placeholder][min_instances]" value="placeholder" />\
+				</span>\
+			</td>\
+		</tr>');
+    }
+    
+    /**
+     * Return an empty, new data
+     */
+    function __newData() {
+        return {
+            'uid': '',
+            'context': '',
+            'template': '',
+            'min_instances': 1,
+            'service_offering': '',
+            'disk_offering': '',
+            'network_offering': ''   
+        }
+    }
+    
+    /**
+     * Render the edit form with the given data and call the 'callback' when it's about
+     * to update the field information.
+     */
+    var __submit_callback = function() { };
+    function __editData(data, callback) {
+		$("#add-service-error").hide();
 		
-	try {
-		/* Validate the service */
-		validateService( service );
+		// Render Data
+		$("#ns_uid").val(data['uid']);
+		$("#ns_context_name").val(data['context']);
+		$("#ns_template").val(data['template']);
+		$("#ns_instances").val(data['min_instances']);
+		$("#ns_service_offering").val(data['service_offering']);
+		$("#ns_disk_offering").val(data['disk_offering']);
+		$("#ns_network_offering").val(data['network_offering']);
 		
-		/* Add row */
-		addService( service );
+		// Register callback
+		__submit_callback = function(elm) {
+		    callback({
+		        'uid': $("#ns_uid").val(),
+		        'context': $("#ns_context_name").val(),
+		        'template': $("#ns_template").val(),
+		        'min_instances': $("#ns_instances").val(),
+		        'service_offering': $("#ns_service_offering").val(),
+		        'disk_offering': $("#ns_disk_offering").val(),
+		        'network_offering': $("#ns_network_offering").val(),
+		    });
+		}
 		
-		/* Check tfoot visibility for services table */
-		__checkServicesFooter();
-		
-		/* Reset the fields */ 
-		$( "ns_uid" ).value = "";
-		$( "ns_context_name" ).value = "";
-		$( "ns_context_uid" ).value = "";
-		$( "ns_context_has_key" ).value = "0";
-		$( "ns_context_key" ).value = "";
-		$( "ns_context_key_container" ).setStyle( "display", "none" );
-		$( "ns_service_offering_uid" ).value = DefaultServiceOffering;
-		$( "ns_disk_offering_uid" ).value = DefaultDiskOffering;
-		$( "ns_network_offering_uid" ).value = DefaultNetworkOffering;
-		$( "ns_template_uid" ).value = DefaultTemplate;
-	} catch( exception ) {
-		/* Display error */
-		alert( exception );
-	}	
-}
+		// Open dialog
+        $( "#add-service-container" ).dialog( "open" );
+    }
+    
+    /**********************************
+     *        EXPORTED FUNCTIONS  
+     **********************************/
+    
+    window.editService = function(button) {
+        var parent = $($(button).parents('tr')[0]),
+            data = __svcParseData(parent);
+        __editData(data, function(data) {
+            __svcUpdateData(parent, data);
+        });
+    };
+    
+    window.deleteService = function(button) {
+        var parent = $($(button).parents('tr')[0]);
+        parent.remove();        
+    };
+    
+    /**********************************
+     *      INITIALIZATION PART  
+     **********************************/
+    $(function() {
 
-/***** New service context name field events *****/
+        // Setup autocomplete
+        var NSContextNameAutocomplete = new CVMO.Widgets.AutoComplete( mt( "ns_context_name" ), {
+    		"url": "/ajax/context/list"
+    	});
+    	
+        // Setup accordion
+        $( "#content-accordion" ).accordion({ 
+            header: '.accordion-header',
+            heightStyle: 'content'
+        });
+        
+        // Setup sortable table
+        $( "#fixed-services-sortable, #scalable-services-sortable" ).sortable({
+            placeholder: "services-sortable-placeholder",
+            connectWith: '.services-list',
+            handle: '.handle',
+            cancel: "#label-no-fixed, label-no-scalable",
+            helper: function(e,o) {
+                var elm = o.clone();
+                elm.addClass('services-sortable-helper');
+                return elm;
+            },
+            start: function(e, ui) {
+                var obj = jQuery('<td colspan="8"></td>');
+                    elm = $(".services-sortable-placeholder");
+                obj.appendTo(elm);
+            },
+            stop: function(e, ui) {
+                __nsUpdateEmptyPlaceholders();
+                __nsUpdateOrderField();
+            }
+        });
+        $( "#fixed-services-sortable" ).disableSelection();
+        $( "#scalable-services-sortable" ).disableSelection();
 
-function __nsContextName_selectChoice( item, attributes ) 
-{
-	$( "ns_context_uid" ).value = attributes["uid"];
-	if( attributes["has_key"] ) {   
-		$( "ns_context_has_key" ).value = "1";
-		$( "ns_context_key_container" ).setStyle( "display", "table-row" );
-		$( "ns_context_key" ).addClass( 'invalid' );
-		$( "ns_context_key" ).addEvent( "keyup", 
-			function( event )
-			{    	
-				var value = $( "ns_context_key" ).get( "value" ) + "";
-				if( value != "" ) {
-					$( "ns_context_key" ).removeClass( "invalid" );
-				} else {
-					$( "ns_context_key" ).addClass( "invalid" );
-				}
-			}
-		);
-	} else {
-		$( "ns_context_has_key" ).value = "0";
-		$( "ns_context_key_container" ).setStyle( "display", "none" );
-	}
-	return true;
-}
+        // Setup validator
+        jQuery.validator.messages.required = "";
+        jQuery.validator.addMethod("validate-context", function( value, element ) {
+        		return NSContextNameAutocomplete.valid;
+        	}, "");
+        jQuery.validator.addMethod("positive", function( value, element ) {
+        		return (value > 0);
+        	}, "");
+		$("#add-service-error").hide();
+        $('#add-service-form').validate({
+            invalidHandler: function(e, validator) {
+    			var errors = validator.numberOfInvalids();
+    			if (errors) {
+    				var message = errors == 1
+    					? 'You missed 1 field. It has been highlighted below'
+    					: 'You missed ' + errors + ' fields.  They have been highlighted below';
+    				$("#add-service-error span").html(message);
+    				$("#add-service-error").show();
+    			} else {
+    				$("#add-service-error").hide();
+    			}
+    		},
+        });
+        
+        // Setup dialog
+        $('#add-service-container').dialog({
+            autoOpen: false,
+            height: 380,
+            width: 450,
+            modal: true,
+            resizable: false,
+            draggable: false,
+            title: "Service editor",
+            show: 'fade',
+            buttons: {
+                "Save": function() {
+                    if ($('#add-service-form').valid() && NSContextNameAutocomplete.valid) {
+                        $( this ).dialog( "close" );
+                        __submit_callback( this );
+                    }
+                },
+                Cancel: function() {
+    				$("#add-service-error").hide();
+                    $( this ).dialog( "close" );
+                }
+            }
+        });
+    	
+    	// Setup service buttons
+        $('#add-service').click(function() { 
+            __editData(__newData(), function(data) {
+                var elm = __svcNewRow();
+                __svcUpdateData(elm, data);
+                elm.appendTo('#scalable-services-sortable');
+                __nsUpdateEmptyPlaceholders();
+                __nsUpdateOrderField();
+            })
+        });
+        
+        // Update placeholders
+        __nsUpdateEmptyPlaceholders();
 
-/***** Add service *****/
-
-function addService( service )
-{
-	/* Create Base Row */
-	var baseRowHTML = "<td>" + service.uid + "</td>";
-	baseRowHTML += "<td>" + Templates[service.template_uid] + "</td>";
-	baseRowHTML += "<td>" + service.context_name + "</td>";
-	baseRowHTML += "<td class=\"operations\">" +
-		"<a href=\"#\" class=\"softbutton remove-row\">" +
-		"<img border=\"0\" src=\"" + DeleteImgPath + "\" align=\"absmiddle\" />" +
-		" Remove Service" +
-		"</a>" +
-		"</td>";
-	var baseRow = new Element( "tr", { "html": baseRowHTML, "class": "base-row" }  );	
-	
-	/* Create Details row */
-	var detailsRowHTML = "<td colspan=\"4\">";
-	detailsRowHTML += "<ul class=\"offerings\">";
-	detailsRowHTML += "<li><strong>Service offering:</strong> " + ServiceOfferings[service.service_offering_uid] + "</li>";
-	if( DiskOfferings[service.disk_offering_uid] )
-		detailsRowHTML += "<li><strong>Disk offering:</strong> " + DiskOfferings[service.disk_offering_uid] + "</li>";
-	if( NetworkOfferings[service.network_offering_uid] )
-		detailsRowHTML += "<li><strong>Network offering:</strong> " + NetworkOfferings[service.network_offering_uid] + "</li>";
-	detailsRowHTML += "</ul>";
-		
-	/* Add hidden fields */
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][uid]\" value=\"" + service.uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][context_uid]\" value=\"" + service.context_uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][context_key]\" value=\"" + service.context_key + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][template_uid]\" value=\"" + service.template_uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][service_offering_uid]\" value=\"" + service.service_offering_uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][network_offering_uid]\" value=\"" + service.network_offering_uid + "\" />";
-	detailsRowHTML += "<input type=\"hidden\" name=\"values[services][disk_offering_uid]\" value=\"" + service.disk_offering_uid + "\" />";	
-	
-	detailsRowHTML += "</td>";
-	var detailsRow = new Element( "tr", { "html": detailsRowHTML, "class": "details-row" }  );
-	
-	/* Add rows to table */
-	var tbody = $$( "#services_container table#services tbody" )[0];
-	baseRow.inject( tbody );
-	detailsRow.inject( tbody );	
-	
-	/* Add events */
-	__addServiceRowsEvents();
-}
-
-function validateService( service )
-{
-	if( service.uid.length == 0 ) throw "Service key is required";
-	if( service.uid.length > 16 ) throw "Service key should be less than 16 characters.";
-	if( service.context_uid.length == 0 ) throw "Context is required";
-	if( service.context_has_key == 1 && service.context_key.length == 0 ) 
-		throw "Context is encrypted, please provide key";
-	if( service.template_uid.length == 0 ) throw "Template is required";
-	if( service.service_offering_uid.length == 0 ) throw "Service offering is required";
-}
-
-/***** Arrow Show / Hide methods *****/
-
-function showArrow( arrow, row )
-{
-	/* Clear timeout */
-	clearTimeout( ArrowHideTimeout );
-	
-	/* Get row position and height */
-	var rowPosition = row.getPosition();
-	var rowHeight = row.getHeight();
-	
-	/* Get height and position of the arrow */
-	var arrowHeight = arrow.getHeight();
-	var arrowWidth = arrow.getWidth();
-	var arrowPosition = rowPosition;	
-	arrowPosition.x -= arrowWidth + 5;
-	arrowPosition.y += ( rowHeight - arrowHeight ) / 2;
-	
-	/* Show the arrow */	
-	arrow.setStyle( "visibility", "visible" );
-	arrow.setPosition( arrowPosition );
-	arrow.shown_for = row; // arrow should know next to which row is shown
-	row.arrow_shown = true; // flag that arrow is shown	
-}
-
-function hideArrows( row )
-{
-	$$( "#services_container img.arrow" ).each( function( r ) { r.setStyle( "visibility", "collapse" ); } );	
-	$$( "#services_container img.arrow" ).each( function( r ) { r.shown_for = 0; } );
-	if( row ) row.arrow_shown = false;
-	clearTimeout( ArrowHideTimeout );
-}
+    });
+})($);

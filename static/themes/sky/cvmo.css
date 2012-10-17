@@ -1,4 +1,16 @@
 
+body {
+    font-size: 12px;
+}
+
+pre {
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
 input[type=text], input[type=password] {
     width: 110px;
 }
@@ -268,6 +280,7 @@ div.accordion-inactive-content {
     max-height: 144px;
     overflow: hidden;
     position: absolute;
+    z-index: 2000;
     
     -moz-box-shadow: 2px 2px 2px #999;
     -webkit-box-shadow: 2px 2px 2px #999;
@@ -569,4 +582,30 @@ div#services_container table.add-service tr.buttons-container td {
 }
 div#services_container div.buttons-container {
 	margin-top: 10px;
+}
+
+table#services td, table#services th {
+    vertical-align: middle;
+}
+
+tbody#fixed-services-sortable td, tbody#fixed-services-sortable th {
+    background-color: #FFE7D9;
+}
+
+.services-sortable-placeholder {
+    height: 40px;
+    background-color: #ddd;
+}
+.services-sortable-helper {
+    border: solid 1px #ddd;
+    padding: 4px;
+    background-color: #fff;
+}
+.services-sortable-helper td {
+    border: solid 1px #ddd !important;
+}
+
+td.cluster-fixed-separator {
+    height: 0px;
+    border-bottom: double 4px #ddd;
 }
