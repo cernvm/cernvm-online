@@ -588,8 +588,8 @@ table#services td, table#services th {
     vertical-align: middle;
 }
 
-tbody#fixed-services-sortable td, tbody#fixed-services-sortable th {
-    background-color: #FFE7D9;
+tbody#fixed-services-sortable {
+    background: url(img/stripes.png);
 }
 
 .services-sortable-placeholder {

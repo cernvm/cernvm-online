@@ -17,10 +17,25 @@
      */
     function __nsUpdateOrderField() {
         var container = $('#services_container'),
-            elements = container.find(".services-list .service-row");
-        for (var i=0; i<elements.length; i++) {
-            __svcUpdateData($(elements[i]), { order: i });
-        }
+            i=0;
+        
+        // Update order and fixed-only fields
+        container.find("#fixed-services-sortable .service-row").each(function(i,e){
+            __svcUpdateData($(e), { 
+                order: i++,
+                min_instances: 1,
+                service_type: 'F'
+            });
+        });
+        
+        // Update order and scalable-only fields
+        $("#scalable-services-sortable .service-row").each(function(i,e) {
+            __svcUpdateData($(e), { 
+                order: i++,
+                service_type: 'S'
+            });
+        });
+        
     }
     
     /**
@@ -84,17 +99,17 @@
         }
         
         // Update UI fields (we hope for the best!)
-        var e_visual = tr.find("td, th");
+        var e_visual = tr.find("td");
         for (var i=0; i<e_visual.length; i++) {
             var e = $(e_visual[i]);
-            window.console.log(i);
             switch (i) {
-                case 1: if (data['uid']!=undefined) e.html(data['uid'] || ''); break;
-                case 2: if (data['template']!=undefined) e.html(data['template'] || ''); break;
+                case 1: if (data['uid']!=undefined) e.html('<strong>'+data['uid']+'</strong>'); break;
+                case 2: if (data['min_instances']!=undefined) e.html(data['min_instances'] || ''); break;
                 case 3: if (data['context']!=undefined) e.html(data['context'] || ''); break;
-                case 4: if (data['network_offering']!=undefined) e.html(data['network_offering'] || ''); break;
-                case 5: if (data['disk_offering']!=undefined) e.html(data['disk_offering'] || ''); break;
-                case 6: if (data['service_offering']!=undefined) e.html(data['service_offering'] || ''); break;
+                case 4: if (data['template']!=undefined) e.html(data['template'] || ''); break;
+                case 5: if (data['network_offering']!=undefined) e.html(data['network_offering'] || ''); break;
+                case 6: if (data['disk_offering']!=undefined) e.html(data['disk_offering'] || ''); break;
+                case 7: if (data['service_offering']!=undefined) e.html(data['service_offering'] || ''); break;
             }
         }
     }
@@ -107,7 +122,8 @@
         if (!d_static) d_static='/static/';
         return jQuery('<tr class="service-row">\
 			<td class="handle"><img src="'+d_static+'images/handle.png" /></td>\
-			<th>&nbsp;</th>\
+			<td>&nbsp;</td>\
+			<td>&nbsp;</td>\
 			<td>&nbsp;</td>\
 			<td>&nbsp;</td>\
 			<td>&nbsp;</td>\
@@ -130,11 +146,12 @@
 					<input type="hidden" name="values[services][placeholder][service_offering]" value="placeholder" />\
 					<input type="hidden" name="values[services][placeholder][order]" value="placeholder" />\
 					<input type="hidden" name="values[services][placeholder][min_instances]" value="placeholder" />\
+					<input type="hidden" name="values[services][placeholder][service_type]" value="placeholder" />\
 				</span>\
 			</td>\
 		</tr>');
     }
-    
+        
     /**
      * Return an empty, new data
      */
@@ -144,6 +161,7 @@
             'context': '',
             'template': '',
             'min_instances': 1,
+            'service_type': 'S',
             'service_offering': '',
             'disk_offering': '',
             'network_offering': ''   
@@ -166,6 +184,17 @@
 		$("#ns_service_offering").val(data['service_offering']);
 		$("#ns_disk_offering").val(data['disk_offering']);
 		$("#ns_network_offering").val(data['network_offering']);
+		
+		// Disable/enable instances field based on if we are
+		// using a static service
+		if (data['service_type'] == 'F') {
+		    $('#ns_instances_fixedmsg').show();
+		    $('#ns_instances').val(1);
+		    $('#ns_instances').hide();
+		} else {
+		    $('#ns_instances_fixedmsg').hide();
+		    $('#ns_instances').show();
+		}
 		
 		// Register callback
 		__submit_callback = function(elm) {
@@ -198,7 +227,9 @@
     
     window.deleteService = function(button) {
         var parent = $($(button).parents('tr')[0]);
-        parent.remove();        
+        parent.remove();
+        __nsUpdateEmptyPlaceholders();
+        __nsUpdateOrderField();
     };
     
     /**********************************
@@ -229,7 +260,7 @@
                 return elm;
             },
             start: function(e, ui) {
-                var obj = jQuery('<td colspan="8"></td>');
+                var obj = jQuery('<td colspan="9"></td>');
                     elm = $(".services-sortable-placeholder");
                 obj.appendTo(elm);
             },
@@ -250,6 +281,7 @@
         		return (value > 0);
         	}, "");
 		$("#add-service-error").hide();
+        $('#ns_instances_fixedmsg').hide();
         $('#add-service-form').validate({
             invalidHandler: function(e, validator) {
     			var errors = validator.numberOfInvalids();
@@ -268,12 +300,12 @@
         // Setup dialog
         $('#add-service-container').dialog({
             autoOpen: false,
-            height: 380,
+            height: 350,
             width: 450,
             modal: true,
             resizable: false,
             draggable: false,
-            title: "Service editor",
+            title: "Service details",
             show: 'fade',
             buttons: {
                 "Save": function() {
@@ -299,7 +331,7 @@
                 __nsUpdateOrderField();
             })
         });
-        
+                
         // Update placeholders
         __nsUpdateEmptyPlaceholders();
 

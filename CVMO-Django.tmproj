@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>cvmo/context/views/cluster.py</string>
+	<string>static/scripts/cvmocluster.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -40,29 +40,29 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>11</integer>
+				<integer>7</integer>
 				<key>line</key>
-				<integer>141</integer>
+				<integer>154</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>128</integer>
+			<integer>118</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
 				<integer>4</integer>
 				<key>line</key>
-				<integer>141</integer>
+				<integer>154</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>20</integer>
+				<integer>17</integer>
 				<key>line</key>
-				<integer>141</integer>
+				<integer>154</integer>
 			</dict>
 		</dict>
 		<key>cvmo/context/views/cluster.py</key>
@@ -70,14 +70,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>69</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>32</integer>
+				<integer>45</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>15</integer>
+			<integer>18</integer>
 		</dict>
 		<key>static/scripts/cvmo.js</key>
 		<dict>
@@ -128,28 +128,44 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>26</integer>
+				<integer>22</integer>
 				<key>line</key>
-				<integer>6</integer>
+				<integer>123</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>10</integer>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>17</integer>
+				<key>line</key>
+				<integer>123</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>29</integer>
+				<key>line</key>
+				<integer>123</integer>
+			</dict>
 		</dict>
 		<key>static/themes/sky/cvmo.css</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>34</integer>
+				<integer>25</integer>
 				<key>line</key>
-				<integer>593</integer>
+				<integer>7</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>552</integer>
+			<integer>0</integer>
 		</dict>
 		<key>templates/core/main.html</key>
 		<dict>
@@ -170,23 +186,23 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>20</integer>
+				<integer>53</integer>
 				<key>line</key>
-				<integer>92</integer>
+				<integer>184</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>57</integer>
+			<integer>167</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>templates/pages/cluster.html</string>
 		<string>static/scripts/cvmocluster.js</string>
+		<string>templates/pages/cluster.html</string>
+		<string>cvmo/context/views/cluster.py</string>
 		<string>templates/core/main.html</string>
 		<string>static/themes/sky/cvmo.css</string>
-		<string>cvmo/context/views/cluster.py</string>
 		<string>cvmo/context/admin.py</string>
 		<string>cvmo/context/models.py</string>
 		<string>static/scripts/cvmocluster-old.js</string>
