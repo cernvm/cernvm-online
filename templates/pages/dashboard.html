@@ -56,6 +56,7 @@
 			<td>{{ item.uid }}</td>
 			<td>
 				<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
+				<a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a>
 			</td>
 		</tr>
 	{% empty %}

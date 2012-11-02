@@ -19,6 +19,17 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
         alwaysHide: false
     });
     
+    // Setup accordion
+    /*
+    jQuery( "#content-accordion" ).accordion({ 
+        header: '.accordion-header',
+        heightStyle: 'content',
+        onBeforeActivate: function(event, ui) {
+            window.console.alert(ui);
+        }
+    });
+    */
+    
     // Prepare the switches for the modules
     $$('#content-accordion .cvmo-module').each(function(el) {
         var header = el,

@@ -52,8 +52,10 @@ urlpatterns += patterns('cvmo.context.views.actions',
 if settings.ENABLE_CLOUD:
     urlpatterns += patterns('cvmo.context.views.cluster',
         url(r'^cluster/create$', 'create', name="cluster_create"),
-        url(r'^cluster/save$', 'save', name="cluster_save"),
+        url(r'^cluster/create.do$', 'do_create', name="cluster_create_action"),
         url(r'^cluster/delete/(?P<cluster_id>[-\w]+)$','delete', name="cluster_delete"),
+        url(r'^cluster/view/(?P<cluster_id>[-\w]+)$','view', name="cluster_view"),
+        url(r'^cluster/clone/(?P<cluster_id>[-\w]+)$','clone',name='cluster_clone'),
         url(r'^api/cluster/(?P<cluster_uid>[-\w]*)/{0,1}$', 'api_get'),
         url(r'^api/cloudinfo\.js$', 'api_cloudinfo'),
      )

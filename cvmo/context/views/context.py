@@ -23,6 +23,10 @@ import pprint
 def get_cernvm_config():
     """ Download the latest configuration parameters from CernVM """
     
+    return {
+        'CERNVM_ORGANISATION_LIST': [ 'unknown' ]
+    }
+    
     try:
         response = urllib2.urlopen('http://cernvm.cern.ch/config/')
         _config = response.read()

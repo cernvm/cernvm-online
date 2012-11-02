@@ -39,7 +39,7 @@
 		<ul>
 			{% block last_clusters %}
 			{% for item in last_cluster_definitions %}
-			<li><a href="#"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
+			<li><a href="{% url "cluster_view" cluster_id=item.id %}"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
 			{% empty %}
 			<li class="empty">No cluster definitions</li>
 			{% endfor %}			

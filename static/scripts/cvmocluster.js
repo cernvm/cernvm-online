@@ -6,23 +6,27 @@
     // Import mootools '$' as 'mt'
     // Alias jQuery to '$'
     
+    // Globals
+    var NSContextNameAutocomplete
+    
     function __nsContextName_selectChoice( item, attributes )  {
     	window.console.log(item,attributes,'OK?');
     	return true;
     }
     
     /**
-     * Update the 'order' data fields of each service entry in a
-     * first-found seuence.
+     * Update the 'order' and simmilar data fields of each service 
+     * entry. The order is defined in a the order the elements are found.
+     *
      */
     function __nsUpdateOrderField() {
         var container = $('#services_container'),
-            i=0;
+            order=0;
         
         // Update order and fixed-only fields
         container.find("#fixed-services-sortable .service-row").each(function(i,e){
             __svcUpdateData($(e), { 
-                order: i++,
+                order: order++,
                 min_instances: 1,
                 service_type: 'F'
             });
@@ -31,7 +35,7 @@
         // Update order and scalable-only fields
         $("#scalable-services-sortable .service-row").each(function(i,e) {
             __svcUpdateData($(e), { 
-                order: i++,
+                order: order++,
                 service_type: 'S'
             });
         });
@@ -57,7 +61,7 @@
     
     /**
      * Parse the data field of the given <tr /> entry and return a hash
-     * with the stored values. 
+     * with the actual values stored in the hidden input fields. 
      */
     function __svcParseData(tr) {
         var e_data = tr.find(".service-data input[type=hidden]"),
@@ -74,8 +78,8 @@
     }
     
     /**
-     * Update the UI and /or the data fields of the given <tr /> using the given
-     * visual and/or data information.
+     * Update the UI and hidden input fields of the given <tr /> using the 
+     * provided hash which contains those fields in a key/value format.
      */
     function __svcUpdateData(tr, data) {
         var e_data = tr.find(".service-data input[type=hidden]"),
@@ -185,6 +189,9 @@
 		$("#ns_disk_offering").val(data['disk_offering']);
 		$("#ns_network_offering").val(data['network_offering']);
 		
+		// Validate NSContextNameAutocomplete
+		NSContextNameAutocomplete.valid = true;
+		
 		// Disable/enable instances field based on if we are
 		// using a static service
 		if (data['service_type'] == 'F') {
@@ -231,14 +238,14 @@
         __nsUpdateEmptyPlaceholders();
         __nsUpdateOrderField();
     };
-    
+        
     /**********************************
      *      INITIALIZATION PART  
      **********************************/
     $(function() {
 
         // Setup autocomplete
-        var NSContextNameAutocomplete = new CVMO.Widgets.AutoComplete( mt( "ns_context_name" ), {
+        NSContextNameAutocomplete = new CVMO.Widgets.AutoComplete( mt( "ns_context_name" ), {
     		"url": "/ajax/context/list"
     	});
     	

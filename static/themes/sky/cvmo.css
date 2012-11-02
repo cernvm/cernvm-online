@@ -394,7 +394,9 @@ td.split {
     height: 1px;
 }
 
-.v-middle {
+td.v-middle, th.v-middle, 
+tr.v-middle > td, tr.v-middle > th, 
+table.v-middle > td, table.v-middle > th {
     vertical-align: middle !important;
 }
 

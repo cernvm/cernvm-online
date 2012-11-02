@@ -14,36 +14,35 @@
 	<pre>{{ debug }}</pre>
 	{% endif %}
 	<h1>Create Cluster</h1>
-	<!-- {% url "cluster_save" %} -->
-	<form action="" id="cluster_create_form" method="post">
+	<form action="{% url "cluster_create_action" %}" id="cluster_create_form" method="post">
 		{% csrf_token %}
 	
-		<div id="content-accordion">
+		<div id="content-accordion" {% if disabled %}class="cvmo-context-disabled"{% endif %}>
 			<div class="accordion-header separator"><h2>General</h2></div>
 			<div class="accordion-content container">
 				<table class="plain long-text">
 					<tr>
 						<th width="150"><label for="name">Cluster name:</label></th>
 						<td>
-							<input type="text" id="name" class="cvmo-validate" maxlength="100" name="values[name]" value="{{ values.name }}" />
+							<input type="text" id="name" class="cvmo-validate" maxlength="100" name="values[name]" value="{{ values.name }}" {{disabled|dis}} />
 						</td>			
 					</tr>
 					<tr>
 						<th width="150"><label for="description">Description:</label></th>
 						<td>
-							<textarea name="values[description]" id="description">{{ values.description }}</textarea>
+							<textarea name="values[description]" id="description" {{disabled|dis}}>{{ values.description }}</textarea>
 						</td>			
 					</tr>
 					<tr>
 						<th>Secret key:</th>
 						<td>
-							<input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" />
+							<input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}} />
 						</td>			
 					</tr>
 					<tr>
 						<th>&nbsp</th>
 						<td>
-							<input type="checkbox" class="cvmo-disabling" name="values[protect]" value="1" id="protect" {{ values.protect|chk }} />
+							<input type="checkbox" class="cvmo-disabling" name="values[protect]" value="1" id="protect" {{ values.protect|chk }} {{disabled|dis}} />
 							<label for="protect"> Protect this cluster with a secret key</label>
 						</td>
 					</tr>
@@ -56,7 +55,9 @@
 				<table id="services" class="pad-5">
 					<thead>
 						<tr>
-							<th width="30">&nbsp;</th>
+							{% if not disabled %}
+								<th width="30">&nbsp;</th>
+							{% endif %}
 							<th width="50">Key</th>
 							<th width="10">#</th>
 							<th width="80">Context</th>
@@ -64,20 +65,25 @@
 							<th width="70">Network</th>
 							<th width="70">Disk</th>
 							<th width="70">CPU</th>
-							<th>Operations</th>
+							{% if not disabled %}
+								<th>Operations</th>
+							{% endif %}
 						</tr>
 					</thead>
 					<tbody id="fixed-services-sortable" class="services-list">
-						{% for row in values.services.fixed %}
+						{% for row in values.services.values %}{% if row.service_type == "F" %}
 							<tr class="service-row">
-								<td class="handle"><img src="{% static "images/handle.png" %}" /></td>
+								{% if not disabled %}
+									<td class="handle"><img src="{% static "images/handle.png" %}" /></td>
+								{% endif %}
 								<td><strong>{{ row.uid }}</strong></td>
 								<td>{{ row.min_instances }}</td>
-								<td>{{ row.context.name }}</td>
-								<td>{{ row.template.name }}</td>
+								<td>{{ row.context }}</td>
+								<td>{{ row.template }}</td>
 								<td>{{ row.network_offering }}</td>
 								<td>{{ row.disk_offering }}</td>
 								<td>{{ row.service_offering }}</td>
+								{% if not disabled %}
 								<td class="operations">
 									<a href="javascript:;" onclick="deleteService(this)" class="softbutton">
 										<img border="0" src="{% static "images/delete.png" %}" align="absmiddle" /> Del
@@ -88,20 +94,25 @@
 									</a>
 									<span class="service-data">
 										<input type="hidden" name="values[services][{{ row.uid }}][uid]" value="{{ row.uid }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][context]" value="{{ row.template.name }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][template]" value="{{ row.template.name }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][network_offering]" value="{{ row.network_offering.name }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][disk_offering]" value="{{ row.disk_offering.name }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][service_offering]" value="{{ row.service_offering.name }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][context]" value="{{ row.context }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][template]" value="{{ row.template }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][network_offering]" value="{{ row.network_offering }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][disk_offering]" value="{{ row.disk_offering }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][service_offering]" value="{{ row.service_offering }}" />
 										<input type="hidden" name="values[services][{{ row.uid }}][order]" value="{{ row.order }}" />
 										<input type="hidden" name="values[services][{{ row.uid }}][min_instances]" value="{{ row.min_instances }}" />
 										<input type="hidden" name="values[services][{{ row.uid }}][service_type]" value="{{ row.service_type }}" />
 									</span>
 								</td>
+								{% endif %}
 							</tr>
-						{% endfor %}
+						{% endif %}{% endfor %}
 						<tr>
+							{% if not disabled %}
 							<td colspan="9" align="center" id="label-no-fixed"><em>(No fixed services defined)</em></td>
+							{% else %}
+							<td colspan="7" align="center" id="label-no-fixed"><em>(No fixed services defined)</em></td>
+							{% endif %}
 						</tr>
 					</tbody>
 					<thead>
@@ -109,16 +120,19 @@
 						<th colspan="4" class="cluster-fixed-separator" style="text-align:right">Scalable services (Workers) <img src="{% static "images/min-down.png" %}" align="absmiddle" /> </th>
 					</thead>
 					<tbody id="scalable-services-sortable" class="services-list">
-						{% for row in values.services.scalable %}
+						{% for row in values.services.values %}{% if row.service_type == "S" %}
 							<tr class="service-row">
-								<td class="handle"><img src="{% static "images/handle.png" %}" /></td>
-								<th>{{ row.uid }}</th>
+								{% if not disabled %}
+									<td class="handle"><img src="{% static "images/handle.png" %}" /></td>
+								{% endif %}
+								<td><strong>{{ row.uid }}</strong></td>
 								<td>{{ row.min_instances }}</td>
-								<td>{{ row.context.name }}</td>
-								<td>{{ row.template.name }}</td>
+								<td>{{ row.context }}</td>
+								<td>{{ row.template }}</td>
 								<td>{{ row.network_offering }}</td>
 								<td>{{ row.disk_offering }}</td>
 								<td>{{ row.service_offering }}</td>
+								{% if not disabled %}
 								<td class="operations">
 									<a href="javascript:;" onclick="deleteService(this)" class="softbutton">
 										<img border="0" src="{% static "images/delete.png" %}" align="absmiddle" /> Del
@@ -129,35 +143,99 @@
 									</a>
 									<span class="service-data">
 										<input type="hidden" name="values[services][{{ row.uid }}][uid]" value="{{ row.uid }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][context]" value="{{ row.template.name }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][template]" value="{{ row.template.name }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][network_offering]" value="{{ row.network_offering.name }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][disk_offering]" value="{{ row.disk_offering.name }}" />
-										<input type="hidden" name="values[services][{{ row.uid }}][service_offering]" value="{{ row.service_offering.name }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][context]" value="{{ row.context }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][template]" value="{{ row.template }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][network_offering]" value="{{ row.network_offering }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][disk_offering]" value="{{ row.disk_offering }}" />
+										<input type="hidden" name="values[services][{{ row.uid }}][service_offering]" value="{{ row.service_offering }}" />
 										<input type="hidden" name="values[services][{{ row.uid }}][order]" value="{{ row.order }}" />
 										<input type="hidden" name="values[services][{{ row.uid }}][min_instances]" value="{{ row.min_instances }}" />
 										<input type="hidden" name="values[services][{{ row.uid }}][service_type]" value="{{ row.service_type }}" />
 									</span>
 								</td>
+								{% endif %}
 							</tr>
-						{% endfor %}
+						{% endif %}{% endfor %}
 						<tr>
+							{% if not disabled %}
 							<td colspan="9" align="center" id="label-no-scalable"><em>(No scalable services defined)</em></td>
+							{% else %}
+							<td colspan="7" align="center" id="label-no-scalable"><em>(No scalable services defined)</em></td>
+							{% endif %}
 						</tr>
 					</tbody>
 				</table>
 				<br />
+				{% if not disabled %}
 				<p>
 					<a href="javascript:;" class="softbutton" id="add-service">
 						<img border="0" src="{% static "images/add.png" %}" align="absmiddle" />
 						 Add Service
 					</a>
 				</p>
+				{% endif %}
 			</div>
+
+			<!--
+			<div class="accordion-header separator"><h2>Environment</h2></div>
+			<div class="accordion-content container" id="services_container">
+				<table class="pad-5 v-middle">
+					<thead>
+						<tr>
+							{% if not disabled %}
+								<th>Name</th>
+							{% else %}
+								<th width="200">Name</th>
+							{% endif %}
+							<th width="10">&nbsp;</th>
+							<th>Value</th>
+							{% if not disabled %}
+								<th width="150">Operations</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody id="environment-list">
+						{% for v_name,v_value in values.environment.items %}
+							<tr id="env-entry-{{v_name}}" class="cvm-environment-entry">
+								<td align="right"><strong>{{v_name}}</strong></td>
+								<td align="center">=</td>
+								{% if not disabled %}
+									<td><input type="hidden" name="values[environment][{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
+									<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.ContextUI.RemoveEnv('env-entry-{{v_name}}');" class="softbutton"><img border="0" src="{% static "images/page_delete.png" %}" align="absmiddle"> Remove variable</a></td>
+								{% else %}
+									<td><input type="hidden" name="values[environment][{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
+								{% endif %}
+							</tr>
+						{% empty %}
+							{% if disabled %}
+								<tr>
+									<td colspan="3" align="center">No environment variables are defined</tr>
+								</tr>
+							{% endif %}
+						{% endfor %}
+					</tbody>
+					{% if not disabled %}
+						<thead>
+							<tr id="newenv_row" class="tr-newenv">
+								<td><input type="text" id="new_env_var" style="width:98%" /></td>			
+								<td align="center">=</td>
+								<td><input type="text" id="new_env_value" style="width:98%" /></td>			
+								<td align="center"><a href="javascript:;" onclick="CVMO.ContextUI.AddEnvFromForm()" class="softbutton"><img border="0" src="{% static "images/page_add.png" %}" align="absmiddle"> Add variable</a></td>
+							</tr>
+						</thead>
+					{% endif %}
+				</table>
+			</div>
+			-->
+
 		</div>
+		
+		{% if not disabled %}
 		<div class="buttons-container">
 			<input type="submit" value="Create cluster" />
 		</div>			
+		{% endif %}
+		
 	</form>
 	
 	<div id="add-service-container">
@@ -196,7 +274,7 @@
 				<tr>
 					<th width="150"><label for="ns_service_offering">Service offering:</label></th>
 					<td>
-						<select name="ns_service_offering" id="ns_service_offering">						
+						<select name="ns_service_offering" id="ns_service_offering">
 							{% for row in service_offerings %}
 								<option value="{{ row.name }}">{{ row.name }}</option>
 							{% endfor %}
@@ -207,7 +285,7 @@
 					<th width="150"><label for="ns_disk_offering">Disk offering:</label></th>
 					<td>
 						<select name="ns_disk_offering" id="ns_disk_offering">
-							<option value="">None</option>
+							<option value="">No disk</option>
 							{% for row in disk_offerings %}
 								<option value="{{ row.name }}">{{ row.name }}</option>
 							{% endfor %}
@@ -218,7 +296,7 @@
 					<th width="150"><label for="ns_network_offering">Network offering:</label></th>
 					<td>
 						<select name="ns_network_offering" id="ns_network_offering">
-							<option value="">None</option>
+							<option value="">No preference</option>
 							{% for row in network_offerings %}
 								<option value="{{ row.name }}">{{ row.name }}</option>
 							{% endfor %}
