@@ -205,8 +205,9 @@ def api_cloudinfo(request):
         content_type = "application/javascript" ))
 
 
-@for_cloud
-def api_get( request, cluster_uid ):        
+#@for_cloud
+# Not under cloud restriction because it is accessed from Gateway server (anonymous user).
+def api_get( request, cluster_uid ):
     
     # Try to find the cluster
     try:
@@ -233,6 +234,7 @@ def api_get( request, cluster_uid ):
                 
                 # Build response
                 response['services'][s_type][service.uid] = {
+                     "offerings": {},
                     "template_uid": service.template.uid,
                     "context_uid": service.context.id,
                     "order": service.order
@@ -240,11 +242,11 @@ def api_get( request, cluster_uid ):
             
                 # Setu pofferings
                 if service.disk_offering is not None:
-                    response['services'][s_type][service.uid]["disk_offering_uid"] = service.disk_offering.uid
+                    response['services'][s_type][service.uid]["offerings"]["disk_uid"] = service.disk_offering.uid
                 if service.network_offering is not None:
-                    response['services'][s_type][service.uid]["network_offering_uid"] = service.network_offering.uid
+                    response['services'][s_type][service.uid]["offerings"]["network_uid"] = service.network_offering.uid
                 if service.service_offering is not None:
-                    response['services'][s_type][service.uid]["compute_offering_uid"] = service.service_offering.uid
+                    response['services'][s_type][service.uid]["offerings"]["compute_uid"] = service.service_offering.uid
             
     except Exception as ex:
         response = { 'error': str(ex) }
