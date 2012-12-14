@@ -1,0 +1,42 @@
+{% load formutils %}
+<table class="plain long-text">
+	<tr>
+		<th width="150">Mode:</th>
+		<td>
+			<select class="cvmo-disclose" name="values[puppet][mode]" id="puppetmode">
+				<option value="slave" {{ values.puppet.mode|sel:"slave" }}>Puppet slave</option>
+				<option value="master" {{ values.puppet.mode|sel:"master" }}>Puppet master</option>
+			</select>
+		</td>
+	</tr>
+	<tr class="cvmo-disclose-puppetmode-slave">
+		<th>Server:</th>
+		<td>
+			<input type="text" name="values[puppet][puppet_server]" value="{{ values.puppet.puppet_server }}" style="width: 120px !important" /> :
+			<input type="text" name="values[puppet][puppet_port]" value="{{ values.puppet.puppet_port }}" style="width: 60px !important" />
+		</td>
+	</tr>
+	<tr class="cvmo-disclose-puppetmode-master">
+		<th>Puppetmaster port(s):</th>
+		<td><input type="text" name="values[puppet][puppetmaster_ports]" value="{{ values.puppet.puppetmaster_ports }}" /></td>			
+	</tr>
+</table>
+<h3>Extra parameters:</h3>
+<table class="plain long-text">
+	<tr class="cvmo-disclose-puppetmode-slave">
+		<th width="150">Log file:</th>
+		<td><input type="text" name="values[puppet][puppet_log]" value="{{ values.puppet.puppet_log }}" /></td>			
+	</tr>
+	<tr class="cvmo-disclose-puppetmode-master">
+		<th width="150">Log file:</th>
+		<td><input type="text" name="values[puppet][puppetmaster_log]" value="{{ values.puppet.puppetmaster_log }}" /></td>			
+	</tr>
+	<tr class="cvmo-disclose-puppetmode-slave">
+		<th>Extra options:</th>
+		<td><input type="text" name="values[puppet][puppet_extra_opts]" value="{{ values.puppet.puppet_extra_opts }}" /></td>			
+	</tr>
+	<tr class="cvmo-disclose-puppetmode-master">
+		<th>Extra options:</th>
+		<td><input type="text" name="values[puppet][puppetmaster_extra_opts]" value="{{ values.puppet.puppetmaster_extra_opts }}" /></td>			
+	</tr>
+</table>

@@ -29,7 +29,8 @@ class ContextPlugin(object):
                 self.CONFIG_GROUP: self.validate_values(values)
             }
         }
-        print "Rendering to %s: " % self.CONFIG_GROUP, _values
+        #print "Rendering to %s: " % self.CONFIG_GROUP, _values
+        print "Doing %s" % self.TEMPLATE
         
         # First render the plugin body
         t = loader.get_template(self.TEMPLATE)
@@ -58,6 +59,7 @@ class ContextPlugin(object):
             
             # Check for a value in values
             _val = self.CONFIG_VARS[k]
+            print ">> Looking for %s (safe of %s) in %s" % ( safeK, k, str(values) )
             if safeK in values:
                 _val = values[safeK]
 
@@ -168,13 +170,16 @@ class ContextPlugins(object):
             _rpath = "\n[rpath]\n"
             _rpath+= "rap-password=%s\n" % values['general']['cvm_raa_password']
             
-        # Prepare general header
-        #_ans = "[general]\n"
-        #_ans+= "enabled_plugins=cernvm%s\n" % enable_plugins
-        #_ans+= "disabled_plugins=\n\n"
+        # If we have startup script put it here now
+        _ans=""
+        if ('startup_script' in values['general']) and (values['general']['startup_script']):
+            _ans+="#!/bin/sh\n"
+            _ans+=". /etc/cernvm/site.conf\n"
+            _ans+=str(values['general']['startup_script']).replace("\r","")
+            _ans+="exit\n"
         
         # Prepare amiconfig header
-        _ans = "[amiconfig]\n"
+        _ans+= "[amiconfig]\n"
         _ans+= "plugins=cernvm%s\n" % enable_plugins
         
         # Push rpath config

@@ -1,0 +1,69 @@
+{% extends "core/class_context.html" %}
+{% load formutils %}
+{% load static %}
+{% load url from future %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block body %}
+<h1>Publish to marketplace</h1>
+<p>Using this form you can make your context visible on the public marketplace. You can still however publish encrypted information.</p>
+<form action="{% url "market_publish_action" %}" id="market_publish" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	
+	<div id="content-accordion">
+		<div class="accordion-header separator"><h2>General</h2></div>
+		<div class="accordion-content container">
+			<table class="plain long-text">
+				<tr>
+					<th width="150"><label for="name">Context name:</label></th>
+					<td>
+						<strong>{{context.name}}</strong>
+						<input type="hidden" name="context" value="{{context.id}}" />
+					</td>
+				</tr>
+				<tr>
+					<th width="150"><label for="instructions">Detailed instructions:</label></th>
+					<td>
+						<textarea name="instructions" id="instructions">{{ values.instructions }}</textarea>
+					</td>			
+				</tr>
+			</table>
+		</div>
+		
+		<div class="accordion-header separator"><h2>Entry details</h2></div>
+		<div class="accordion-content container">
+			<table class="plain long-text">
+				<tr>
+					<th width="150"><label for="group">Category:</label></th>
+					<td>
+						<select id="group" name="group">
+						{% for g in groups %}
+							<option value="{{g.id}}">{{g.name}}</option>
+						{% endfor %}
+						</select>
+					</td>			
+				</tr>
+				<tr>
+					<th width="150"><label for="tags">Tags:</label></th>
+					<td>
+						<input type="text" id="tags" maxlength="100" name="tags" value="{{ values.tags }}" />
+					</td>			
+				</tr>
+				<tr>
+					<th width="150"><label for="icon">Icon:</label></th>
+					<td>
+						<input type="file" id="icon" name="icon" />
+					</td>			
+				</tr>
+			</table>
+		</div>
+		
+	</div>
+
+	<div class="buttons-container">
+		<input type="submit" value="Publish context" />
+	</div>			
+</form>	
+		
+{% endblock %}

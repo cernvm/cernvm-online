@@ -15,6 +15,11 @@ input[type=text], input[type=password] {
     width: 110px;
 }
 
+div.buttonbar {
+    height: 24px;
+    margin: 4px 0px;
+}
+
 div.sidenav > ul {
     list-style: none;
 }
@@ -610,4 +615,222 @@ tbody#fixed-services-sortable {
 td.cluster-fixed-separator {
     height: 0px;
     border-bottom: double 4px #ddd;
+}
+
+/************** Marketplace/**************/
+div#marketframe {
+    border: solid 1px #eee;
+    height: 500px;
+    position: relative;
+    overflow: hidden;
+}
+div#marketframe > div {
+    height: 100%;
+    position: absolute;
+    top: 0;
+}
+div#marketplace { 
+    overflow-y: auto;
+    overflow-x: hidden;
+    left: 0;
+    width: 75%;
+    padding-right: 25%;
+    background: none;
+}
+
+/* __ Info frame __ */
+
+div.marketinfo_back {
+    right: 0;
+    width: 25%;
+    background-color: #eee;
+    border-left: solid 1px #FF8D1F;
+}
+
+div#marketinfo {
+    width: 25%;
+    right: 15px;
+}
+
+div#marketinfo > div#marketdetails {
+    padding: 8px 8px 8px 23px;
+}
+
+div#marketinfo > div#marketfilter {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
+
+div#marketinfo > div#marketfilter > ul { list-style: none; }
+div#marketinfo > div#marketfilter > ul >li {
+    display: block;
+    background: #eee;
+    margin-left: 20px;
+    padding: 0px;
+}
+
+/* __ Market filter __ */
+
+div#marketinfo > div#marketfilter > ul > li > a {
+    display: block;
+    height: 23px;
+    text-decoration: none;
+    font-size: 1.2em;
+    padding-top: 1px;
+    color: #333;
+    
+    transition: margin-left 0.2s;
+    -moz-transition: margin-left 0.2s; 
+    -webkit-transition: margin-left 0.2s;
+    -o-transition: margin-left 0.2s;
+    margin-left: 0px;
+}
+
+div#marketinfo > div#marketfilter > ul > li > a:hover { margin-left: 12px; }
+div#marketinfo > div#marketfilter > ul > li.active {
+    margin-left: 14px;
+    background: url(img/market-arrow.png) no-repeat 0px 0px transparent;
+}
+div#marketinfo > div#marketfilter > ul > li.active > a {
+    margin-left: 18px;
+    width: 110%;
+    color: #000;
+    font-weight: bold;
+}
+
+/* __ Search bar __ */
+
+div#marketinfo > div#marketfilter > div.searchbar {
+    margin: 8px 8px 8px 23px;
+    padding: 0px 0px 8px;
+    border-bottom: solid 1px #ccc;
+}
+
+div#marketinfo > div#marketfilter > div.searchbar > div {
+    background: #fff url(img/ic-search.png) no-repeat 4px 4px;
+    border: solid 1px #ccc;
+    padding: 2px 2px 2px 24px;
+}
+
+div#marketinfo > div#marketfilter > div.searchbar > div > input {
+    border: none;
+    font-size: 1em;
+    width: 154px;
+}
+
+div#marketinfo > div#marketfilter > div.searchbar > div > a {
+    background: #fff url(img/x-icon.png) no-repeat 0px 0px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    text-decoration: none;
+}
+
+/* __ Marketplace frame __ */
+div#marketplace > ul { list-style: none; }
+div#marketplace > ul > li > input { display: none; }
+div#marketplace > ul > li {
+    position: relative;
+    display: block;
+    float: left;
+    width: 110px;
+    height: 120px;
+    margin: 10px;
+}
+
+div#marketplace > div#marketplace_loader {
+    width: 95%;
+    height: 35px;
+    margin: 0px 2.5%;
+    float: left;
+    display: block;
+    border-top: dotted 1px #ddd;
+    background: url(img/loading.gif) no-repeat center bottom;
+}
+
+div#marketplace > div#marketplace_empty {
+    width: 95%;
+    height: 35px;
+    margin: 30% 2.5% 0;
+    float: left;
+    display: block;
+    color: #ccc;
+    font-size: 2em;
+    text-align: center;
+}
+
+div#marketplace > div.placeholder {
+    float: left;
+    width: 100%;
+    height: 120px;
+}
+
+div#marketplace > ul > li > div > label {
+    text-align: center;
+    background: no-repeat center 30px;
+    display: block;
+    width: 110px;
+    height: 120px;
+    cursor: pointer;
+}
+
+div#marketplace > ul > li > div {
+    width: 110px;
+    height: 120px;
+    margin: 1px;
+    color: #999;
+}
+div#marketplace > ul > li > input:checked + div {
+    border: 1px #999;
+    margin: 0px;
+    border-style: solid solid none;
+    color: #000;
+	box-shadow: 2px 2px 4px #666;
+	-moz-box-shadow: 2px 2px 4px #666;
+	-webkit-box-shadow: 2px 2px 4px #666;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#666666')";
+    border-radius: 0px;
+}
+div#marketplace > ul > li > div:hover {
+    border: solid 1px #ccc;
+    margin: 0px;
+    color: #000;
+    border-radius: 10px;
+}
+
+div#marketplace > ul > li div.details {
+    z-index: 1000;
+    overflow: hidden;
+    position: absolute;
+    border: 1px #999;
+    border-style: none solid solid;
+    background-color: #eee;
+    color: #333;
+    padding: 5px;
+    border-radius: 0px 0px 15px 0px;
+    width: 100px;
+    left: 0px;
+    
+    visibility: hidden;
+    max-height: 1px;
+    transition: max-height 0.5s;
+    -moz-transition: max-height 0.5s; 
+    -webkit-transition: max-height 0.5s;
+    -o-transition: max-height 0.5s;
+    
+}
+div#marketplace > ul > li > input:checked + div > div.details {
+    visibility: visible;
+    max-height: 120px;
+	box-shadow: 2px 2px 4px #666;
+	-moz-box-shadow: 2px 2px 4px #666;
+	-webkit-box-shadow: 2px 2px 4px #666;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#666666')";
+}
+
+form#market_publish div.buttons-container {
+    border-top: solid 1px #ccc;
+    padding: 8px;
+    margin-top: 10px;
 }

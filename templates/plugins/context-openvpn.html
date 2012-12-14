@@ -1,14 +1,18 @@
+{% load formutils %}
 <table class="plain long-text">
 	<tr>
 		<th>Server:</th>
-		<td><input type="text" name="values[openvpn][search]" value="{{ values.openvpn.search }}" /> GB</td>			
+		<td>
+			<input type="text" name="values[openvpn][server]" placeholder="myvpn.example.com"  value="{{ values.openvpn.server }}" style="width: 120px !important" /> :
+			<input type="text" name="values[openvpn][port]" value="{{ values.openvpn.port }}" style="width: 60px !important" />
+		</td>
 	</tr>
 	<tr>
 		<th width="150">Protocol:</th>
 		<td>
 			<select class="cvmo-disclose" name="values[openvpn][proto]" id="openvpnproto">
-				<option value="hostname" {{ values.openvpn.proto|sel:"tcp" }}>TCP</option>
-				<option value="prefix" {{ values.openvpn.proto|sel:"udp" }}>UDP</option>
+				<option value="tcp" {{ values.openvpn.proto|sel:"tcp" }}>TCP</option>
+				<option value="udp" {{ values.openvpn.proto|sel:"udp" }}>UDP</option>
 			</select>
 		</td>
 	</tr>
@@ -18,6 +22,24 @@
 	</tr>
 	<tr>
 		<th>Search:</th>
-		<td><input type="text" name="values[openvpn][search]" placeholder="foo.example.com bar.example.com" value="{{ values.openvpn.search }}" /> GB</td>			
+		<td><input type="text" name="values[openvpn][search]" placeholder="foo.example.com bar.example.com" value="{{ values.openvpn.search }}" /></td>			
+	</tr>
+</table>
+<h3>Certificates:</h3>
+<table class="plain long-text">
+	<tr>
+		<td colspan="2"><span class="description">Paste the contents of your certificate files.</span></td>
+	</tr>
+	<tr>
+		<th>CA:</th>
+		<td><textarea name="values[openvpn][ca]" {{disabled|dis}}>{{ values.openvpn.ca }}</textarea><br /></td>
+	</tr>
+	<tr>
+		<th>Certificate:</th>
+		<td><textarea name="values[openvpn][cert]" {{disabled|dis}}>{{ values.openvpn.cert }}</textarea><br /></td>
+	</tr>
+	<tr>
+		<th>Certificate key:</th>
+		<td><textarea name="values[openvpn][key]" {{disabled|dis}}>{{ values.openvpn.key }}</textarea><br /></td>
 	</tr>
 </table>

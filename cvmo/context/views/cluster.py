@@ -237,7 +237,8 @@ def api_get( request, cluster_uid ):
                      "offerings": {},
                     "template_uid": service.template.uid,
                     "context_uid": service.context.id,
-                    "order": service.order
+                    "order": service.order,
+                    "min": service.min_instances
                 }
             
                 # Setu pofferings
@@ -247,7 +248,7 @@ def api_get( request, cluster_uid ):
                     response['services'][s_type][service.uid]["offerings"]["network_uid"] = service.network_offering.uid
                 if service.service_offering is not None:
                     response['services'][s_type][service.uid]["offerings"]["compute_uid"] = service.service_offering.uid
-            
+        
     except Exception as ex:
         response = { 'error': str(ex) }
 

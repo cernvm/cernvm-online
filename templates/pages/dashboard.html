@@ -16,15 +16,21 @@
 	{% for item in context_list %}
 		<tr>
 			<td>{% if item.public %}
-				<img alt="Public" title="Definition visible in public listings" src="{% if item.key %}{% static "images/world_key.png" %}{% else %}{% static "images/world.png" %}{% endif %}" /></td>
+				<img alt="Public" title="Definition visible in market listings" src="{% if item.key %}{% static "images/cart_key.png" %}{% else %}{% static "images/cart.png" %}{% endif %}" /></td>
 				{% else %}
 				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" /></td>
 				{% endif %}
 			<td>{{ item.name }}</td>
 			<td>{{ item.id }}</td>
 			<td>
-				<a href="{% url "context_delete" context_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
-				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a>
+				{% if item.public %}
+				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
+				<a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>
+				{% else %}
+				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
+				<a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a>
+				<a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+				{% endif %}
 			</td>
 		</tr>
 	{% empty %}

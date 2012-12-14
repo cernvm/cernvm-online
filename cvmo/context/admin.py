@@ -32,3 +32,6 @@ admin.site.register(cvmo.context.models.DiskOffering)
 admin.site.register(cvmo.context.models.NetworkOffering)
 admin.site.register(cvmo.context.models.Template)
 admin.site.register(cvmo.context.models.ServiceDefinition)
+
+admin.site.register(cvmo.context.models.MarketplaceGroup)
+admin.site.register(cvmo.context.models.MarketplaceEntry)

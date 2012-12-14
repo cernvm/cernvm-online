@@ -9,7 +9,6 @@ class Condor(ContextPlugin):
     
     CONFIG_GROUP    = "condor"
     CONFIG_VARS     = {
-            'hostname'      : '',
             'condor_master' : '',
             'condor_secret' : '',
             'collector_name': '',

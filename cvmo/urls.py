@@ -11,6 +11,12 @@ urlpatterns = patterns('cvmo.context.views.index',
     url(r'^dashboard$', 'dashboard', name="dashboard")
 )
 
+# DEBUGG
+urlpatterns += patterns("",
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+        {'document_root': settings.MEDIA_ROOT, 'show_indexes': True }),
+    )
+
 urlpatterns += patterns('cvmo.context.views.context',
     url(r'^context/new$',                        'blank',       name="context_new"),
     url(r'^context/create$',                     'create',      name="context_create"),
@@ -46,6 +52,14 @@ urlpatterns += patterns('cvmo.context.views.user',
 urlpatterns += patterns('cvmo.context.views.actions',
     url(r'^actions/edit$', 'edit',                  name="actions_edit"),
     url(r'^actions/save$', 'save',                  name="actions_save")
+)
+
+urlpatterns += patterns('cvmo.context.views.marketplace',
+    url(r'^market/revoke/(?P<context_id>[-\w]+)$', 'revoke', name="market_revoke"),
+    url(r'^market/publish/(?P<context_id>[-\w]+)$', 'publish', name="market_publish"),
+    url(r'^market/publish.do$', 'publish_action',   name="market_publish_action"),
+    url(r'^market/list$', 'list',                   name="market_list"),
+    url(r'^market/list.search$', 'list_ajax',       name="market_list_search"),
 )
 
 # Optional 1) Cluster defintion

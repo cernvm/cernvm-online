@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models import Q
 
-from cvmo.context.models import ContextDefinition, Machines, ClusterDefinition
+from cvmo.context.models import ContextDefinition, Machines, ClusterDefinition, MarketplaceEntry
 
 from cvmo.context.plugins import ContextPlugins
 from cvmo.context.utils.views import uncache_response
@@ -12,10 +12,24 @@ def welcome(request):
     return render_to_response('pages/welcome.html', {}, RequestContext(request))
 
 def dashboard(request):
+    
+    # Fetch context definitions
+    context_list = [ ]
+    for ctx in ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False)):
+        details = {
+            'name'  : ctx.name,
+            'id'    : ctx.id,
+            'key'   : ctx.key,
+            'public': False
+        }
+        if MarketplaceEntry.objects.filter(context=ctx).exists():
+            details['public'] = True
+        context_list.append(details)
+        
     context = {
-        'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False)),
+        'context_list': context_list,
         'cluster_list': ClusterDefinition.objects.filter(owner=request.user),
-        'machine_list': Machines.objects.filter(owner=request.user),
+        'machine_list': Machines.objects.filter(owner=request.user)
     }
     push_to_context("redirect_msg_info", "msg_info", context, request)
     push_to_context("redirect_msg_error", "msg_error", context, request)

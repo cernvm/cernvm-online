@@ -5,4 +5,5 @@ tar -zcf dist.tgz --exclude="*.pyc" --exclude=".svn" --exclude="._*" cvmo/contex
 #cat dist.tgz | ssh -t -t icharala@lxplus.cern.ch "ssh -t -t root@cvmappi22.cern.ch 'cat > /usr/local/cernvm/dist.tgz'; cd /usr/local/cernvm; tar -ztf dist.tgz"
 # scp dist.tgz icharala@lxplus.cern.ch:dist.tgz
 #ssh -t -t icharala@lxplus.cern.ch "scp -t -t dist.tgz root@cvmappi22.cern.ch:/usr/local/cernvm/"
+echo "Dist ready. Sending..."
 scp dist.tgz root@cvmappi22.cern.ch:/usr/local/cernvm/

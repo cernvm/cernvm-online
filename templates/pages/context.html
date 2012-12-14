@@ -5,6 +5,17 @@
 {% block head %}
 	<script type="text/javascript" src="{% static "scripts/cvmocontext.js" %}"></script>
 	<script type="text/javascript" src="{% static "scripts/jquery.validate.min.js" %}"></script>
+
+
+	<link rel="stylesheet" href="{% static "scripts/codemirror/lib/codemirror.css" %}">
+	<script type="text/javascript" src="{% static "scripts/codemirror/lib/codemirror.js" %}"></script>
+	<script type="text/javascript" src="{% static "scripts/codemirror/mode/shell/shell.js" %}"></script>
+	<style type="text/css">
+	.CodeMirror {
+		border: solid 1px #999;
+	}
+	</style>
+
 {% endblock %}
 
 {% block body %}
@@ -29,10 +40,6 @@
 					<tr>
 						<th><label for="f_description">Description:</label></th>
 						<td><textarea id="f_description" class="code" name="values[description]" name="other" {{disabled|dis}}>{{ values.description }}</textarea></td>			
-					</tr>
-					<tr>
-						<th>&nbsp</th>
-						<td><input type="checkbox"  name="values[public]" value="1" id="public" {{values.public|chk}} {{disabled|dis}}><label for="public"> Make this context visible on the public lists</label></td>
 					</tr>
 					<tr>
 						<th>Secret key:</th>
@@ -448,7 +455,22 @@
 					</tr>
 				</table>
 			</div>
-		
+	
+			<div class="accordion-header separator">
+				<h2>
+					Startup script
+					<span class="error">section has errors!</span>
+				</h2>				
+			</div>
+			<div class="accordion-content">
+				<p class="description">Here you can write a shell script that will be executed as root during contextualization phase.</p>
+				{% if disabled %}
+				<pre>{{ values.general.startup_script }}</pre>
+				{% else %}
+				<textarea id="code" style="width: 99%" name="values[general][startup_script]" rows="20">{{values.general.startup_script}}</textarea>
+				{% endif %}
+			</div>
+				
 			{% for p in plugins %}
 				<div class="separator cvmo-module">
 					<h2>
@@ -473,6 +495,13 @@
 	</form>
 	
 	{% autoescape off %}
-		<script type="text/javascript">CVMO.ContextUI.Init({{ cernvm.CERNVM_REPOSITORY_MAP }});</script>
+		<script type="text/javascript">
+		CVMO.ContextUI.Init({{ cernvm.CERNVM_REPOSITORY_MAP }});
+		CodeMirror.fromTextArea(document.getElementById('code'), {
+			mode: 'shell',
+			lineNumbers: true,
+			matchBrackets: true
+		});
+		</script>
 	{% endautoescape %}
 {% endblock %}

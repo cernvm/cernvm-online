@@ -137,7 +137,8 @@ class Template(models.Model):
         return self.name
         
 class ServiceDefinition(models.Model):
-    uid = models.CharField(max_length=16, db_index=True)
+    uid = models.CharField(max_length=128, db_index=True)
+    name = models.CharField(max_length=250)
     cluster = models.ForeignKey(ClusterDefinition)    
     service_offering = models.ForeignKey(ServiceOffering)
     disk_offering = models.ForeignKey(DiskOffering, null = True, blank = True)
@@ -165,7 +166,28 @@ class UserActivationKey(models.Model):
     user = models.OneToOneField(User)
     key = models.CharField(max_length=150)
     created_on = models.DateTimeField(auto_now_add=True)
+
+
+##################################################
+# Marketplace models
+##################################################
+
+class MarketplaceGroup(models.Model):
+    name = models.CharField(max_length=150)
     
+    def __unicode__(self):
+        return self.name
+
+class MarketplaceEntry(models.Model):
+    details = models.TextField()
+    context = models.ForeignKey(ContextDefinition)
+    group = models.ForeignKey(MarketplaceGroup)
+    icon = models.ImageField(upload_to='market/icons')
+    tags = models.TextField()
+    
+    def __unicode__(self):
+        return self.context.name
+
 ##################################################
 # Deprecated models
 ##################################################
