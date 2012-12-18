@@ -70,6 +70,11 @@
 				<li class="leaf first">
 					<a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
 				</li>
+				{% if enable_market %}
+				<li class="leaf first">
+					<a href="{% url "market_list" %}" title="Marketplace">Marketplace</a>
+				</li>
+				{% endif %}
 				<li class="leaf first">
 					<a href="http://cernvm.cern.ch/portal/online/documentation" title="Documentation">Documentation</a>
 				</li>

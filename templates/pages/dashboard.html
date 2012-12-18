@@ -11,7 +11,11 @@
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
 		<th width="240">ID</th>
-		<th width="200">Operations</th>		
+		{% if enable_market %}
+		<th width="175">Operations</th>		
+		{% else %}
+		<th width="100">Operations</th>		
+		{% endif %}
 	</tr>
 	{% for item in context_list %}
 		<tr>
@@ -23,13 +27,12 @@
 			<td>{{ item.name }}</td>
 			<td>{{ item.id }}</td>
 			<td>
+				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
 				{% if item.public %}
-				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
-				<a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>
+					{% if enable_market %}<a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>{% endif %}
 				{% else %}
-				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
-				<a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a>
-				<a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+					{% if enable_market %}<a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a>{% endif %}
+					<a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
 				{% endif %}
 			</td>
 		</tr>
@@ -49,7 +52,11 @@
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
 		<th width="240">ID</th>
-		<th width="200">Operations</th>		
+		{% if enable_market %}
+		<th width="180">Operations</th>		
+		{% else %}
+		<th width="100">Operations</th>		
+		{% endif %}
 	</tr>
 	{% for item in cluster_list %}
 		<tr>
@@ -61,8 +68,13 @@
 			<td>{{ item.name }}</td>
 			<td>{{ item.uid }}</td>
 			<td>
-				<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /> Remove</a>
-				<a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use as template</a>
+				<a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
+				{% if item.public %}
+					{% if enable_market %}<a href="{% url "market_cluster_revoke" cluster_id=item.id %}" class="softbutton" title="Remove this cluster definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>{% endif %}
+				{% else %}
+					{% if enable_market %}<a href="{% url "market_cluster_publish" cluster_id=item.id %}" class="softbutton" title="Publish this cluster definition to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a>{% endif %}
+					<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+				{% endif %}
 			</td>
 		</tr>
 	{% empty %}

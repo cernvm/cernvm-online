@@ -34,7 +34,7 @@
 	</div>
 	<div id="marketinfo">
 		<div id="marketdetails">
-			<h2 id="market_title">HLT Alice Batch</h2>
+			<h2><span id="market_title">HLT Alice Batch</span> <span class="rank" id="market_rank">0</span></h2>
 			<p id="market_description">Here lie some of the details about the context you selected. This text
 			will be automatically wrapped if it's way to long for this small label.</p>
 			<table class="plain" id="market_options">
@@ -51,16 +51,11 @@
 					<td id="market_access">Open</td>
 				</tr>
 				<tr>
-					<td colspan="2">&nbsp;</td>
-				</tr>
-				<tr>
 					<td colspan="2">
-						<a href="javascript:;" id="market_pair" class="softbutton" title="Use this contextualization information to pair a VM"><img border="0" align="absmiddle" src="{% static "images/vm_contextualize.png" %}" /> Pair with this context</a>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<a href="javascript:;" id="market_template" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Use this context as template</a>
+						<a href="javascript:;" id="market_pair" class="softbutton" title="Use this contextualization information to pair a VM"><img border="0" align="absmiddle" src="{% static "images/vm_contextualize.png" %}" /> Pair</a>
+						<a href="javascript:;" id="market_template" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
+						<a href="javascript:;" id="market_rankup" class="softbutton" title="Liked it!"><img border="0" align="absmiddle" src="{% static "images/thumb_up.png" %}" /></a>
+						<a href="javascript:;" id="market_rankdown" class="softbutton" title="Disliked it"><img border="0" align="absmiddle" src="{% static "images/thumb_down.png" %}" /></a>
 					</td>
 				</tr>
 			</table>

@@ -35,16 +35,7 @@
 					</tr>
 					<tr>
 						<th>Secret key:</th>
-						<td>
-							<input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}} />
-						</td>			
-					</tr>
-					<tr>
-						<th>&nbsp</th>
-						<td>
-							<input type="checkbox" class="cvmo-disabling" name="values[protect]" value="1" id="protect" {{ values.protect|chk }} {{disabled|dis}} />
-							<label for="protect"> Protect this cluster with a secret key</label>
-						</td>
+						<td><em>If you are using encrypted context definitions for your cluster, make sure they all have the same key!</em></td>
 					</tr>
 				</table>
 			</div>

@@ -9,10 +9,13 @@
     
     CVMO.entries = [ ];
     
+    var urlVote = '/market/vote.do';
+    
     CVMO.resetDescription = function() {
         $("#market_title").html("Select an item");
         $("#market_description").html("Select one of the items on the left to see more details.");
         $("#market_options").hide();
+        $("#market_rank").hide();
     };
     
     CVMO.resetItems = function() {
@@ -20,6 +23,42 @@
         CVMO.resetDescription();
         CVMO.activeOffset = 0;
         CVMO.entries = [ ];
+    }
+    
+    CVMO.addTag = function(tag) {
+        var v = $("#market_search").val();
+        if (v!="") v+=" ";
+        $("#market_search").attr("value", v+tag);
+        CVMO.activeOffset = 0;
+        CVMO.resetItems();
+        CVMO.ajaxUpdate();
+        CVMO.closeElement.show();
+    }
+    
+    CVMO.marketRank = function( id, direction ) {
+        $.ajax({
+            url: urlVote,
+            type: "GET",
+            dataType: "json",
+            data: {
+                'type': 'context',
+                'id': CVMO.entries[id].id,
+                'vote': direction
+            }
+        }).done(function( msg ) {
+            
+            // Update rank
+            if (msg.rank > 0) {
+                $("#market_rank").html('<strong>'+msg.rank+'</strong>');
+            } else {
+                $("#market_rank").html('<strong>'+msg.rank+'</strong>');
+            }
+            
+            // Update rank on the cached array too
+            CVMO.entries[id].rank = msg.rank;
+            
+        });
+        
     }
     
     CVMO.updateDetails = function( i ) {
@@ -30,13 +69,32 @@
         }
         
         $("#market_options").show();
+        $("#market_rank").show();
         $("#market_title").html(details.label);
         $("#market_description").html(details.details);
         $("#market_author").html(details.owner);
-        $("#market_tags").html(details.tags);
         $("#market_access").html(details.encrypted ? "<strong>Restricted</strong>" : "Open")
         $("#market_template").attr("href", "/context/clone/" + details.uid);
         $("#market_pair").attr("href", "/machine/pair/" + details.uid);
+        
+        if (details.rank > 0) {
+            $("#market_rank").html(details.rank);
+        } else {
+            $("#market_rank").html(details.rank);
+        }
+        
+        $("#market_rankup").attr("href", "javascript:CVMO.marketRank('"+i+"','up');")
+        $("#market_rankdown").attr("href", "javascript:CVMO.marketRank('"+i+"','down');")
+        
+        var tagML = "";
+        for (var i=0; i<details.tags.length; i++) {
+            tagML+="<span class=\"tag\">"+details.tags[i]+"\
+                <a href=\"javascript:;\" onclick=\"CVMO.addTag('+"+details.tags[i]+"')\">+</a> <a href=\"javascript:;\" onclick=\"CVMO.addTag('-"+details.tags[i]+"')\">-</a>\
+                </span> ";
+        }
+        
+        $("#market_tags").html(tagML);
+
     };
     
     CVMO.addItems = function( data, offset ) {
@@ -86,6 +144,9 @@
         });
     }
 
+    /**********************************
+     *      INITIALIZATION PART  
+     **********************************/
     CVMO.initMarket = function() {
         CVMO.closeElement = $("#marketfilter > div.searchbar > div > a");
         CVMO.closeElement.hide();

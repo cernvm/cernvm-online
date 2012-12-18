@@ -35,7 +35,8 @@ def global_context(request):
         'msg_confirm': msg_confirm,
         'msg_info': msg_info,
         'enable_cloud' : settings.ENABLE_CLOUD and is_cloud_enabled(request),
-        'enable_csc': settings.ENABLE_CSC
+        'enable_csc': settings.ENABLE_CSC,
+        'enable_market' : settings.ENABLE_CLOUD and is_market_enabled(request)
     }
     
     # Append some extra info if we are authenticated
@@ -44,13 +45,23 @@ def global_context(request):
         ans['last_context_definitions'] = ContextDefinition.objects.filter(Q(Q(owner=request.user) | Q(public=True)) & Q(inherited=False)).order_by('-id')[:5]
         ans['last_cluster_definitions'] = ClusterDefinition.objects.filter(Q(owner=request.user) | Q(public=True)).order_by('-id')[:5]
     
+    # Delete memory
+    if 'global__memory' in request.session:
+        del request.session['global__memory']
+    
     # Return resulting context    
     return ans
     
-def set_memory(request, data):
+def set_memory(request, var='', data=''):
     
-    # Update redirect memory
-    request.session['global__memory'] = data
+    # No variable defined, update the whole entry
+    if data == '':
+        request.session['global__memory'] = var
+        return
+
+    # Update particular entry
+    if not 'global__memory' in request.session:
+        request.session['global__memory'] = { }
 
 def get_memory(request, var='', default=''):
     
@@ -207,9 +218,17 @@ def is_cloud_enabled(request):
         return request.user.groups.filter(name='cloud').count() != 0
     return False
 
+def is_market_enabled(request):
+    """
+    Check if the current user has market permissions
+    """
+    if request.user:
+        return request.user.groups.filter(name='market').count() != 0
+    return False
+
 def for_cloud(fn):
     """
-    Decorator to reject access if the user is not owner of the cloud group
+    Decorator to reject access if the user is not member of the cloud group
     """
     def wrapped(*args, **kwargs):
 
@@ -224,5 +243,25 @@ def for_cloud(fn):
         # It looks OK, run the view
         return fn(*args, **kwargs)
     
+    # Return the wrapped function
+    return wrapped
+
+def for_market(fn):
+    """
+    Decorator to reject access if the user is not member of the market group
+    """
+    def wrapped(*args, **kwargs):
+
+        # Fetch request object
+        request = args[0]
+
+        # Check if user is not member of cloud
+        if not is_market_enabled(request):
+            msg_info(request, "This is an experimental feature. Access is granted only to beta testers!")
+            return redirect('dashboard')
+
+        # It looks OK, run the view
+        return fn(*args, **kwargs)
+
     # Return the wrapped function
     return wrapped

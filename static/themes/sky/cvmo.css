@@ -656,6 +656,31 @@ div#marketinfo > div#marketdetails {
     padding: 8px 8px 8px 23px;
 }
 
+div#marketinfo > div#marketdetails span.tag {
+    padding: 2px;
+}
+
+div#marketinfo > div#marketdetails span.tag > a {
+    text-decoration: none;
+    color: #aaa;
+    font-size: 1.2em;
+}
+
+div#marketinfo > div#marketdetails span.tag > a:hover {
+    text-decoration: none;
+    color: #fff;
+    border-radius: 10px;
+    background: #ccc;
+}
+
+div#marketinfo span#market_rank {
+    background: url(img/tiny_thumb.png) no-repeat 2px 8px;
+    padding-left: 17px;
+    font-size: 0.7em;
+    color: #333;
+    float: right;
+}
+
 div#marketinfo > div#marketfilter {
     width: 100%;
     position: absolute;
@@ -833,4 +858,51 @@ form#market_publish div.buttons-container {
     border-top: solid 1px #ccc;
     padding: 8px;
     margin-top: 10px;
+}
+
+/************** Image Selector **************/
+
+div#imgselect {
+    border: solid 1px #eee;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 96px;
+}
+
+div#imgselect > ul {
+    list-style: none;
+    padding: 2px;
+    margin: 0;
+}
+
+div#imgselect > ul > li {
+    float: left;
+}
+
+div#imgselect > div.empty {
+    width: 100%;
+    margin-top: 35px;
+    font-size: 1.2em;
+    color: #ccc;
+    font-weight: bold;
+    text-align: center;
+}
+
+div#imgselect > ul > li > input {
+    display: none;
+}
+
+div#imgselect > ul > li > label {
+    height: 90px;
+    width: 90px;
+    display: block;
+    background: no-repeat center center;
+    cursor: pointer;
+    margin: 1px;
+}
+
+div#imgselect > ul > li > input:checked + label {
+    background-color: Highlight;
+    border: dashed 1px ButtonHighlight;
+    margin: 0;
 }

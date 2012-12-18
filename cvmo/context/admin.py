@@ -34,4 +34,5 @@ admin.site.register(cvmo.context.models.Template)
 admin.site.register(cvmo.context.models.ServiceDefinition)
 
 admin.site.register(cvmo.context.models.MarketplaceGroup)
-admin.site.register(cvmo.context.models.MarketplaceEntry)
+admin.site.register(cvmo.context.models.MarketplaceContextEntry)
+admin.site.register(cvmo.context.models.MarketplaceClusterEntry)

@@ -11,7 +11,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/var/www/html/db.sqlite3',             # Or path to database file if using sqlite3.
+        'NAME': '/Users/icharala/Develop/cernvm-django/trunk/db.sqlite3',             # Or path to database file if using sqlite3.
         'USER': '',                                     # Not used with sqlite3.
         'PASSWORD': '',                                 # Not used with sqlite3.
         'HOST': '',                                     # Set to empty string for localhost. Not used with sqlite3.
@@ -47,12 +47,12 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/Users/icharala/Develop/cernvm-django/trunk/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -69,7 +69,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    ( 'static', '/var/www/html/cvmo/static' )
+    ( 'static', '/Users/icharala/Develop/cernvm-django/trunk/static' )
 )
 
 # List of finder classes that know how to find static files in
@@ -110,7 +110,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/var/www/html/cvmo/templates'
+    '/Users/icharala/Develop/cernvm-django/trunk/templates'
 )
 
 INSTALLED_APPS = (
@@ -172,10 +172,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 CONTEXT_PLUGINS = (
+    'cvmo.context.plugin.condor.Condor',
+    'cvmo.context.plugin.hostname.Hostname',
     'cvmo.context.plugin.noip.NoIP',
     'cvmo.context.plugin.storage.Storage',
-    'cvmo.context.plugin.hostname.Hostname',
-    'cvmo.context.plugin.condor.Condor'
+    'cvmo.context.plugin.openvpn.OpenVPN',
+    'cvmo.context.plugin.ganglia.Ganglia',
+    'cvmo.context.plugin.puppet.Puppet',
 )
 
 SHIBBOLETH_SSO = {
@@ -222,6 +225,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Weather to enable or disable the cloud
 ENABLE_CLOUD = True
+
+# Enable marketplace
+ENABLE_MARKET = True
 
 # Whether to enable or disable the CSC UI
 ENABLE_CSC = False

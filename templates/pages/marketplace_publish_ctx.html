@@ -3,7 +3,10 @@
 {% load static %}
 {% load url from future %}
 
-{% block title %}Welcome{% endblock %}
+{% block title %}Publish Context{% endblock %}
+{% block head %}
+	<script type="text/javascript" src="{% static "scripts/cvmompublish.js" %}"></script>
+{% endblock %}
 
 {% block body %}
 <h1>Publish to marketplace</h1>
@@ -39,7 +42,7 @@
 					<td>
 						<select id="group" name="group">
 						{% for g in groups %}
-							<option value="{{g.id}}">{{g.name}}</option>
+							<option value="{{g.id}}" {{g.id|sel:values.group}}>{{g.name}}</option>
 						{% endfor %}
 						</select>
 					</td>			
@@ -53,8 +56,27 @@
 				<tr>
 					<th width="150"><label for="icon">Icon:</label></th>
 					<td>
-						<input type="file" id="icon" name="icon" />
-					</td>			
+						<div id="imgselect">
+							{% if icons %}
+								<ul>
+								{% for img in icons %}
+									<li>
+										<input type="radio" id="mrktimg{{forloop.counter}}" name="prev_icon" value="{{img.name}}" />
+										<label for="mrktimg{{forloop.counter}}" style="background-image: url({{img.url}})">&nbsp;</label>
+									</li>
+								{% endfor %}
+								</ul>
+							{% else %}
+								<div class="empty">You have not uploaded any image yet</div>
+							{% endif %}
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td>
+						<span style="vertical-align: middle">Upload one: <input type="file" id="icon" name="icon" /></span>
+					</td>
 				</tr>
 			</table>
 		</div>
