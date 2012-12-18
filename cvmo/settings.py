@@ -210,7 +210,9 @@ SHIBBOLETH_SSO = {
         r'/register_action$',
         r'/account_activation$',
         r'/api/fetch/?$',
-        r'/api/cluster/.*$'#,
+        r'/api/cluster/.*$',
+        r'/api/market/search.clusters/?$'
+        r'/api/market/groups/?$'
 #        r'/wiki/.*$'
 #        r'/csc$',
 #        r'/csc/do_login$',

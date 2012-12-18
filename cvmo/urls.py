@@ -91,6 +91,8 @@ if settings.ENABLE_MARKET:
             url(r'^market/cluster_revoke/(?P<cluster_id>[-\w]+)$', 'cluster_revoke', name="market_cluster_revoke"),
             url(r'^market/cluster_publish/(?P<cluster_id>[-\w]+)$', 'cluster_publish', name="market_cluster_publish"),
             url(r'^market/cluster_publish.do$', 'cluster_publish_action',   name="market_cluster_publish_action"),
+            url(r'^api/market/search.clusters$', 'list_cluster_ajax',   name="market_list_cluster_ajax"),
+            url(r'^api/market/groups$', 'list_cluster_groups',   name="market_list_cluster_groups"),
         )
 
 # Admin UI
