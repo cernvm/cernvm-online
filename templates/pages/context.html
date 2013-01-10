@@ -92,7 +92,7 @@
 								<div class="float-clear"></div>
 		
 								<!-- INPUT to bind with form -->
-								<input {{disabled|dis}} type="hidden" name="repositories" id="available_repos_text" value="atlas-condb,atlas,geant4,boss,atlas-nightlies,cms,grid,hepsoft,hone,lcd,lhcb,na61,sft" />
+								<input {{disabled|dis}} type="hidden" name="repositories" id="available_repos_text" value="{{ cernvm.CERNVM_REPOSITORY_LIST }}" />
 								<input {{disabled|dis}} type="hidden" name="values[general][repositories]" value="{{ values.general.repositories }}" id="active_repos_text" />		
 							</div>								
 						</td>
