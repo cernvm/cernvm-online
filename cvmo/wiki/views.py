@@ -3,7 +3,6 @@ import re
 from cvmo.wiki.models import Page, PageCategory
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from wikimarkup import parse
 
 def show_wiki(request, url):
     # Check URL
@@ -59,8 +58,8 @@ def show_page(request, url, page):
     # Render page content
     if page.contents_type == Page.CT_HTML:
         page_contents = page.contents
-    elif page.contents_type == Page.CT_WIKI:
-        page_contents = parse(page.contents, False)
+#    elif page.contents_type == Page.CT_WIKI:
+#        page_contents = parse(page.contents, False)
     else:
         page_contents = page.contents
         

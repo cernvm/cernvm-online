@@ -222,6 +222,7 @@ def api_get( request, cluster_uid ):
         # Prepare response
         response = {
             'uid': cluster_uid,
+            "name": cluster.name,
             'services': {
                 'fixed': { },
                 'scalable': { }

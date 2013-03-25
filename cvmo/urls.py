@@ -24,6 +24,8 @@ urlpatterns += patterns('cvmo.context.views.context',
     url(r'^context/delete/(?P<context_id>[-\w]+)$', 'delete',   name="context_delete"),
     url(r'^context/view/(?P<context_id>[-\w]+)$',   'view',     name="context_view"),
     url(r'^api/context/(?P<context_id>[-\w]+)/$', 'api_get'),
+    url(r'^api/context/(?P<context_id>[-\w]+)/plain[/]{0,1}$', 'api_get_plain', 
+        name="context_api_plain"),
     url(r'^ajax/context/list$', 'ajax_list',                    name="vm_ajax_listcontexts"),
 )
 

@@ -1,5 +1,41 @@
-# Django settings for cvmo project.
+################################################################################
+# Parameters of Settings file
+################################################################################
+
+# Source path
+SRC_PATH = "/home/george/afs/dev/cernvm/src/cernvm-online"
+# Directory separator
+PATH_DS = "/"
+
+# Debug mode?
 DEBUG = True
+# Weather to enable or disable the cloud
+ENABLE_CLOUD = True
+# Enable marketplace
+ENABLE_MARKET = True
+# Whether to enable or disable the CSC UI
+ENABLE_CSC = False
+
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# On Unix systems, a value of None will cause Django to use the same
+# timezone as the operating system.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+TIME_ZONE = "Europe/Paris"
+
+# Recaptcha information for the user registration
+GOOGLE_RECAPTCHA = {
+    # localhost keys
+    "public_key": "6Lf-6tMSAAAAAINhybwn_uxxdugd9nfDv5NCx-tY",
+    "private_key": "6Lf-6tMSAAAAAIAMH0F6OLvySp--S6aPWoQGW_bU"    
+}
+
+################################################################################
+# DO NOT TOUCH ANYTHING BELOW THIS LINE!!!
+################################################################################
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -11,22 +47,13 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/Users/icharala/Develop/cernvm-django/trunk/db.sqlite3',             # Or path to database file if using sqlite3.
+        'NAME': SRC_PATH + PATH_DS + "db.sqlite3",      # Or path to database file if using sqlite3.
         'USER': '',                                     # Not used with sqlite3.
         'PASSWORD': '',                                 # Not used with sqlite3.
         'HOST': '',                                     # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                                     # Set to empty string for default. Not used with sqlite3.
     }
 }
-
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# On Unix systems, a value of None will cause Django to use the same
-# timezone as the operating system.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'UTC'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -47,7 +74,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/Users/icharala/Develop/cernvm-django/trunk/media/'
+MEDIA_ROOT = SRC_PATH + PATH_DS + "media" + PATH_DS
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -69,7 +96,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    ( 'static', '/Users/icharala/Develop/cernvm-django/trunk/static' )
+    ( 'static', SRC_PATH + PATH_DS + "static" + PATH_DS )
 )
 
 # List of finder classes that know how to find static files in
@@ -110,7 +137,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/Users/icharala/Develop/cernvm-django/trunk/templates'
+    SRC_PATH + PATH_DS + "templates" + PATH_DS
 )
 
 INSTALLED_APPS = (
@@ -225,25 +252,8 @@ SESSION_COOKIE_AGE = 3600
 # Expire session at browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# Weather to enable or disable the cloud
-ENABLE_CLOUD = True
-
-# Enable marketplace
-ENABLE_MARKET = True
-
-# Whether to enable or disable the CSC UI
-ENABLE_CSC = False
-CSC_USER_CONFIG_FILE="/var/www/html/cvmo/students.conf"
-
-# Recaptcha information for the user registration
-GOOGLE_RECAPTCHA = {
-    # cernvm-online.cern.ch keys
-#    "public_key": "6LdG6tMSAAAAAMDBse8Dzze0Wz_3WGTwfUdyz60Z",
-#    "private_key": "6LdG6tMSAAAAAJTx1HqU69b-r90tERI51U8Gn-F2"
-    # localhost keys
-    "public_key": "6Lf-6tMSAAAAAINhybwn_uxxdugd9nfDv5NCx-tY",
-    "private_key": "6Lf-6tMSAAAAAIAMH0F6OLvySp--S6aPWoQGW_bU"    
-}
+# CSC list of students
+CSC_USER_CONFIG_FILE= SRC_PATH + PATH_DS + "students.conf"
 
 # Where to send activation mail
 ACTIVATION_EMAIL = {

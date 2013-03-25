@@ -25,7 +25,13 @@
 				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" /></td>
 				{% endif %}
 			<td>{{ item.name }}</td>
-			<td>{{ item.id }}</td>
+			<td>
+				{% if not item.key %}
+					<a target="_blank" href="{% url "context_api_plain" context_id=item.id %}">{{ item.id }}</a>
+				{% else %}
+					{{ item.id }}
+				{% endif %}
+			</td>
 			<td>
 				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
 				{% if item.public %}

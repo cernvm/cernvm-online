@@ -3,6 +3,7 @@ import json
 import pickle
 import hashlib
 import base64
+import re
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
@@ -18,7 +19,6 @@ from cvmo.querystring_parser import parser
 from cvmo.context.utils.views import uncache_response, render_error, render_confirm, render_password_prompt
 from cvmo.context.utils.context import gen_context_key, salt_context_key
 from cvmo.context.utils import crypt
-import pprint
 
 def get_cernvm_config():
     """ Download the latest configuration parameters from CernVM """
@@ -65,6 +65,32 @@ def api_get(request, context_id):
         return HttpResponse(context.data, content_type="text/plain")        
     except:
         return HttpResponse("not-found", content_type="text/plain")
+
+def api_get_plain(request, context_id):
+    """ Return the context definition in text format """
+    
+    # Fetch the specified context
+    try:
+        # Do not display encrypted context
+        context = ContextDefinition.objects.get(id=context_id)
+        if context.key is not None and context.key != "":
+            return HttpResponse("encrypted", content_type="text/plain")
+        
+        # De-base64 the context content
+        cStorage = ContextStorage.objects.get(id=context_id)
+        m = re.search(r"^\s*EC2_USER_DATA\s*=\s*([^\s]*)$", cStorage.data, re.M)
+        import pprint
+        pprint.pprint(m)
+        pprint.pprint(m.group(1))
+        if m is None:
+            return HttpResponse("format-error", content_type="text/plain")
+        try:
+            return HttpResponse(base64.b64decode(m.group(1)), content_type="text/plain")
+        except:
+            return HttpResponse("encoding-error", content_type="text/plain")
+    except:
+        return HttpResponse("not-found", content_type="text/plain")
+
 
 def ajax_list(request):
     
