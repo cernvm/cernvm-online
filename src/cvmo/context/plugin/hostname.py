@@ -10,3 +10,4 @@ class Hostname(ContextPlugin):
     CONFIG_VARS     = {
             'hostname'  : ''
         }
+    REMOVE_BLANK	= True

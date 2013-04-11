@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 ##################################################
 
 class ContextDefinition(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)
+    id = models.CharField(max_length=64, primary_key=True)    
     name = models.CharField(max_length=100)
     description = models.TextField()
     owner = models.ForeignKey(User)
@@ -16,6 +16,9 @@ class ContextDefinition(models.Model):
     agent = models.BooleanField(verbose_name='Activate iAgent')
     inherited = models.BooleanField(default=False)
     data = models.TextField()
+    # Revisions system
+    parent = models.ForeignKey("self", default=None, blank=True)
+    revision = models.IntegerField(blank=True, default=0)
     
     def delete(self, using=None):                
         # Remove storage
