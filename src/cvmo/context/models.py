@@ -16,9 +16,6 @@ class ContextDefinition(models.Model):
     agent = models.BooleanField(verbose_name='Activate iAgent')
     inherited = models.BooleanField(default=False)
     data = models.TextField()
-    # Revisions system
-    parent = models.ForeignKey("self", default=None, blank=True)
-    revision = models.IntegerField(blank=True, default=0)
     
     def delete(self, using=None):                
         # Remove storage
