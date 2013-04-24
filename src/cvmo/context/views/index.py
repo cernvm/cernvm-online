@@ -12,9 +12,10 @@ def welcome(request):
     return render_to_response('pages/welcome.html', {}, RequestContext(request))
 
 def dashboard(request):
-        
     context = {
-        'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False)).order_by('-public', 'name'),
+        'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False) & Q(abstract=False)).order_by('-public', 'name'),
+        'full_abstract_list': ContextDefinition.objects.filter(Q(inherited=False) & Q(abstract=True)).order_by('-public', 'name'),
+        'my_abstract_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False) & Q(abstract=True)).order_by('-public', 'name'),
         'cluster_list': ClusterDefinition.objects.filter(owner=request.user).order_by('-public', 'name'),
         'machine_list': Machines.objects.filter(owner=request.user)
     }
@@ -22,7 +23,7 @@ def dashboard(request):
     push_to_context("redirect_msg_error", "msg_error", context, request)
     push_to_context("redirect_msg_warning", "msg_warning", context, request)
     push_to_context("redirect_msg_confirm", "msg_confirm", context, request)
-    
+
     return uncache_response(render_to_response('pages/dashboard.html', context, RequestContext(request)))
 
 def test(request):

@@ -11,6 +11,9 @@
 			<li><a href="{% url "dashboard" %}">Dashboard</a></li>
 			<li><a href="{% url "vm_pair_begin" %}">Pair an instance</a></li>
 			<li><a href="{% url "context_new" %}">Create Context</a></li>
+			{% if enable_abstract_creation %}
+			<li><a href="{% url "abstract_new" %}">Create Abstract Context</a></li>
+			{% endif %}
 			{% if enable_cloud %}
 			<li><a href="{% url "cluster_create" %}">Create Cluster</a></li>
 			<!-- <li><a href="#">Live Console</a></li> -->

@@ -4,6 +4,7 @@ import pickle
 import hashlib
 import base64
 import re
+import copy
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
@@ -19,6 +20,15 @@ from cvmo.querystring_parser import parser
 from cvmo.context.utils.views import uncache_response, render_error, render_confirm, render_password_prompt
 from cvmo.context.utils.context import gen_context_key, salt_context_key
 from cvmo.context.utils import crypt
+
+# String corresponding to the generic plugin name
+global generic_plugin
+generic_plugin = {
+    'title': 'Basic CernVM configuration',
+    'name': 'generic_cernvm',
+    'display': True,
+    'enabled': True
+}
 
 def get_cernvm_config():
     """ Download the latest configuration parameters from CernVM """
@@ -55,14 +65,14 @@ def get_cernvm_config():
         print "Got error: %s\n" % str(ex)
         return {
         }
-    
+
 def api_get(request, context_id):
     """ Return the context definition in text format """
     
     # Fetch the specified context
     try:
         context = ContextStorage.objects.get(id=context_id)
-        return HttpResponse(context.data, content_type="text/plain")        
+        return HttpResponse(context.data, content_type="text/plain")
     except:
         return HttpResponse("not-found", content_type="text/plain")
 
@@ -79,9 +89,9 @@ def api_get_plain(request, context_id):
         # De-base64 the context content
         cStorage = ContextStorage.objects.get(id=context_id)
         m = re.search(r"^\s*EC2_USER_DATA\s*=\s*([^\s]*)$", cStorage.data, re.M)
-        import pprint
-        pprint.pprint(m)
-        pprint.pprint(m.group(1))
+        #import pprint
+        #pprint.pprint(m)
+        #pprint.pprint(m.group(1))
         if m is None:
             return HttpResponse("format-error", content_type="text/plain")
         try:
@@ -138,6 +148,81 @@ def ajax_list(request):
     # Return response
     return uncache_response(HttpResponse(json.dumps(_ans), content_type="application/json"))
 
+def blank_abstract(request):
+
+    p_names = ContextPlugins().get_names()
+    p_dict = []
+
+    p_dict.append(generic_plugin)
+
+    # A default html_body value for convenience
+    abstract = {
+        'html_body': """
+<table class="plain long-text">
+    <tr>
+        <th width="150">Multiple choices:</th>
+        <td>
+            <select name="values[custom][multiple]">
+                <option value="choice#1">1st choice</option>
+                <option value="choice#2">2nd choice</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th width="150">Input text:</th>
+        <td><input name="values[custom][text]" value="any text value"/></td>
+    </tr>
+</table>
+"""
+    }
+
+    for p_n in p_names:
+        p = ContextPlugins().get(p_n)
+        p_dict.append({'title': p.TITLE, 'name': p_n})
+
+    # Render the response
+    return render_to_response('pages/abstract.html', {
+        'plugins': p_dict,
+        'abstract': abstract
+    }, RequestContext(request))
+
+def create_abstract(request):
+    post_dict = parser.parse(request.POST.urlencode())
+
+    # We are interested in values, enabled and abstract. Let's insert empty
+    # values in case some of them are null (values and abstract are never null)
+    if post_dict.get('enabled') == None:
+        post_dict['enabled'] = {}
+
+    # There is no specific model for the abstract context, so we will just use
+    # the ContextDefinition model. Since this context is abstract, no rendered
+    # version will be saved in ContextStorage
+    c_uuid = gen_context_key()
+    c_data = pickle.dumps({
+        'values'   : post_dict['values'],
+        'enabled'  : post_dict['enabled'],
+        'abstract' : post_dict['abstract']
+    })
+
+    # For debug
+    # return uncache_response(HttpResponse(json.dumps(post_dict, indent=2), \
+    #     content_type="text/plain"))
+
+    e_context = ContextDefinition.objects.create(
+        id=c_uuid,
+        name=str( post_dict['values']['name'] ),
+        description='',  # TODO
+        owner=request.user,
+        key='',
+        public=False,  # TODO
+        data=c_data,
+        checksum=0,  # TODO
+        inherited=False,
+        abstract=True
+    )
+
+    return redirect('dashboard')
+
 def blank(request):
     # Empty values
     values = { }
@@ -145,13 +230,18 @@ def blank(request):
     # Render all of the plugins
     plugins = ContextPlugins().renderAll(request, values)
 
+    # Append display property to every plugin, and set it to True
+    for p in plugins:
+        p['display'] = True
+
     # Render the response
     return render_to_response('pages/context.html', {
         'cernvm': get_cernvm_config(),
         'values': values,
         'disabled': False,
         'id': '',
-        'plugins': plugins
+        'plugins': plugins,
+        'cernvm_plugin': generic_plugin
     }, RequestContext(request))
 
 def create(request):
@@ -160,13 +250,22 @@ def create(request):
     # The values of all the plugins and the enabled plugins
     values = post_dict.get('values')
     enabled = post_dict.get('enabled')
-    
+    abstract = post_dict.get('abstract')
+
     # Generate a UUID for this context
     c_uuid = gen_context_key()
-    
+
+    # Collect data to save. Non-indexed data is pickled    
+    raw_values = { 'values': values, 'enabled': enabled }
+    if abstract is not None:
+        raw_values['abstract'] = abstract
+        from_abstract = True
+    else:
+        from_abstract = False
+
     # Prepare pickled data for easy reconstruction
     # (in case somebody wants to clone a template)
-    c_values = pickle.dumps({'values':values, 'enabled':enabled})
+    c_values = pickle.dumps(raw_values)
     c_config = ContextPlugins().renderContext(c_uuid, values, enabled)
     
     # Generate checksum of the configuration 
@@ -187,7 +286,12 @@ def create(request):
     c_public = False
     if ('public' in values) and (values['public']):
         c_public = True
-    
+
+    # For debug
+    # return uncache_response(
+    #     HttpResponse(json.dumps(raw_values, indent=2), content_type="text/plain")
+    # )
+
     # Save context definition
     e_context = ContextDefinition.objects.create(
             id=c_uuid,
@@ -198,7 +302,9 @@ def create(request):
             public=c_public,
             data=c_values,
             checksum=c_checksum,
-            inherited=False
+            inherited=False,
+            abstract=False,  # only True for pure abstract contexts
+            from_abstract=from_abstract
         )
     
     # Save context data (Should go to key/value store for speed-up)
@@ -210,12 +316,19 @@ def create(request):
     # Go to dashboard
     return redirect('dashboard')
 
+def raw(request, context_id):
+    item = ContextDefinition.objects.get(id=context_id)
+    data = pickle.loads(str(item.data))
+    return uncache_response(
+        HttpResponse(json.dumps(data, indent=4), content_type="text/plain")
+    )
+
 def clone(request, context_id):
-    
+
     # Fetch the entry from the db
     item = ContextDefinition.objects.get(id=context_id)
     data = {}
-    
+
     # Check if the data are encrypted
     if item.key == '':
         data = pickle.loads(str(item.data))
@@ -253,15 +366,94 @@ def clone(request, context_id):
     # Render all of the plugins
     plugins = ContextPlugins().renderAll(request, data['values'], data['enabled'])
 
+    # Append display property to every plugin, and set it to True
+    for p in plugins:
+        p['display'] = True
+
     # Render the response
+    #raw = {'data':data}  # debug
     return render_to_response('pages/context.html', {
         'cernvm': get_cernvm_config(),
         'values': data['values'],
         'id': context_id,
         'disabled': False,
-        'plugins': plugins
+        #'raw': json.dumps(raw, indent=2),
+        'plugins': plugins,
+        'cernvm_plugin': generic_plugin
     }, RequestContext(request))
-    
+
+def clone_abstract(request, context_id):
+    item = ContextDefinition.objects.get(id=context_id)
+    data = pickle.loads(str(item.data))
+    display = data['abstract'].get('display')
+
+    p_names = ContextPlugins().get_names()
+    p_dict = []
+
+    # Display CernVM generic plugin? (It is always enabled anyway)
+    generic_plugin_cp = copy.deepcopy(generic_plugin)
+    if display == None:
+        generic_plugin_cp['display'] = False
+    else:
+        generic_plugin_cp['display'] = ( display.get(generic_plugin['name']) == 1 )
+
+    p_dict.append(generic_plugin_cp)
+
+    for p_n in p_names:
+        p = ContextPlugins().get(p_n)
+        p_e = ( data['enabled'].get(p_n) == 1 )
+        if display != None:
+            p_d = ( display.get(p_n) == 1 )
+        else:
+            p_d = False
+        p_dict.append({'title': p.TITLE, 'name': p_n,
+            'enabled': p_e, 'display': p_d})
+
+    return render_to_response('pages/abstract.html', {
+        'values': data['values'],
+        'abstract': data['abstract'],
+        'enabled': data['enabled'],
+        'plugins': p_dict
+    }, RequestContext(request))
+
+def context_from_abstract(request, context_id):
+    item = ContextDefinition.objects.get(id=context_id)
+    data = pickle.loads(str(item.data))
+    display = data['abstract'].get('display')
+
+    # Render all of the plugins
+    plugins = ContextPlugins().renderAll(request, data['values'],
+        data['enabled'])
+
+    # Append display property to every plugin. Defaults to False
+    for p in plugins:
+        if display == None:
+            p['display'] = False  # default
+        else:
+            p['display'] = ( display.get(p['id']) == 1 )
+
+    # Display CernVM generic plugin? (It is always enabled anyway)
+    generic_plugin_cp = copy.deepcopy(generic_plugin)
+    if display == None:
+        generic_plugin_cp['display'] = False
+    else:
+        generic_plugin_cp['display'] = ( display.get(generic_plugin['name']) == 1 )
+
+    # Render the response
+    #raw = {'data': data}  # debug
+    return render_to_response('pages/context.html', {
+        'cernvm': get_cernvm_config(),
+        'values': data['values'],
+        'json_values': json.dumps(data['values']),
+        'disabled': False,
+        'id': '',
+        'parent_id': context_id,
+        #'raw': json.dumps(raw, indent=2),
+        'abstract_html': data['abstract'].get('html_body'),
+        'plugins': plugins,  # now each plugin will hold enable=True|False
+        'cernvm_plugin': generic_plugin_cp
+    }, RequestContext(request))
+
 def view(request, context_id):
     
     # Fetch the entry from the db
@@ -306,13 +498,18 @@ def view(request, context_id):
     # Render all of the plugins
     plugins = ContextPlugins().renderAll(request, data['values'], data['enabled'])
 
+    # Append display property to every plugin, and set it to True
+    for p in plugins:
+        p['display'] = True
+
     # Render the response
     return render_to_response('pages/context.html', {
         'cernvm': get_cernvm_config(),
         'values': data['values'],
         'id': context_id,
         'disabled': True,
-        'plugins': plugins
+        'plugins': plugins,
+        'cernvm_plugin': generic_plugin
     }, RequestContext(request))
 
 def delete(request, context_id):

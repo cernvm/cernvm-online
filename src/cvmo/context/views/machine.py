@@ -210,7 +210,7 @@ def pair_status(request, claim_key):
 def pair_begin(request):
     # First screen of the pairing process: Show the available contextualization options
     return uncache_response(render_to_response('pages/machine_pair.html', {
-            'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False)),
+            'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False) & Q(abstract=False)),
             'context_public': ContextDefinition.objects.filter(public=True).exclude(owner=request.user)
         }, RequestContext(request)))
     

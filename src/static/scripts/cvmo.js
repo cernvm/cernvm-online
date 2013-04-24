@@ -640,3 +640,37 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
     set_valid(false);
     
 };
+
+/**
+ * Makes a drop down button from certain CSS selectors. Example of HTML that
+ * will become a button toggling a drop down list:
+ *
+ * <div class="dropdownbutton">
+ *   <span>Button label</span>
+ *   <ul>
+ *     <li>Option 1</li>
+ *     <li><a href="http://a-link/">Option 2</a></li>
+ *   </ul>
+ * </div>
+ *
+ * Proper transformations are applied at page load.
+ *
+ */
+CVMO.Widgets.MakeDropDown = function( element ) {
+    $(element).getChildren('span').addEvent('click', function() {
+        // jQuery used here
+        btn = jQuery(this);
+        opt = btn.parent().children('ul');
+        opt.css('min-width', btn.outerWidth());
+        opt.css('max-width', btn.outerWidth()*1.5);
+        opt.css('left', btn.offset().left);
+        opt.css('top', btn.offset().top + btn.outerHeight() );
+        opt.slideToggle(200);
+    });
+};
+$(window).addEvent('load', function() {
+    $$('.dropdownbutton').each(function(e) {
+        var ne = e;
+        new CVMO.Widgets.MakeDropDown(ne);
+    });
+});

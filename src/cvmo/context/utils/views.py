@@ -36,13 +36,14 @@ def global_context(request):
         'msg_info': msg_info,
         'enable_cloud' : settings.ENABLE_CLOUD and is_cloud_enabled(request),
         'enable_csc': settings.ENABLE_CSC,
-        'enable_market' : settings.ENABLE_CLOUD and is_market_enabled(request)
+        'enable_market' : settings.ENABLE_CLOUD and is_market_enabled(request),
+        'enable_abstract_creation' : is_abstract_creation_enabled(request)
     }
     
     # Append some extra info if we are authenticated
     if request.user.is_authenticated():
         ans['ip_address'] = request.META['REMOTE_ADDR']
-        ans['last_context_definitions'] = ContextDefinition.objects.filter(Q(Q(owner=request.user) | Q(public=True)) & Q(inherited=False)).order_by('-id')[:5]
+        ans['last_context_definitions'] = ContextDefinition.objects.filter(Q(Q(owner=request.user) | Q(public=True)) & Q(inherited=False) & Q(abstract=False)).order_by('-id')[:5]
         ans['last_cluster_definitions'] = ClusterDefinition.objects.filter(Q(owner=request.user) | Q(public=True)).order_by('-id')[:5]
     
     # Delete memory
@@ -224,6 +225,14 @@ def is_market_enabled(request):
     """
     if request.user:
         return request.user.groups.filter(name='market').count() != 0
+    return False
+
+def is_abstract_creation_enabled(request):
+    """
+    Check if the current user can create abstract contexts
+    """
+    if request.user:
+        return request.user.groups.filter(name='abstract').count() != 0
     return False
 
 def for_cloud(fn):

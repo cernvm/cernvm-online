@@ -15,6 +15,10 @@ class ContextDefinition(models.Model):
     public = models.BooleanField(verbose_name='Visible on public lists')
     agent = models.BooleanField(verbose_name='Activate iAgent')
     inherited = models.BooleanField(default=False)
+    abstract = models.BooleanField(default=False)
+    from_abstract = models.BooleanField(default=False)
+    # No foreign key for now: deleting a parent abstract will delete all the descendants
+    #parent = models.ForeignKey('self', null=True, default=None)
     data = models.TextField()
     
     def delete(self, using=None):                

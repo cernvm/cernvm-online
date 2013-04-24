@@ -20,11 +20,12 @@
 	{% for item in context_list %}
 		<tr>
 			<td>{% if item.public %}
-				<img alt="Public" title="Definition visible in market listings" src="{% if item.key %}{% static "images/cart_key.png" %}{% else %}{% static "images/cart.png" %}{% endif %}" /></td>
+				<img alt="Public" title="Definition visible in market listings" src="{% if item.key %}{% static "images/cart_key.png" %}{% else %}{% static "images/cart.png" %}{% endif %}" />
 				{% else %}
-				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" /></td>
+				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" />
 				{% endif %}
-			<td>{{ item.name }}</td>
+			</td>
+			<td>{{ item.name }}{% if item.from_abstract %} <img alt="Simple" title="Simple definition" src="{% static "images/thumb_up.png" %}"/>{% endif %}</td>
 			<td>
 				{% if not item.key %}
 					<a target="_blank" href="{% url "context_api_plain" context_id=item.id %}">{{ item.id }}</a>
@@ -33,7 +34,19 @@
 				{% endif %}
 			</td>
 			<td>
-				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
+				{% if item.from_abstract %}
+				<!-- Clone context from abstract: dropdown -->
+				<div class="dropdownbutton" style="float:left;margin-right:3px">
+  					<span><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Clone</span>
+  					<ul>
+  						<li><a href="{% url "context_clone_simple" context_id=item.id %}">To simple</b></a></li>
+  						<li><a href="{% url "context_clone" context_id=item.id %}">To normal</a></li>
+  					</ul>
+				</div>
+				{% else %}
+				<!-- Ordinary clone: one button -->
+				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}"/> Clone</a>
+				{% endif %}
 				{% if item.public %}
 					{% if enable_market %}<a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>{% endif %}
 				{% else %}
@@ -49,7 +62,61 @@
 	{% endfor %}
 </table>
 <br />
+
+<!-- Button to create a new context -->
+{% if full_abstract_list|length > 0 %}
+{# Display dropdown only if we have at least one abstract context definition #}
+<div class="dropdownbutton" style="float:left;margin:5px 5px 15px;">
+  <span><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Create new context...</span>
+  <ul>
+  	<li><a href="{% url "context_new" %}"><b>New context</b></a></li>
+	{% for item in full_abstract_list %}
+	<li><a href="{% url "abstract_contextualize" context_id=item.id %}">{{ item.name }}</a></li>
+	{% endfor %}
+  </ul>
+</div><p style="float:left">&nbsp;</p>
+{% else %}
+{# No dropdown: we don't have any abstract context definitions #}
 <p><a href="{% url "context_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Create new context</a></p>
+{% endif %}
+
+{% if enable_abstract_creation %}
+<h2>Your abstract context definitions</h2>
+<table class="pad-5">
+	<tr>
+		<th>Name</th>
+		<th width="240">ID</th>
+		<th width="100">Operations</th>		
+	</tr>
+	{% for item in my_abstract_list %}
+	<tr>
+
+		<!-- Name column -->
+		<td>{{ item.name }}</td>
+
+		<!-- ID column -->
+		<td>{{ item.id }}</td>
+
+		<!-- Operations column -->
+		<td>
+
+			<!-- Clone -->
+			<a href="{% url "abstract_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
+
+			<!-- Delete (since it is a ContextDefinition, we can reuse the same action) -->
+			<a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+
+		</td>
+	</tr>
+	{% empty %}
+	<tr>
+		<td colspan="3" align="center">No abstract context defined yet</tr>
+	</tr>
+	{% endfor %}
+</table>
+<br />
+<p><a href="{% url "abstract_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Create new abstract context</a></p>
+{% endif %}
 
 {% if enable_cloud %}
 <h2>Your cluster definitions</h2>

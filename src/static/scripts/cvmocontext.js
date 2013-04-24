@@ -309,3 +309,39 @@ CVMO.ContextUI.ShowFirstErrorBlock = function()
 	/* Display it */
 	CVMO.ContextUI.Accordion.display( firstBlock );
 }
+
+CVMO.UriParser = function(uri) {
+
+    this._RegExp = /^((\w+):\/\/\/?)?((\w+):?(\w+)?@)?([^\/\?:]+):?(\d+)?(\/?[^\?#;\|]+)?([;\|])?([^\?#]+)?\??([^#]+)?#?(\w*)/;
+
+    this._Map = {
+        uri: 0,
+        protocol: 2,
+        username: 4,
+        password: 5,
+        host: 6,
+        port: 7,
+        pathname: 8,
+        urlparamseparator: 9,
+        urlparam: 10,
+        querystring: 11,
+        fragment: 12
+    }
+
+    this._Uri = uri;
+    this._Result = {};
+
+    this.Parse = function() {
+        re_match = this._RegExp.exec(this._Uri);
+        if (!re_match) return;
+        for (idx in this._Map) {
+            r = re_match[this._Map[idx]];
+            if (r) this._Result[idx] = r;
+        }
+    };
+
+    this.GetVal = function(key) {
+        return this._Result[key];
+    };
+
+}; // end of CVMO.UriParser

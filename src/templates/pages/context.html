@@ -25,6 +25,89 @@
 		<p>Please fill the following parameters and click create in order to create a new virtual machine context definition</p>
 
 		<div id="content-accordion" {% if disabled %}class="cvmo-context-disabled"{% endif %}>
+
+		{% if raw %}
+		<!-- Begin of the Raw section -->
+		<div class="accordion-header separator"><h2>Raw data</h2></div>
+		<div class="accordion-content"><pre>{{ raw|escape }}</pre></div>
+		<!-- End of the Raw section -->
+		{% endif %}
+
+		{% if abstract_html %}
+		<!-- Custom HTML code -->
+		<div id="cvmo-custom-plugin">
+		<div class="accordion-header separator"><h2>Simplified configuration</h2></div>
+		<div class="accordion-content">
+
+			<!-- Name is mandatory -->
+			<table class="plain long-text">
+			<tr>
+				<th width="150"><label for="f_name">Context name:</label></th>
+				<td><input type="text" id="f_name" maxlength="100" name="values[name]" value="{{ values.name }}" {{disabled|dis}}/></td>
+			</tr>
+			</table><br/>
+
+			<!-- Dump raw HTML -->
+			{{ abstract_html }}
+
+			<!-- Save raw HTML when submitting -->
+			<textarea name="abstract[html_body]" style="display:none">{{ abstract_html|escape }}</textarea>
+
+		</div>
+		<script language="JavaScript">
+		// All the parameters defined in this section override other form
+		// elements located elsewhere. We thus need to list elements in this
+		// section and disable other elements with the same name
+		jQuery(document).ready(function() {
+			custom_input_objs = jQuery('#cvmo-custom-plugin :input');
+			values = {{ json_values }};
+
+			for (i=0; i<custom_input_objs.length; i++) {
+
+				input_name = jQuery( custom_input_objs[i] ).attr('name');
+
+				// Skip non-values
+				if (input_name.substring(0,7) != 'values[')
+					continue;
+
+				name_input_objs =
+					jQuery('form#create_context_form :input[name="' +
+					input_name + '"]');
+
+				// Fill custom form with default content, whenever possible
+				json_path = input_name.replace(/\[([^\]]*)\]/g,
+					function(match, $1) { 
+					  return '.' + $1;
+					});
+				try {
+					// May walk on paths containing undefined elements
+					jQuery( custom_input_objs[i] ).val(eval('('+json_path+')'));
+				}
+				catch (e) {};
+
+				// Disable all elements from the second on (the first one is
+				// the custom one)
+				for (j=0; j<name_input_objs.length; j++) {
+					if ( name_input_objs[j] !== custom_input_objs[i] ) {
+						// Not the same custom object: disable it
+						jQuery( name_input_objs[j] ).prop('disabled', true);
+					}
+				}
+
+			}
+		})
+		</script>
+		</div>
+		{% endif %}
+
+		<!-- Begin of the Generic CernVM plugin section -->
+		{% if cernvm_plugin.display %}
+		<div>
+			{% if abstract_html %}<input type="hidden" name="abstract[display][generic_cernvm]" value="1"/>{% endif %}
+		{% else %}
+		<div style="display:none">
+		{% endif %}
+
 			<div class="accordion-header separator">
 				<h2>
 					General
@@ -470,9 +553,12 @@
 				<textarea id="code" style="width: 99%" name="values[general][startup_script]" rows="20">{{values.general.startup_script}}</textarea>
 				{% endif %}
 			</div>
+
+		</div>
+		<!-- End of the Generic CernVM plugin section -->
 				
 			{% for p in plugins %}
-				<div class="separator cvmo-module">
+				<div class="separator cvmo-module" {% if not p.display %}style="display:none"{% endif %}>
 					<h2>
 						{{ p.title }}&nbsp;
 						<label title="Turn on to enable this module" class="cvmo-headcontrol">
@@ -481,14 +567,17 @@
 						 </label>
 					</h2>
 				</div>
-				<div class="">
+				<div class="" {% if not p.display %}style="display:none"{% endif %}>
 					{% if p.description != '' %}<p class="description">{{ p.description }}.</p>{% endif %}
+					{% if p.display and abstract_html %}
+					<input type="hidden" name="abstract[display][{{ p.id }}]" value="1"/>
+					{% endif %}
 					{{ p.body }}
 				</div>
 			{% endfor %}
 		
 		</div>
-		
+
 		{% if not disabled %}
 			<p><input type="submit" value="{{ submit_label|default:'Create context' }}" /></p>
 		{% endif %}

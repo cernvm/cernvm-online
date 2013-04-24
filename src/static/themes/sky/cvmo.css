@@ -166,7 +166,8 @@ tr.tr-newuser > td {
     background-color: #efefef;
 }
 
-a.softbutton {
+/* Both ordinary button and Drop Down button */
+a.softbutton, .dropdownbutton > span {
     padding: 4px;
 
     -webkit-border-radius: 5px;
@@ -186,6 +187,72 @@ a.softbutton:hover {
     background: #186496;
     color: #fff;
 }
+
+/* Drop Down Button specific definitions */
+
+.dropdownbutton {
+    display: inline-block;
+}
+
+.dropdownbutton > ul {
+    position: absolute;
+    display:none;
+    text-decoration: none;
+    border: solid 1px #999;
+    -webkit-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-radius: 5px;
+    color: #333;
+    font-weight: normal;
+    background-color: #efefef;
+    padding: 3px 0 3px 0;
+    margin-top: 5px;
+    box-shadow: 0 0 7px rgb(190, 190, 190);
+}
+
+.dropdownbutton > ul > li {
+    list-style: none;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.dropdownbutton > ul > li:hover {
+    background: #186496;
+    color: #fff;
+}
+
+.dropdownbutton > span {
+    cursor: hand;
+    cursor: pointer;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.dropdownbutton > span:hover {
+    border-color: #186496;
+    background: #186496;
+    color: #fff;
+}
+
+.dropdownbutton > ul > li > a {
+    text-decoration: none;
+    width: 100%;
+    display: inline-block;
+}
+
+.dropdownbutton > ul > li > a:hover {
+    color: white;
+}
+
+/*.dropdownbutton > ul > li > a:hover {
+    color: white;
+}*/
+
+/* End of Drop Down Button specific definitions */
 
 #cvmo_proxies ul > li {
     text-indent: 20px;
