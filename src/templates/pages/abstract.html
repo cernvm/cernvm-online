@@ -54,7 +54,7 @@
 	<tbody>
 		<tr>
 			<th width="140"><label for="f_name">Abstract context name:</label></th>
-			<td><input type="text" id="f_name" name="values[name]" value="{% if values.name %}{{ values.name }} (copy){% endif %}"/></td>
+			<td><input type="text" id="f_name" name="values[name]" value="{{ values.name }}"/></td>
 		</tr>
 	</tbody>
 	</table>

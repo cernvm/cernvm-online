@@ -370,6 +370,8 @@ def clone(request, context_id):
     for p in plugins:
         p['display'] = True
 
+    data['values']['name'] = name_increment_revision(data['values']['name'])
+
     # Render the response
     #raw = {'data':data}  # debug
     return render_to_response('pages/context.html', {
@@ -395,7 +397,8 @@ def clone_abstract(request, context_id):
     if display == None:
         generic_plugin_cp['display'] = False
     else:
-        generic_plugin_cp['display'] = ( display.get(generic_plugin['name']) == 1 )
+        generic_plugin_cp['display'] = \
+          ( display.get(generic_plugin['name']) == 1 )
 
     p_dict.append(generic_plugin_cp)
 
@@ -409,6 +412,8 @@ def clone_abstract(request, context_id):
         p_dict.append({'title': p.TITLE, 'name': p_n,
             'enabled': p_e, 'display': p_d})
 
+    data['values']['name'] = name_increment_revision(data['values']['name'])
+
     return render_to_response('pages/abstract.html', {
         'values': data['values'],
         'abstract': data['abstract'],
@@ -416,7 +421,20 @@ def clone_abstract(request, context_id):
         'plugins': p_dict
     }, RequestContext(request))
 
-def context_from_abstract(request, context_id):
+# If the given (context) name ends with a number, returns the same name with
+# that number incremeted by one. In case it doesn't, appends a '(copy)' at the
+# end of the given name.
+def name_increment_revision(name):
+    revre = r'^(.*?)([0-9]+)$'
+    m = re.search(revre, name)
+    if m:
+        name = m.group(1) + str(int(m.group(2))+1)
+    else:
+        name = name + ' (copy)'
+    return name
+
+# Used both when creating a simple context and when cloning it
+def context_from_abstract(request, context_id, cloning=False):
     item = ContextDefinition.objects.get(id=context_id)
     data = pickle.loads(str(item.data))
     display = data['abstract'].get('display')
@@ -438,6 +456,12 @@ def context_from_abstract(request, context_id):
         generic_plugin_cp['display'] = False
     else:
         generic_plugin_cp['display'] = ( display.get(generic_plugin['name']) == 1 )
+
+    # Change original name
+    if cloning:
+        data['values']['name'] = name_increment_revision(data['values']['name'])
+    else:
+        data['values']['name'] = 'Context from ' + data['values']['name']
 
     # Render the response
     #raw = {'data': data}  # debug
