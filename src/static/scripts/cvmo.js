@@ -662,7 +662,9 @@ CVMO.Widgets.MakeDropDown = function( element ) {
         btn = jQuery(this);
         opt = btn.parent().children('ul');
         opt.css('min-width', btn.outerWidth());
-        opt.css('max-width', btn.outerWidth()*1.5);
+        mw = btn.outerWidth()*1.5;
+        if (mw < 99) mw = 99;
+        opt.css('max-width', mw);
         opt.css('left', btn.offset().left);
         opt.css('top', btn.offset().top + btn.outerHeight() );
         opt.slideToggle(200);
