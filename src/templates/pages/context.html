@@ -36,7 +36,7 @@
 		{% if abstract_html %}
 		<!-- Custom HTML code -->
 		<div id="cvmo-custom-plugin">
-		<div class="accordion-header separator"><h2>Simplified configuration</h2></div>
+		<div class="accordion-header separator"><h2>User configuration</h2></div>
 		<div class="accordion-content">
 
 			<!-- Name is mandatory -->
@@ -67,7 +67,7 @@
 				input_name = jQuery( custom_input_objs[i] ).attr('name');
 
 				// Skip non-values
-				if (input_name.substring(0,7) != 'values[')
+				if (input_name.substring(0, 7) != 'values[')
 					continue;
 
 				name_input_objs =
@@ -81,7 +81,8 @@
 					});
 				try {
 					// May walk on paths containing undefined elements
-					jQuery( custom_input_objs[i] ).val(eval('('+json_path+')'));
+					jQuery( custom_input_objs[i] ).val(
+						eval('('+json_path+')') ).trigger('change');
 				}
 				catch (e) {};
 
