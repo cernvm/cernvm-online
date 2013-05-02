@@ -474,6 +474,7 @@ def context_from_abstract(request, context_id, cloning=False):
         'parent_id': context_id,
         #'raw': json.dumps(raw, indent=2),
         'abstract_html': data['abstract'].get('html_body'),
+        'from_abstract': True,
         'plugins': plugins,  # now each plugin will hold enable=True|False
         'cernvm_plugin': generic_plugin_cp
     }, RequestContext(request))

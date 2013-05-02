@@ -33,7 +33,7 @@
 		<!-- End of the Raw section -->
 		{% endif %}
 
-		{% if abstract_html %}
+		{% if abstract_html %}{# Note that when abstract_html is empty, it won't be displayed! #}
 		<!-- Custom HTML code -->
 		<div id="cvmo-custom-plugin">
 		<div class="accordion-header separator"><h2>User configuration</h2></div>
@@ -104,7 +104,7 @@
 		<!-- Begin of the Generic CernVM plugin section -->
 		{% if cernvm_plugin.display %}
 		<div>
-			{% if abstract_html %}<input type="hidden" name="abstract[display][generic_cernvm]" value="1"/>{% endif %}
+			{% if from_abstract %}<input type="hidden" name="abstract[display][generic_cernvm]" value="1"/>{% endif %}
 		{% else %}
 		<div style="display:none">
 		{% endif %}
