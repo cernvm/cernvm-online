@@ -38,15 +38,27 @@
 			</td>
 			<td>
 				<!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
-				<a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/> Clone</a>
+				<div style="float:left;margin-right:2px"><a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/> Clone</a></div>
 				{% if item.public %}
-					{% if enable_market %}<a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>{% endif %}
+
+					{% if enable_market %}
+					<!-- Unpublish button -->
+					<div style="float:left;margin-right:2px"><a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a></div>
+					{% endif %}
+
 				{% else %}
-					{% if enable_market %}<a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a>{% endif %}
-					<div style="float:left;margin-right:3px"><a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a></div>
+
+					{% if enable_market %}
+					<!-- Publish button -->
+					<div style="float:left;margin-right:2px"><a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a></div>
+					{% endif %}
+
+					<!-- Delete button -->
+					<div style="float:left;margin-right:2px"><a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a></div>
+
 				{% endif %}
 				<!-- Extra options -->
-				<div class="dropdownbutton">
+				<div class="dropdownbutton" style="float:left;margin-right:2px">
   					<span><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" width="16" height="16"/></span>
   					<ul>
   						{% if item.from_abstract %}
@@ -56,6 +68,7 @@
   						<li><a href="{% url "context_api_encoded" context_id=item.id %}">Get raw user data</b></a></li>
   					</ul>
 				</div>
+				<!-- End of buttons -->
 			</td>
 		</tr>
 	{% empty %}
