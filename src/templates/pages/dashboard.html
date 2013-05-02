@@ -12,9 +12,9 @@
 		<th>Name</th>
 		<th width="240">ID</th>
 		{% if enable_market %}
-		<th width="175">Operations</th>		
+		<th width="200">Operations</th>		
 		{% else %}
-		<th width="100">Operations</th>		
+		<th width="125">Operations</th>		
 		{% endif %}
 	</tr>
 	{% for item in context_list %}
@@ -27,32 +27,35 @@
 			</td>
 			<td>{{ item.name }}{% if item.from_abstract %} <img alt="Simple" title="Simple definition" src="{% static "images/thumb_up.png" %}"/>{% endif %}</td>
 			<td>
+				{{ item.id }}
+				<!--
 				{% if not item.key %}
 					<a target="_blank" href="{% url "context_api_plain" context_id=item.id %}">{{ item.id }}</a>
 				{% else %}
 					{{ item.id }}
 				{% endif %}
+				-->
 			</td>
 			<td>
-				{% if item.from_abstract %}
-				<!-- Clone context from abstract: dropdown -->
-				<div class="dropdownbutton" style="float:left;margin-right:3px">
-  					<span><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Clone</span>
-  					<ul>
-  						<li><a href="{% url "context_clone_simple" context_id=item.id %}">To simple</b></a></li>
-  						<li><a href="{% url "context_clone" context_id=item.id %}">To normal</a></li>
-  					</ul>
-				</div>
-				{% else %}
-				<!-- Ordinary clone: one button -->
-				<a href="{% url "context_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}"/> Clone</a>
-				{% endif %}
+				<!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
+				<a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/> Clone</a>
 				{% if item.public %}
 					{% if enable_market %}<a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>{% endif %}
 				{% else %}
 					{% if enable_market %}<a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a>{% endif %}
-					<a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+					<div style="float:left;margin-right:3px"><a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a></div>
 				{% endif %}
+				<!-- Extra options -->
+				<div class="dropdownbutton">
+  					<span><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" width="16" height="16"/></span>
+  					<ul>
+  						{% if item.from_abstract %}
+  						<li><a href="{% url "context_clone" context_id=item.id %}">Clone with full options</a></li>
+  						{% endif %}
+  						<li><a href="{% url "context_api_plain" context_id=item.id %}">Get rendered context</b></a></li>
+  						<li><a href="{% url "context_api_encoded" context_id=item.id %}">Get raw user data</b></a></li>
+  					</ul>
+				</div>
 			</td>
 		</tr>
 	{% empty %}

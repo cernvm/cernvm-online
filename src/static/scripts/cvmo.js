@@ -657,22 +657,35 @@ CVMO.Widgets.AutoComplete = function( element, options ) {
  *
  */
 CVMO.Widgets.MakeDropDown = function( element ) {
-    $(element).getChildren('span').addEvent('click', function() {
+    $(element).getChildren('span').addEvent('click', function(evt) {
+        evt.stopPropagation();  // avoid trigger close MooTools
+
         // jQuery used here
         btn = jQuery(this);
         opt = btn.parent().children('ul');
+
+        // Close other dropdowns
+        jQuery('.dropdownbutton ul').not(opt).slideUp('fast');
+
+        // Open and position this dropdown
         opt.css('min-width', btn.outerWidth());
+        mwth = 150;
         mw = btn.outerWidth()*1.5;
-        if (mw < 99) mw = 99;
+        if (mw < mwth) mw = mwth;
         opt.css('max-width', mw);
         opt.css('left', btn.offset().left);
         opt.css('top', btn.offset().top + btn.outerHeight() );
-        opt.slideToggle(200);
+        opt.slideToggle('fast');
     });
 };
 $(window).addEvent('load', function() {
     $$('.dropdownbutton').each(function(e) {
         var ne = e;
         new CVMO.Widgets.MakeDropDown(ne);
+    });
+});
+$(window).addEvent('click', function() {
+    $$('.dropdownbutton ul').each(function(e) {
+        jQuery(e).slideUp('fast');
     });
 });
