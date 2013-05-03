@@ -68,40 +68,48 @@ def get_cernvm_config():
         return {
         }
 
-def api_get(request, context_id):
+def api_get(request, context_id, plain=False):
     """ Return the context definition in text format """
-    
-    # Fetch the specified context
+    render = None
     try:
-        context = ContextStorage.objects.get(id=context_id)
-        return HttpResponse(context.data, content_type="text/plain")
+        # Check if item has a key
+        item = ContextDefinition.objects.get(id=context_id)
+        if item.key:
+            # Password-protected
+            if plain:
+                revurl = 'context_api_plain'
+            else:
+                revurl = 'context_api_encoded'
+            resp = prompt_unencrypt_context(request, item,
+                reverse(revurl, kwargs={'context_id': context_id}),
+                decode_render=True)
+            if 'httpresp' in resp:
+                return resp['httpresp']
+            elif 'render' in resp:
+                render = resp['render']
+        else:
+            # No password
+            render = ContextStorage.objects.get(id=context_id)
+            render = render.data
     except:
-        return HttpResponse("not-found", content_type="text/plain")
+        return HttpResponse('not-found', content_type='text/plain')
 
-def api_get_plain(request, context_id):
-    """ Return the context definition in text format """
-    
-    # Fetch the specified context
-    try:
-        # Do not display encrypted context
-        context = ContextDefinition.objects.get(id=context_id)
-        if context.key is not None and context.key != "":
-            return HttpResponse("encrypted", content_type="text/plain")
-        
-        # De-base64 the context content
-        cStorage = ContextStorage.objects.get(id=context_id)
-        m = re.search(r"^\s*EC2_USER_DATA\s*=\s*([^\s]*)$", cStorage.data, re.M)
-        #import pprint
-        #pprint.pprint(m)
-        #pprint.pprint(m.group(1))
+    if render is None:
+        return HttpResponse('database-error', content_type='text/plain')
+
+    if plain:
+        # Return plaintext context
+        m = re.search(r"^\s*EC2_USER_DATA\s*=\s*([^\s]*)$", render, re.M)
         if m is None:
-            return HttpResponse("format-error", content_type="text/plain")
+            return HttpResponse('format-error', content_type='text/plain')
         try:
-            return HttpResponse(base64.b64decode(m.group(1)), content_type="text/plain")
+            return HttpResponse(base64.b64decode(m.group(1)),
+                content_type='text/plain')
         except:
-            return HttpResponse("encoding-error", content_type="text/plain")
-    except:
-        return HttpResponse("not-found", content_type="text/plain")
+            return HttpResponse('encoding-error', content_type='text/plain')
+    else:
+        # Return raw context
+        return HttpResponse(render, content_type='text/plain')
 
 # Changes the published value of a given context. Obtains all the parameters
 # (id and action) through HTTP GET. Returns a HTTP status != 200 in case of
@@ -382,9 +390,15 @@ def prompt_unencrypt_context(request, ctx, callback_url, decode_data=True, decod
         if salt_context_key(ctx.id, pwd) == ctx.key:
             # Password is OK: decrypt
             if decode_data:
-                resp['data'] = crypt.decrypt(base64.b64decode(str(ctx.data)), pwd)
-            #if decode_render:
-            #    resp['render'] = crypt.decrypt();
+                resp['data'] = crypt.decrypt(
+                    base64.b64decode(str(ctx.data)), pwd)
+            if decode_render:
+                render = ContextStorage.objects.get(id=ctx.id)
+                m = re.search(r"^ENCRYPTED:(.*)$", render.data)
+                if m:
+                    resp['render'] = crypt.decrypt(
+                        base64.b64decode(str(m.group(1))), pwd)
+                # Response empty in case of problems
         else:
             # Password is wrong
             resp['httpresp'] = render_password_prompt(request, title, body,
@@ -547,7 +561,7 @@ def view(request, context_id):
             return resp['httpresp']
         elif 'data' in resp:
             data = pickle.loads(resp['data'])
-    
+
     # Render all of the plugins
     plugins = ContextPlugins().renderAll(request, data['values'], data['enabled'])
 
