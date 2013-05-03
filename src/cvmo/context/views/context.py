@@ -369,7 +369,7 @@ def raw(request, context_id):
 # Takes care of prompting user for a password and returning an unencrypted
 # version of a given context "data" section and "rendered" representation.
 # Decoded data is returned as strings. No "unpickling" is performed
-def prompt_unencrypt_context(request, ctx, decode_data=True, decode_render=False):
+def prompt_unencrypt_context(request, ctx, callback_url, decode_data=True, decode_render=False):
     resp = {}
     title = 'Context encrypted'
     body = 'The context information you are trying to use are encrypted with ' \
@@ -387,17 +387,12 @@ def prompt_unencrypt_context(request, ctx, decode_data=True, decode_render=False
             #    resp['render'] = crypt.decrypt();
         else:
             # Password is wrong
-            resp['httpresp'] = render_password_prompt(
-                request, title, body,
-                reverse('context_clone', kwargs={'context_id': ctx.id}),
-                { 'msg_error': 'Wrong password' }
-            );
+            resp['httpresp'] = render_password_prompt(request, title, body,
+                callback_url, { 'msg_error': 'Wrong password' });
     else:
         # Prompt for password
-        resp['httpresp'] = render_password_prompt(
-            request, title, body,
-            reverse('context_clone', kwargs={'context_id': ctx.id})
-        );
+        resp['httpresp'] = render_password_prompt(request, title, body,
+            callback_url);
 
     return resp
 
@@ -412,7 +407,8 @@ def clone(request, context_id):
         data = pickle.loads(str(item.data))
     else:
         # Password-protected
-        resp = prompt_unencrypt_context(request, item)
+        resp = prompt_unencrypt_context(request, item,
+            reverse('context_clone', kwargs={'context_id': context_id}))
         if 'httpresp' in resp:
             return resp['httpresp']
         elif 'data' in resp:
@@ -539,41 +535,18 @@ def view(request, context_id):
     # Fetch the entry from the db
     item = ContextDefinition.objects.get(id=context_id)
     data = {}
-    
+
     # Check if the data are encrypted
     if item.key == '':
         data = pickle.loads(str(item.data))
-        
     else:
-        
-        # Fetch the key from the POST variables
-        if 'password' in request.POST:
-            
-            # Validate password
-            try:
-                if salt_context_key(item.id, request.POST['password']) != item.key:
-                    return render_password_prompt(request, 'Context encrypted',
-                        'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
-                        reverse('context_view', kwargs={'context_id':context_id}),
-                        { 'msg_error': 'Password mismatch' }
-                        )
-            except Exception as ex:
-                return render_password_prompt(request, 'Context encrypted',
-                    'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
-                    reverse('context_view', kwargs={'context_id':context_id}),
-                    { 'msg_error': 'Decryption error: %s' % str(ex) }
-                    )
-                
-            # Decode data
-            data = pickle.loads(crypt.decrypt(base64.b64decode(str(item.data)), request.POST['password'].decode("utf-8").encode('ascii', 'ignore')))
-            
-        else:
-            # Key does not exist in session? 
-            return render_password_prompt(request, 'Context encrypted',
-                'The context information you are trying to use are encrypted with a private key. Please enter this key below to decrypt them:',
-                reverse('context_view', kwargs={'context_id':context_id})
-                )
-        
+        # Password-protected
+        resp = prompt_unencrypt_context(request, item,
+            reverse('context_view', kwargs={'context_id': context_id}))
+        if 'httpresp' in resp:
+            return resp['httpresp']
+        elif 'data' in resp:
+            data = pickle.loads(resp['data'])
     
     # Render all of the plugins
     plugins = ContextPlugins().renderAll(request, data['values'], data['enabled'])
