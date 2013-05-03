@@ -501,7 +501,19 @@ def name_increment_revision(name):
 # Used both when creating a simple context and when cloning it
 def context_from_abstract(request, context_id, cloning=False):
     item = ContextDefinition.objects.get(id=context_id)
-    data = pickle.loads(str(item.data))
+
+    # Check if the data are encrypted
+    if item.key == '':
+        data = pickle.loads(str(item.data))
+    else:
+        # Password-protected
+        resp = prompt_unencrypt_context(request, item,
+            reverse('context_clone_simple', kwargs={'context_id': context_id}))
+        if 'httpresp' in resp:
+            return resp['httpresp']
+        elif 'data' in resp:
+            data = pickle.loads(resp['data'])
+
     display = data['abstract'].get('display')
 
     # Render all of the plugins
