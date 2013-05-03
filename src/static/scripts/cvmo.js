@@ -673,7 +673,21 @@ CVMO.Widgets.MakeDropDown = function( element ) {
         mw = btn.outerWidth()*1.5;
         if (mw < mwth) mw = mwth;
         opt.css('max-width', mw);
-        opt.css('left', btn.offset().left);
+
+        left_wrt_viewport = btn.offset().left + btn.outerWidth()*0.5 -
+            jQuery(window).scrollLeft();
+        viewport_width = jQuery(window).width();
+
+        if (left_wrt_viewport > viewport_width*0.5) {
+            // Right align
+            off_right = viewport_width - (btn.offset().left + btn.outerWidth());
+            opt.css('right', off_right);
+        }
+        else {
+            // Left align
+            opt.css('left', btn.offset().left);
+        }
+
         opt.css('top', btn.offset().top + btn.outerHeight() );
         opt.slideToggle('fast');
     });
