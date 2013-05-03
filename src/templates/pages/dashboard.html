@@ -28,6 +28,7 @@
 			<td>{{ item.name }}{% if item.from_abstract %} <img alt="Simple" title="Simple definition" src="{% static "images/thumb_up.png" %}"/>{% endif %}</td>
 			<td>
 				{{ item.id }}
+				<!-- George!? -->
 				<!--
 				{% if not item.key %}
 					<a target="_blank" href="{% url "context_api_plain" context_id=item.id %}">{{ item.id }}</a>
@@ -98,10 +99,57 @@
 
 {% if enable_abstract_creation %}
 <h2>Your abstract context definitions</h2>
+<script language="JavaScript">
+
+// function type(obj){
+//     return Object.prototype.toString.call(obj).match(/^\[object (.*)\]$/)[1]
+// }
+
+// Event handler for each single checkbox
+absCheckboxCallback = function(e, id) {
+	jQuery(this).attr('disabled', true);  // disable to avoid bombing
+	chk = jQuery(this).attr('checked') ? true : false;
+	jQuery(this).attr('checked', !chk);  // reverse checking: restore when OK
+	id = jQuery(this).data('absctx_id');
+	obj = this;
+	jQuery.ajax({
+		type: 'GET',
+		url: '{% url "ajax_publish_context" %}?' +
+			'id=' + id + '&do=' + (chk ? 'publish' : 'unpublish')
+	}).done(function(resp) {
+		if (parseInt(resp) == 1) {
+			jQuery(obj)
+				.attr('checked', chk)
+				.removeAttr('disabled');
+		}
+	});
+}
+
+// When document is loaded, load checkbox statuses as well
+jQuery(document).ready(function() {
+	jQuery.ajax({
+		type: 'GET',
+		url: '{% url "ajax_abstract_list" %}'
+	}).always(function() {
+		jQuery(':checkbox[name^="absctx"]').attr('disabled', true);
+	}).done(function(resp) {
+		for (i=0; i<resp.length; i++) {
+			jQuery(':checkbox[name="absctx[' + resp[i].id + '][public]"]')
+				.attr('disabled', false)
+				.attr('checked', resp[i].public)
+				.data('absctx_id', resp[i].id)
+				.change(absCheckboxCallback);
+		}
+	});
+});
+
+
+</script>
 <table class="pad-5">
 	<tr>
 		<th>Name</th>
 		<th width="240">ID</th>
+		<th width="40">Public</th>
 		<th width="100">Operations</th>		
 	</tr>
 	{% for item in my_abstract_list %}
@@ -112,6 +160,9 @@
 
 		<!-- ID column -->
 		<td>{{ item.id }}</td>
+
+		<!-- Public column (checkbox) -->
+		<td align="center"><input type="checkbox" disabled name="absctx[{{ item.id }}][public]"/></td>
 
 		<!-- Operations column -->
 		<td>

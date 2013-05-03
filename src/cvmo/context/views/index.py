@@ -8,14 +8,16 @@ from cvmo.context.models import ContextDefinition, Machines, ClusterDefinition, 
 from cvmo.context.plugins import ContextPlugins
 from cvmo.context.utils.views import uncache_response
 
+from cvmo.context.utils.views import get_list_allowed_abstract
+
 def welcome(request):
     return render_to_response('pages/welcome.html', {}, RequestContext(request))
 
 def dashboard(request):
     context = {
         'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False) & Q(abstract=False)).order_by('-public', 'name'),
-        'full_abstract_list': ContextDefinition.objects.filter(Q(inherited=False) & Q(abstract=True)).order_by('-public', 'name'),
-        'my_abstract_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False) & Q(abstract=True)).order_by('-public', 'name'),
+        'full_abstract_list': get_list_allowed_abstract(request),
+        'my_abstract_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False) & Q(abstract=True)).order_by('name'),
         'cluster_list': ClusterDefinition.objects.filter(owner=request.user).order_by('-public', 'name'),
         'machine_list': Machines.objects.filter(owner=request.user)
     }

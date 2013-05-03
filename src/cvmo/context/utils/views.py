@@ -235,6 +235,21 @@ def is_abstract_creation_enabled(request):
         return request.user.groups.filter(name='abstract').count() != 0
     return False
 
+# Returns a list of displayable abstract contexts for the currently enabled set
+# of options (such as current user and other settings)
+def get_list_allowed_abstract(request):
+    if is_abstract_creation_enabled(request):
+        # Administrator: get all abstract contexts
+        ab_list = ContextDefinition.objects.filter(
+            Q(inherited=False) & Q(abstract=True) ).order_by('name')
+    else:
+        # Normal user: get only own contexts plus public ones
+        ab_list = ContextDefinition.objects.filter(
+            Q(inherited=False) & Q(abstract=True) & (
+                Q(owner=request.user) | Q(public=True)
+            )).order_by('name')
+    return ab_list
+
 def for_cloud(fn):
     """
     Decorator to reject access if the user is not member of the cloud group

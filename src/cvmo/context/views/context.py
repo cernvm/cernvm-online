@@ -21,6 +21,8 @@ from cvmo.context.utils.views import uncache_response, render_error, render_conf
 from cvmo.context.utils.context import gen_context_key, salt_context_key
 from cvmo.context.utils import crypt
 
+from cvmo.context.utils.views import get_list_allowed_abstract
+
 # String corresponding to the generic plugin name
 global generic_plugin
 generic_plugin = {
@@ -101,9 +103,50 @@ def api_get_plain(request, context_id):
     except:
         return HttpResponse("not-found", content_type="text/plain")
 
+# Changes the published value of a given context. Obtains all the parameters
+# (id and action) through HTTP GET. Returns a HTTP status != 200 in case of
+# errors, or an HTTP 200 with a JSON file containing the string '1' when OK
+def ajax_publish_context(request):
+    # id, do required
+    if not 'do' in request.GET or not 'id' in request.GET:
+        return render_error(request, 400, 'Action and/or id are missing')
+
+    # Actions allowed: [un]publish
+    if request.GET['do'] == 'publish':
+        publish = True
+    elif request.GET['do'] == 'unpublish':
+        publish = False
+    else:
+        return render_error(request, 400, 'Invalid action')
+
+    # Check if context exists and it's mine
+    id = request.GET['id']
+    ctx = ContextDefinition.objects.filter(
+        Q(id=id) & Q(inherited=False) & Q(owner=request.user) );
+    if not ctx.exists or ctx.update(public=publish) != 1:
+        return render_error(request, 500, 'Update error')
+
+    # Will return the string '1' in case of success, '0' in case of failure
+    return uncache_response(HttpResponse('1', content_type="application/json"))
+
+# Gets the list of abstract contexts with the following fields:
+#   id, name, public
+# Users will get a list of the "shown" ones only plus their own. If
+# is_abstract_creation_enabled == True, the full list is obtained.
+def ajax_abstract_list(request):
+    ab_list = get_list_allowed_abstract(request)
+    ab_dict = []
+    for ab in ab_list:
+        ab_dict.append({
+            'id': ab.id,
+            'name': ab.name,
+            'public': ab.public
+        })
+    return uncache_response(HttpResponse(
+        json.dumps(ab_dict, indent=2), content_type="application/json"))
 
 def ajax_list(request):
-    
+
     # Require 'query'
     if not 'query' in request.GET:
         return render_error(request, 400)

@@ -32,7 +32,9 @@ urlpatterns += patterns('cvmo.context.views.context',
     url(r'^api/context/(?P<context_id>[-\w]+)/$', 'api_get', name="context_api_encoded"),
     url(r'^api/context/(?P<context_id>[-\w]+)/plain/*$', 'api_get_plain', 
         name="context_api_plain"),
-    url(r'^ajax/context/list$', 'ajax_list',                    name="vm_ajax_listcontexts"),
+    url(r'^ajax/context/list/*$', 'ajax_list',                    name="vm_ajax_listcontexts"),
+    url(r'^ajax/context/publish/*$', 'ajax_publish_context', name="ajax_publish_context"),
+    url(r'^ajax/abstract/list/*$', 'ajax_abstract_list', name="ajax_abstract_list"),
 )
 
 urlpatterns += patterns('cvmo.context.views.machine',
