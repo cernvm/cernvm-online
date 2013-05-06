@@ -27,10 +27,17 @@ urlpatterns += patterns('cvmo.context.views.context',
     url(r'^context/clone/(?P<context_id>[-\w]+)$', 'clone',     name="context_clone"),
     url(r'^context/clone/(?P<context_id>[-\w]+)/simple/*$', 'context_from_abstract', {'cloning': True}, name="context_clone_simple"),
     url(r'^context/delete/(?P<context_id>[-\w]+)$', 'delete',   name="context_delete"),
-    url(r'^api/context/(?P<context_id>[-\w]+)/raw/*$', 'raw', name="context_raw"),
     url(r'^context/view/(?P<context_id>[-\w]+)$',   'view',     name="context_view"),
-    url(r'^api/context/(?P<context_id>[-\w]+)/$', 'api_get', name="context_api_encoded"),
-    url(r'^api/context/(?P<context_id>[-\w]+)/plain/*$', 'api_get', {'plain': True}, name="context_api_plain"),
+
+    # Used from the webpage to show contexts. If encrypted, they interactively ask for a password
+    url(r'^context/view/(?P<context_id>[-\w]+)/json/*$', 'api_get', {'format': 'json', 'askpass': True}, name='context_view_json'),
+    url(r'^context/view/(?P<context_id>[-\w]+)/plain/*$', 'api_get', {'format': 'plain', 'askpass': True}, name='context_view_plain'),
+    url(r'^context/view/(?P<context_id>[-\w]+)/raw/*$', 'api_get', {'format': 'raw', 'askpass': True}, name='context_view_raw'),
+
+    # API interface. No interactive password prompt: in raw contexts decryption occurs on the client
+    url(r'^api/context/(?P<context_id>[-\w]+)/*$', 'api_get', {'format': 'raw', 'askpass': False}, name='context_api_encoded'),
+    url(r'^api/context/(?P<context_id>[-\w]+)/plain/*$', 'api_get', {'format': 'plain', 'askpass': False}, name='context_api_plain'),
+
     url(r'^ajax/context/list/*$', 'ajax_list',                    name="vm_ajax_listcontexts"),
     url(r'^ajax/context/publish/*$', 'ajax_publish_context', name="ajax_publish_context"),
     url(r'^ajax/abstract/list/*$', 'ajax_abstract_list', name="ajax_abstract_list"),

@@ -68,48 +68,93 @@ def get_cernvm_config():
         return {
         }
 
-def api_get(request, context_id, plain=False):
-    """ Return the context definition in text format """
-    render = None
+def api_get(request, context_id, format, askpass):
+    """ Returns the context definition in different formats and takes care of decrypting if requested """
+
+    # 1. Retrieve the object from database
     try:
-        # Check if item has a key
-        item = ContextDefinition.objects.get(id=context_id)
-        if item.key:
-            # Password-protected
-            if plain:
-                revurl = 'context_api_plain'
-            else:
-                revurl = 'context_api_encoded'
-            resp = prompt_unencrypt_context(request, item,
-                reverse(revurl, kwargs={'context_id': context_id}),
-                decode_render=True)
-            if 'httpresp' in resp:
-                return resp['httpresp']
-            elif 'render' in resp:
-                render = resp['render']
-        else:
-            # No password
-            render = ContextStorage.objects.get(id=context_id)
-            render = render.data
-    except:
+        ctx = ContextDefinition.objects.get(id=context_id)
+    except ContextDefinition.DoesNotExist:
         return HttpResponse('not-found', content_type='text/plain')
 
-    if render is None:
-        return HttpResponse('database-error', content_type='text/plain')
+    # Do we need to query ContextStorage?
+    need_render = (format == 'raw' or format == 'plain')
 
-    if plain:
-        # Return plaintext context
-        m = re.search(r"^\s*EC2_USER_DATA\s*=\s*([^\s]*)$", render, re.M)
-        if m is None:
-            return HttpResponse('format-error', content_type='text/plain')
-        try:
-            return HttpResponse(base64.b64decode(m.group(1)),
-                content_type='text/plain')
-        except:
-            return HttpResponse('encoding-error', content_type='text/plain')
+    # Do we need to unmarshall data?
+    need_data = (format == 'json')
+
+    # 2. Do we need to decrypt?
+    if ctx.key:
+
+        if askpass:
+            # Prompt or decrypt
+            resp = prompt_unencrypt_context(request, ctx, '',
+                decode_render=need_render)
+            if 'httpresp' in resp:
+                # Prompt
+                return resp['httpresp']
+            else:
+                # Decrypt
+
+                # When requested, data must be unpickled
+                if need_data:
+                    if not 'data' in resp:
+                        return HttpResponse('db-error-data', content_type='text/plain')
+                    else:
+                        data = pickle.loads(resp['data'])
+
+                # When requested, rendered part must be present
+                if need_render:
+                    if not 'render' in resp:
+                        return HttpResponse('db-error-render', content_type='text/plain')
+                    else:
+                        render = resp['render']
+        else:
+            # Not asking for password: return encrypted data or nothing
+            if format == 'json' or format == 'plain':
+                return HttpResponse('encrypted', content_type='text/plain')
+            elif format == 'raw':
+                try:
+                    stg = ContextStorage.objects.get(id=context_id)
+                    render = stg.data
+                except ContextStorage.DoesNotExist:
+                    return HttpResponse('not-found-rendered-encrypted',
+                        content_type='text/plain')
+
     else:
-        # Return raw context
-        return HttpResponse(render, content_type='text/plain')
+
+        # Context is unencrypted
+        if need_data:
+            data = pickle.loads(ctx.data)
+        if need_render:
+            try:
+                stg = ContextStorage.objects.get(id=context_id)
+                render = stg.data
+            except ContextStorage.DoesNotExist:
+                return HttpResponse('not-found-rendered', content_type='text/plain')
+
+    # 3. Processing what we have, based on the desired output format
+    if format == 'json':
+        output = json.dumps(data, indent=2)
+    elif format == 'raw':
+        output = render
+    elif format == 'plain':
+        # Un-base64
+        m = re.search(r'^\s*EC2_USER_DATA\s*=\s*([^\s]*)$', render, re.M)
+        if m is None:
+            return HttpResponse('render-format-error',
+                content_type='text/plain')
+        try:
+            output = base64.b64decode(m.group(1))
+        except:
+            return HttpResponse('render-encoding-error', content_type='text/plain')
+
+    # 4. Return
+    if ctx.key:
+        enc = 'yes'
+    else:
+        enc = 'no'
+    return HttpResponse('format:'+format+';encrypted:'+enc+';data:'+output, content_type='text/plain')
 
 # Changes the published value of a given context. Obtains all the parameters
 # (id and action) through HTTP GET. Returns a HTTP status != 200 in case of
@@ -366,13 +411,6 @@ def create(request):
     
     # Go to dashboard
     return redirect('dashboard')
-
-def raw(request, context_id):
-    item = ContextDefinition.objects.get(id=context_id)
-    data = pickle.loads(str(item.data))
-    return uncache_response(
-        HttpResponse(json.dumps(data, indent=4), content_type="text/plain")
-    )
 
 # Takes care of prompting user for a password and returning an unencrypted
 # version of a given context "data" section and "rendered" representation.

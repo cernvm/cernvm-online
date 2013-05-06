@@ -12,9 +12,9 @@
 		<th>Name</th>
 		<th width="240">ID</th>
 		{% if enable_market %}
-		<th width="200">Operations</th>		
+		<th width="210">Operations</th>		
 		{% else %}
-		<th width="125">Operations</th>		
+		<th width="135">Operations</th>		
 		{% endif %}
 	</tr>
 	{% for item in context_list %}
@@ -28,14 +28,6 @@
 			<td>{{ item.name }}{% if item.from_abstract %} <img alt="Simple" title="Simple definition" src="{% static "images/thumb_up.png" %}"/>{% endif %}</td>
 			<td>
 				{{ item.id }}
-				<!-- George!? -->
-				<!--
-				{% if not item.key %}
-					<a target="_blank" href="{% url "context_api_plain" context_id=item.id %}">{{ item.id }}</a>
-				{% else %}
-					{{ item.id }}
-				{% endif %}
-				-->
 			</td>
 			<td>
 				<!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
@@ -65,8 +57,8 @@
   						{% if item.from_abstract %}
   						<li><a href="{% url "context_clone" context_id=item.id %}">Clone with full options</a></li>
   						{% endif %}
-  						<li><a href="{% url "context_api_plain" context_id=item.id %}">Get rendered context</b></a></li>
-  						<li><a href="{% url "context_api_encoded" context_id=item.id %}">Get raw user data</b></a></li>
+  						<li><a href="{% url "context_view_plain" context_id=item.id %}">Get rendered context</b></a></li>
+  						<li><a href="{% url "context_view_raw" context_id=item.id %}">Get raw user data</b></a></li>
   					</ul>
 				</div>
 				<!-- End of buttons -->
