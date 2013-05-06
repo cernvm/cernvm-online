@@ -1,0 +1,137 @@
+<table class="plain long-text" id="cvmo-vaf-form">
+    <tr>
+        <th width="150">Role:</th>
+        <td>
+            <select name="values[vaf][role]">
+                <option value="master">Master</option>
+                <option value="slave">Slave</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr class="cvmo-vaf-slave">
+        <th width="150">VAF master:</th>
+        <td><input name="values[condor][condor_master]" value="fqdn.cern.ch"/></td>
+    </tr>
+
+    <tr>
+        <th width="150">Auth method:</th>
+        <td>
+            <select name="values[vaf][auth]">
+                <option value="alice_ldap">ALICE LDAP</option>
+                <option value="pool_users">Pool accounts</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr class="cvmo-vaf-pool">
+        <th width="150">Num. pool accounts:</th>
+        <td><input name="values[vaf][num_pool]" value="50"/></td>
+    </tr>
+
+    <tr>
+        <th width="150">Proxy for CVMFS:</th>
+        <td><input name="values[vaf][proxy]" value="http://proxy.cern.ch"/></td>
+    </tr>
+
+    <tr>
+        <th width="150">HTCondor shared secret:</th>
+        <td><input name="values[condor][condor_secret]" value="type in any password"/></td>
+    </tr>
+
+    <input type="hidden" name="values[general][startup_script]"/>
+
+</table>
+
+<script language="JavaScript">
+function CVMO_VAF_UpdateStartupScript() {
+  role = jQuery(':input[name="values[vaf][role]"]').val();
+  auth = jQuery(':input[name="values[vaf][auth]"]').val();
+  num_pool = jQuery(':input[name="values[vaf][num_pool]"]').val();
+
+  jQuery(':input[name="values[general][startup_script]"]').val(
+    "export VafConf_NodeType=" + role + "\n" + 
+    "export VafConf_AuthMethod=" + auth + "\n" +
+    "export VafConf_NumPoolAccounts='" + num_pool + "'\n" +
+    "CVM_ContextUrl='https://dl.dropbox.com/u/19379008/CernVM-VAF/2.7.0/context_vaf.sh'\n" +
+    "CVM_ContextDest='/tmp/context_vaf.sh'\n" +
+    "curl -L $CVM_ContextUrl -o $CVM_ContextDest && source $CVM_ContextDest\n" +
+    "rm -f $CVM_ContextDest\n\n\n"
+  );
+}
+
+function CVMO_VAF_UpdateProxy() {
+  uri = jQuery(':input[name="values[vaf][proxy]"]').val();
+  p = new CVMO.UriParser(uri);
+  p.Parse();
+
+  // Translate results in a CernVM Online-compatible structure
+  cvm_proxy = {};
+  if (p.GetVal('username') && p.GetVal('password')) {
+    cvm_proxy['http_usecredentials'] = 'on';
+    cvm_proxy['http_username'] = p.GetVal('username');
+    cvm_proxy['http_password'] = p.GetVal('password');
+  }
+  else {
+    cvm_proxy['http_usecredentials'] = '';
+    cvm_proxy['http_username'] = '';
+    cvm_proxy['http_password'] = '';
+  }
+  cvm_proxy['http_fallback'] = 'on';  // always fallback to DIRECT
+  cvm_proxy['http_proxy'] = p.GetVal('host');
+  if (p.GetVal('protocol')) cvm_proxy['http_proxy_mode'] = p.GetVal('protocol');
+  else cvm_proxy['http_proxy_mode'] = 'auto';
+  if (p.GetVal('port')) cvm_proxy['http_proxy_port'] = p.GetVal('port');
+  else cvm_proxy['http_proxy_port'] = '';
+
+  for (key in cvm_proxy) {
+    jo = jQuery(':input[name="values[general][' + key + ']"]');
+    if (jQuery(jo).attr('type') == 'checkbox') {
+      jQuery(jo).attr('checked', (cvm_proxy[key] == 'on'));
+    }
+    else {
+      jQuery(jo).val(cvm_proxy[key]);
+    }
+  }
+}
+
+//jQuery(document).ready(function() {
+window.addEvent('domready', function() {
+
+  sel = ':input[name="values[vaf][role]"]';
+  jQuery(sel).change(function() {
+    if (jQuery(this).val() == 'master') {
+      jQuery('.cvmo-vaf-master').show();
+      jQuery('.cvmo-vaf-slave').hide();
+      jQuery(':input[name="values[condor][condor_master]"]').val('');
+    }
+    else {
+      jQuery('.cvmo-vaf-slave').show();
+      jQuery('.cvmo-vaf-master').hide();
+    }
+
+  });
+  jQuery(sel).trigger('change');
+
+  sel = ':input[name="values[vaf][auth]"]';
+  jQuery(sel).change(function() {
+    if (jQuery(this).val() == 'alice_ldap') {
+      jQuery('.cvmo-vaf-pool').hide();
+    }
+    else {
+      jQuery('.cvmo-vaf-pool').show();
+    }
+  });
+  jQuery(sel).trigger('change');
+
+  sel = '#cvmo-vaf-form :input';
+  jQuery(sel).change(CVMO_VAF_UpdateStartupScript);
+  CVMO_VAF_UpdateStartupScript();
+
+  sel = ':input[name="values[vaf][proxy]"]';
+  jQuery(sel).change(CVMO_VAF_UpdateProxy);
+  CVMO_VAF_UpdateProxy();
+
+});
+
+</script>
