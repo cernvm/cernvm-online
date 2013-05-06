@@ -154,7 +154,8 @@ def api_get(request, context_id, format, askpass):
         enc = 'yes'
     else:
         enc = 'no'
-    return HttpResponse('format:'+format+';encrypted:'+enc+';data:'+output, content_type='text/plain')
+    #return HttpResponse('format:'+format+';encrypted:'+enc+';data:'+output, content_type='text/plain')
+    return HttpResponse(output, content_type='text/plain')
 
 # Changes the published value of a given context. Obtains all the parameters
 # (id and action) through HTTP GET. Returns a HTTP status != 200 in case of
