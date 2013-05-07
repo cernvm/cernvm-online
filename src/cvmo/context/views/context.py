@@ -125,7 +125,7 @@ def api_get(request, context_id, format, askpass):
 
         # Context is unencrypted
         if need_data:
-            data = pickle.loads(ctx.data)
+            data = pickle.loads(str(ctx.data))
         if need_render:
             try:
                 stg = ContextStorage.objects.get(id=context_id)
