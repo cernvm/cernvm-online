@@ -1,6 +1,8 @@
 import string
 import hashlib
 import uuid
+import unicodedata
+import re
 from random import sample, choice, randint, shuffle
 
 def gen_context_key():
@@ -126,6 +128,23 @@ def salt_context_key(uuid, key):
     # Return the salted result
     return hashlib.sha1(salt + key + salt).hexdigest()
 
+def sanitize(s):
+    """
+    Sanitizes text.
+
+    Takes str or unicode, returns str. Assumes that input str is utf-8. To see
+    what characters are kept, look at the regexp.
+    """
+
+    if isinstance(s, str):
+        s = s.decode('utf-8')
+    elif not isinstance(s, unicode):
+        raise TypeError('str or unicode expected (%s provided)' % \
+            type(s).__name__)
+    s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore') # accents
+    s = re.sub(r'[^A-Za-z0-9-\ _]+', '_', s) # invalid chars
+    s = re.sub(r'(^[_\s]+|[_\s]+$)', '', s) # trailing/leading invalid/spaces
+    return s
 
 def sanitize_env(variable):
     
@@ -136,5 +155,3 @@ def sanitize_env(variable):
         
     # Return result
     return res
-
-        

@@ -1,7 +1,7 @@
 import base64
 from django.conf import settings
 from django.template import RequestContext, loader
-from cvmo.context.utils.context import sanitize_env
+from cvmo.context.utils.context import sanitize_env, sanitize
 
 #######################################################################
 #
@@ -304,7 +304,7 @@ class ContextPlugins(object):
 
         # Start by placing some identification information
         _script  = "VM_CONTEXT_UUID=%s\n" % uuid
-        _script += "VM_CONTEXT_NAME=%s\n" % values['name']
+        _script += 'VM_CONTEXT_NAME="%s"\n' % sanitize(values['name'])
 
         # Then build the contextualization script
         _script += "EC2_USER_DATA=%s\n" % base64.b64encode(_ans)

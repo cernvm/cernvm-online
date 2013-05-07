@@ -83,7 +83,7 @@ def api_get(request, context_id, format, askpass):
     # Do we need to unmarshall data?
     need_data = (format == 'json')
 
-    # 2. Do we need to decrypt?
+    # Do we need to decrypt?
     if ctx.key:
 
         if askpass:
@@ -133,7 +133,7 @@ def api_get(request, context_id, format, askpass):
             except ContextStorage.DoesNotExist:
                 return HttpResponse('not-found-rendered', content_type='text/plain')
 
-    # 3. Processing what we have, based on the desired output format
+    # Processing what we have, based on the desired output format
     if format == 'json':
         output = json.dumps(data, indent=2)
     elif format == 'raw':
@@ -149,11 +149,11 @@ def api_get(request, context_id, format, askpass):
         except:
             return HttpResponse('render-encoding-error', content_type='text/plain')
 
-    # 4. Return
-    if ctx.key:
-        enc = 'yes'
-    else:
-        enc = 'no'
+    # Return
+    # if ctx.key:
+    #     enc = 'yes'
+    # else:
+    #     enc = 'no'
     #return HttpResponse('format:'+format+';encrypted:'+enc+';data:'+output, content_type='text/plain')
     return HttpResponse(output, content_type='text/plain')
 
