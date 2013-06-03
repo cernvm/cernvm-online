@@ -10,12 +10,12 @@
     </tr>
 
     <tr class="cvmo-vaf-slave">
-        <th width="150">VAF master:</th>
+        <th>VAF master:</th>
         <td><input name="values[condor][condor_master]" value="fqdn.cern.ch"/></td>
     </tr>
 
     <tr>
-        <th width="150">Auth method:</th>
+        <th>Auth method:</th>
         <td>
             <select name="values[vaf][auth]">
                 <option value="alice_ldap">ALICE LDAP</option>
@@ -25,23 +25,29 @@
     </tr>
 
     <tr class="cvmo-vaf-pool">
-        <th width="150">Num. pool accounts:</th>
+        <th>Num. pool accounts:</th>
         <td><input name="values[vaf][num_pool]" value="50"/></td>
     </tr>
 
     <tr>
-        <th width="150">Proxy for CVMFS:</th>
+        <th>Proxy for CVMFS:</th>
         <td><input name="values[vaf][proxy]" value="http://proxy.cern.ch"/></td>
     </tr>
 
     <tr>
-        <th width="150">HTCondor shared secret:</th>
+        <th>HTCondor shared secret:</th>
         <td><input name="values[condor][condor_secret]" value="type in any password"/></td>
     </tr>
 
-    <input type="hidden" name="values[general][startup_script]"/>
+    <tr>
+        <th>Context password:</th>
+        <td><input name="values[secret]" value=""/></td>
+    </tr>
 
 </table>
+
+<input type="hidden" name="values[general][startup_script]"/>
+<input type="checkbox" name="values[protect]" value="1" style="display:none"/>
 
 <script language="JavaScript">
 function CVMO_VAF_UpdateStartupScript() {
@@ -95,6 +101,13 @@ function CVMO_VAF_UpdateProxy() {
   }
 }
 
+function CVMO_VAF_UpdateSecret() {
+  secret = jQuery(':input[name="values[secret]"]').val();
+  jQuery(':input[name="values[protect]"]')
+    .attr('checked', (secret.length > 0))
+    .val("1");
+}
+
 //jQuery(document).ready(function() {
 window.addEvent('domready', function() {
 
@@ -126,11 +139,15 @@ window.addEvent('domready', function() {
 
   sel = '#cvmo-vaf-form :input';
   jQuery(sel).change(CVMO_VAF_UpdateStartupScript);
-  CVMO_VAF_UpdateStartupScript();
+  jQuery(sel).trigger('change');
 
   sel = ':input[name="values[vaf][proxy]"]';
   jQuery(sel).change(CVMO_VAF_UpdateProxy);
-  CVMO_VAF_UpdateProxy();
+  jQuery(sel).trigger('change');
+
+  sel = ':input[name="values[secret]"]';
+  jQuery(sel).change(CVMO_VAF_UpdateSecret);
+  jQuery(sel).trigger('change');
 
 });
 
