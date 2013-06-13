@@ -9,10 +9,10 @@
 <table class="pad-5">
 	<tr>
 		<th width="20">&nbsp;</th>
-		<th>Name</th>
-		<th width="240">ID</th>
+		<th width="150">Name</th>
+		<th width="140">Time stamp</th>
 		{% if enable_market %}
-		<th width="210">Operations</th>		
+		<th width="250">Operations</th>		
 		{% else %}
 		<th width="135">Operations</th>		
 		{% endif %}
@@ -27,11 +27,12 @@
 			</td>
 			<td>{{ item.name }}{% if item.from_abstract %} <img alt="Simple" title="Simple definition" src="{% static "images/thumb_up.png" %}"/>{% endif %}</td>
 			<td>
-				{{ item.id }}
+				{{ item.timestamp|date:"d.m.Y" }}
 			</td>
 			<td>
 				<!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
-				<div style="float:left;margin-right:2px"><a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/> Clone</a></div>
+				<div style="float:left;margin-right:2px"><a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/>Clone </a></div>
+                                <div style="float:left; margin-right:2px"> <a href="{% url "vm_pair_request" context_id=item.id %}" class="softbutton" title="Pair an instance of CernVM"><img border="0" align="absmiddle" src="{% static "images/vm_contextualize.png" %}"/>Pair</a></div>
 				{% if item.public %}
 
 					{% if enable_market %}
@@ -253,6 +254,5 @@ jQuery(document).ready(function() {
 	{% endfor %}
 </table>
 <br />
-<p><a href="{% url "vm_pair_begin" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/vm_contextualize.png" %}" /> Pair an instance of CernVM</a></p>
 
 {% endblock %}
