@@ -188,7 +188,7 @@ class ContextPlugins(object):
         
         # Prepare some general stuff for CernVM
         _ans+= "\n[cernvm]\n"
-        _ans+= "organisations=%s\n" % values['general']['organisations']
+        _ans+= "organisations=%s\n" % values['general']['organisation']
         _ans+= "repositories=%s\n" % values['general']['repositories']
         _ans+= "shell=%s\n" % values['general']['shell']
         _ans+= "config_url=%s\n" % values['general']['config_url']
