@@ -149,9 +149,9 @@
 					<tr>
 						<th width="150"><label for="organisation">Main group:</label></th>
 						<td colspan="2">
-							<select {{disabled|dis}} id="organisation" name="values[general][organization]" onchange="javascript:CVMO.ContextUI.UpdateGroups(this.value)">   
+							<select {{disabled|dis}} id="organisation" name="values[general][organisation]" onchange="javascript:CVMO.ContextUI.UpdateGroups(this.value)">   
 								{% for o in cernvm.CERNVM_ORGANISATION_LIST %}
-									<option value="{{ o }}" {{values.general.organization|sel:o}}>{{ o }}</options>
+									<option value="{{ o }}" {{values.general.organisation|sel:o}}>{{ o }}</options>
 								{% endfor %}
 					        </select>
 						</td>
