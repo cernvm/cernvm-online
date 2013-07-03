@@ -35,10 +35,10 @@ GOOGLE_RECAPTCHA = {
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '^p+u-t6^*gtqmj85l$prq(q33#7i+(#$5o0*t0pvm4@1-t_a^w'
 
-ADMINS = (('CernVM', 'cernvm-administrator@cern.ch'))
+ADMINS = (('CernVM', 'cernvm.administrator@cern.ch'))
 
 ################################################################################
-# Advance parameters
+# Advanced parameters
 ################################################################################
 
 TEMPLATE_DEBUG = DEBUG
@@ -253,6 +253,6 @@ CSC_USER_CONFIG_FILE= SRC_PATH + PATH_DS + "students.conf"
 # Where to send activation mail
 ACTIVATION_EMAIL = {
     "sender": "CernVM Online",
-    "sender_email": "cernvm-administrator@cern.ch",
+    "sender_email": "cernvm.administrator@cern.ch",
     "subject": "Account activation"
 }
