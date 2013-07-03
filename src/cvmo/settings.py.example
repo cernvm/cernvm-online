@@ -1,9 +1,9 @@
 ################################################################################
-# Parameters of Settings file
+# Parameters
 ################################################################################
 
 # Source path
-SRC_PATH = "/home/george/afs/dev/cernvm/src/cernvm-online"
+SRC_PATH = "<...>"
 # Directory separator
 PATH_DS = "/"
 
@@ -27,20 +27,21 @@ TIME_ZONE = "Europe/Paris"
 
 # Recaptcha information for the user registration
 GOOGLE_RECAPTCHA = {
-    # localhost keys
-    "public_key": "6Lf-6tMSAAAAAINhybwn_uxxdugd9nfDv5NCx-tY",
-    "private_key": "6Lf-6tMSAAAAAIAMH0F6OLvySp--S6aPWoQGW_bU"    
+    # Get from https://www.google.com/recaptcha/admin/create
+    "public_key": "<...>",
+    "private_key": "<...>"
 }
 
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '^p+u-t6^*gtqmj85l$prq(q33#7i+(#$5o0*t0pvm4@1-t_a^w'
+
+ADMINS = (('CernVM', 'cernvm-administrator@cern.ch'))
+
 ################################################################################
-# DO NOT TOUCH ANYTHING BELOW THIS LINE!!!
+# Advance parameters
 ################################################################################
 
 TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    ( 'CernVM', 'admin@cernvm.com' )
-)
 
 MANAGERS = ADMINS
 
@@ -103,18 +104,13 @@ STATICFILES_DIRS = (
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '^p+u-t6^*gtqmj85l$prq(q33#7i+(#$5o0*t0pvm4@1-t_a^w'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    'django.template.loaders.app_directories.Loader'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -123,9 +119,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'cvmo.context.middleware.shibsync.ShibbolethUserSync'
+    'cvmo.context.middleware.shibsync.ShibbolethUserSync',
     # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware'
 )
 
 ROOT_URLCONF = 'cvmo.urls'
@@ -147,16 +143,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    
     # CernVM Contextualization
     'cvmo.context',
-    
-    # CernVM Online Wiki
-    "cvmo.wiki"
 )
 
 # A sample logging configuration. The only tangible logging
@@ -195,7 +185,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.contrib.messages.context_processors.messages",
-    "cvmo.context.utils.views.global_context" 
+    "cvmo.context.utils.views.global_context"
 )
 
 CONTEXT_PLUGINS = (
@@ -215,38 +205,43 @@ SHIBBOLETH_SSO = {
     'groups_header': 'HTTP_ADFS_GROUP',
     'fullname_header': 'HTTP_ADFS_FULLNAME',
     'email_header': 'HTTP_ADFS_EMAIL',
-    
+
     # Groups to add to the user, depending on groups_header
     'map_groups': {
         'admin': r'(;|^)cernvm-infrastructure(;|$)'
     },
-    
+
     # Which regex on groups_header should mark the user as staff
     'staff_groups': [
         r'(;|^)cernvm-infrastructure(;|$)'
     ],
-    
+
     # Where to redirect if the user is not authenticated
     'redirect_login': '/login',
-    
+
     # Which website paths are publicly accessible
     'public_path': [
+        # Login
         r'/login$',
         r'/login_action$',
+        # Registration
         r'/register$',
         r'/register_action$',
         r'/account_activation$',
+        # API - context
+        r'/api/context/?$',
+        r'/api/context/[0-9a-f]+/?$',
+        r'/api/context/[0-9a-f]+/plain/?$',
         r'/api/fetch/?$',
+        # API - cluster
         r'/api/cluster/.*$',
-        r'/api/market/search.clusters/?$'
+        # API - marketplace
+        r'/api/market/search.clusters/?$',
         r'/api/market/groups/?$'
-#        r'/wiki/.*$'
-#        r'/csc$',
-#        r'/csc/do_login$',
     ]
 }
 
-# 1 hour of session 
+# 1 hour of session
 SESSION_COOKIE_AGE = 3600
 
 # Expire session at browser close
@@ -258,6 +253,6 @@ CSC_USER_CONFIG_FILE= SRC_PATH + PATH_DS + "students.conf"
 # Where to send activation mail
 ACTIVATION_EMAIL = {
     "sender": "CernVM Online",
-    "sender_email": "info@cernvm-online.cern.ch",
+    "sender_email": "cernvm-administrator@cern.ch",
     "subject": "Account activation"
 }
