@@ -1,8 +1,10 @@
+<!-- onchange does not get fired in many browsers with autocomplete/autofill. It is disabled everywhere. -->
+
 <table class="plain long-text" id="cvmo-vaf-form">
     <tr>
         <th width="150">Role:</th>
         <td>
-            <select name="values[vaf][role]">
+            <select name="values[vaf][role]" autocomplete="off">
                 <option value="master">Master</option>
                 <option value="slave">Slave</option>
             </select>
@@ -11,13 +13,13 @@
 
     <tr class="cvmo-vaf-slave">
         <th>VAF master:</th>
-        <td><input name="values[condor][condor_master]" value="fqdn.cern.ch"/></td>
+        <td><input name="values[condor][condor_master]" value="fqdn.cern.ch" autocomplete="off"/></td>
     </tr>
 
     <tr>
         <th>Auth method:</th>
         <td>
-            <select name="values[vaf][auth]">
+            <select name="values[vaf][auth]" autocomplete="off">
                 <option value="alice_ldap">ALICE LDAP</option>
                 <option value="pool_users">Pool accounts</option>
             </select>
@@ -26,28 +28,28 @@
 
     <tr class="cvmo-vaf-pool">
         <th>Num. pool accounts:</th>
-        <td><input name="values[vaf][num_pool]" value="50"/></td>
+        <td><input name="values[vaf][num_pool]" value="50" autocomplete="off"/></td>
     </tr>
 
     <tr>
         <th>Proxy for CVMFS:</th>
-        <td><input name="values[vaf][proxy]" value="http://proxy.cern.ch"/></td>
+        <td><input name="values[vaf][proxy]" value="http://proxy.cern.ch:3128" autocomplete="off"/></td>
     </tr>
 
     <tr>
         <th>HTCondor shared secret:</th>
-        <td><input name="values[condor][condor_secret]" value="type in any password"/></td>
+        <td><input name="values[condor][condor_secret]" value="type in any password" autocomplete="off"/></td>
     </tr>
 
     <tr>
         <th>Context password:</th>
-        <td><input name="values[secret]" value=""/></td>
+        <td><input name="values[secret]" value="" autocomplete="off"/></td>
     </tr>
 
 </table>
 
-<input type="hidden" name="values[general][startup_script]"/>
-<input type="checkbox" name="values[protect]" value="1" style="display:none"/>
+<input type="hidden" name="values[general][startup_script]" autocomplete="off"/>
+<input type="checkbox" name="values[protect]" value="1" style="display:none" autocomplete="off"/>
 
 <script language="JavaScript">
 function CVMO_VAF_UpdateStartupScript() {
@@ -67,6 +69,7 @@ function CVMO_VAF_UpdateStartupScript() {
 }
 
 function CVMO_VAF_UpdateProxy() {
+    
   uri = jQuery(':input[name="values[vaf][proxy]"]').val();
   p = new CVMO.UriParser(uri);
   p.Parse();
