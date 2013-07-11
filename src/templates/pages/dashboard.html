@@ -6,8 +6,8 @@
 <h1>Dashboard</h1>
 
 <h2>Your context definitions</h2>
-<table class="pad-5">
-	<tr>
+<table class="pad-5" style="border: none;">
+	<tr style="border-top: 1px solid rgb(221, 221, 221); border-left: 1px solid rgb(221, 221, 221)">
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
 		<th width="240">ID</th>
@@ -16,10 +16,11 @@
 		{% else %}
 		<th width="135">Operations</th>		
 		{% endif %}
+                <th width="40"></th>
 	</tr>
 	{% for item in context_list %}
 		<tr>
-			<td>{% if item.public %}
+			<td style="border-left: 1px solid rgb(221, 221, 221);">{% if item.public %}
 				<img alt="Public" title="Definition visible in market listings" src="{% if item.key %}{% static "images/cart_key.png" %}{% else %}{% static "images/cart.png" %}{% endif %}" />
 				{% else %}
 				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" />
@@ -46,9 +47,6 @@
 					<div style="float:left;margin-right:2px"><a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a></div>
 					{% endif %}
 
-					<!-- Delete button -->
-					<div style="float:left;margin-right:2px"><a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a></div>
-
 				{% endif %}
 				<!-- Extra options -->
 				<div class="dropdownbutton" style="float:left;margin-right:2px">
@@ -63,10 +61,25 @@
 				</div>
 				<!-- End of buttons -->
 			</td>
+			<td style="text-align: center;">
+			    <input type="checkbox" value="" {% if item.multi_delete %}checked{% endif %}/>
+			</td>
 		</tr>
+		{% if forloop.last %}
+		<tr>
+            	    <td style="background: transparent; border-bottom: none; border-left: none !important;" colspan="4"></td>
+		    <td style="float: right; width: 50px; text-align: center;">
+			{% if item.multi_delete %}
+		        <a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+			{% else %}
+                        <a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+			{% endif %}
+		    </td>
+   	        </tr>
+		{% endif %}
 	{% empty %}
 		<tr>
-			<td colspan="4" align="center">No context defined yet</tr>
+			<td colspan="5" align="center">No context defined yet</tr>
 		</tr>
 	{% endfor %}
 </table>
@@ -137,8 +150,8 @@ jQuery(document).ready(function() {
 
 
 </script>
-<table class="pad-5">
-	<tr>
+<table class="pad-5" style="border: none;">
+	<tr style="border-top: 1px solid rgb(221, 221, 221)">
 		<th>Name</th>
 		<th width="240">ID</th>
 		<th width="40">Public</th>
@@ -179,7 +192,7 @@ jQuery(document).ready(function() {
 
 {% if enable_cloud %}
 <h2>Your cluster definitions</h2>
-<table class="pad-5">
+<table class="pad-5" style="border: none;">
 	<tr>
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
