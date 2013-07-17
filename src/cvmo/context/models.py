@@ -20,7 +20,6 @@ class ContextDefinition(models.Model):
     # No foreign key for now: deleting a parent abstract will delete all the descendants
     #parent = models.ForeignKey('self', null=True, default=None)
     data = models.TextField()
-    multi_delete = models.BooleanField(default=False)
     
     def delete(self, using=None):                
         # Remove storage

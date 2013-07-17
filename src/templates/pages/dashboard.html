@@ -62,21 +62,18 @@
 				<!-- End of buttons -->
 			</td>
 			<td style="text-align: center;">
-			    <input type="checkbox" value="" {% if item.multi_delete %}checked{% endif %}/>
+			    <input id="multiple" type="checkbox" name="checkbox_test" value=""/>
 			</td>
 		</tr>
 		{% if forloop.last %}
 		<tr>
             	    <td style="background: transparent; border-bottom: none; border-left: none !important;" colspan="4"></td>
 		    <td style="float: right; width: 50px; text-align: center;">
-			{% if item.multi_delete %}
 		        <a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
-			{% else %}
-                        <a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
-			{% endif %}
 		    </td>
    	        </tr>
 		{% endif %}
+		
 	{% empty %}
 		<tr>
 			<td colspan="5" align="center">No context defined yet</tr>

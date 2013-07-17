@@ -633,7 +633,7 @@ def view(request, context_id):
 def delete(request, context_id):
     # Try to find the context
     try:
-        context = ContextDefinition.objects.get(id=context_id)
+	context = ContextDefinition.objects.get(id=context_id)
     except:
         request.session["redirect_msg_error"] = "Context with id " + context_id + " does not exist!"
         return redirect("dashboard")
