@@ -9,7 +9,17 @@
 <table class="pad-5">
 	<tr>
 		<th width="20">&nbsp;</th>
-		<th>Name</th>
+		<th>
+		Name
+                <div style="float: right;">
+                    <a href="">
+                    <img src="{% static "images/arrow_up.png" %}"/>
+                    </a>
+                    <a id="test" href="">
+                    <img id="test" src="{% static "images/arrow_down.png" %}"/>
+                    </a>
+                </div>
+		</th>
 		<th width="240">ID</th>
 		{% if enable_market %}
 		<th width="210">Operations</th>		
