@@ -3,6 +3,30 @@
 
 {% block body %}
 {% load static %}{% load url from future %}
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript">
+        $(document).ready(function () {
+            $("#delete_popup").click(function () {
+		$('div#dialog').show();
+                $("#dialog").dialog({
+		    modal: true, 
+		    height: 200, 
+		    width: 400, 
+		    buttons: {
+			"Delete all items": function() {
+			    $( this ).dialog( "close" );
+			},
+			Cancel: function() {
+			    $( this ).dialog( "close" );
+			}
+		    }
+		 });
+            });
+        });
+</script>
+
 <h1>Dashboard</h1>
 
 <h2>Your context definitions</h2>
@@ -47,7 +71,7 @@
 					<div style="float:left;margin-right:2px"><a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a></div>
 					{% endif %}
 
-				{% endif %}
+				 {% endif %}
 				<!-- Extra options -->
 				<div class="dropdownbutton" style="float:left;margin-right:2px">
   					<span><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" width="16" height="16"/></span>
@@ -61,15 +85,20 @@
 				</div>
 				<!-- End of buttons -->
 			</td>
+			<form method="post" action="">
 			<td style="text-align: center;">
-			    <input id="multiple" type="checkbox" name="checkbox_test" value=""/>
+			    <input id="{{item.id}}" type="checkbox" name="checkbox_test" value=""/>
 			</td>
+			</form>
 		</tr>
 		{% if forloop.last %}
 		<tr>
             	    <td style="background: transparent; border-bottom: none; border-left: none !important;" colspan="4"></td>
 		    <td style="float: right; width: 50px; text-align: center;">
-		        <a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+		        <a id="delete_popup" href="#" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
+                        <div id="dialog" title="Delete context" style="display: none;">
+                            <p> Are you sure you want to delete?</a>
+                        </div>
 		    </td>
    	        </tr>
 		{% endif %}
