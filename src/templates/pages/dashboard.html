@@ -15,16 +15,10 @@ jQuery(document).ready(function() {
 		sortList: [[0,0], [1,0]],
 		// pass the headers argument and assing a object
 		headers: {
-			// assign the secound column (we start counting zero)
 			0: {
 				// disable it by setting the property sorter to false
 				sorter: false
-
 			},
-			1: {
-				sorter: "text"
-			},
-						// assign the third column (we start counting zero)
 			3: {
 				// disable it by setting the property sorter to false
 				sorter: false
@@ -98,14 +92,12 @@ jQuery(document).ready(function() {
 				<!-- End of buttons -->
 			</td>
 		</tr>
-	</tbody>
 	{% empty %}
-		<tbody>
 		<tr>
 			<td colspan="4" align="center">No context defined yet</tr>
 		</tr>
-		</tbody>
 	{% endfor %}
+	</tbody>
 </table>
 <br />
 
