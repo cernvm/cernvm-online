@@ -15,6 +15,14 @@ import time
 import json
 import pickle
 
+def marketplace(request):
+    context = {
+        'context_list': ContextDefinition.objects.filter(marketplace=True).order_by('-public', 'name'),
+        'cluster_list': ClusterDefinition.objects.filter(owner=request.user.id).order_by('-public', 'name'),
+    }
+
+    return uncache_response(render_to_response('pages/marketplace.html', context, RequestContext(request)))
+
 @for_market
 def list(request):
     templates = range(40)

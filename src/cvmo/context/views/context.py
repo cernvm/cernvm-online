@@ -384,6 +384,11 @@ def create(request):
     if ('public' in values) and (values['public']):
         c_public = True
 
+    # Check if share on Marketplace
+    c_marketplace = False
+    if('marketplace' in values) and (values['marketplace']):
+        c_marketplace = True
+
     # For debug
     # return uncache_response(
     #     HttpResponse(json.dumps(raw_values, indent=2), content_type="text/plain")
@@ -401,7 +406,8 @@ def create(request):
             checksum=c_checksum,
             inherited=False,
             abstract=False,  # only True for pure abstract contexts
-            from_abstract=from_abstract
+            from_abstract=from_abstract,
+            marketplace=c_marketplace
         )
     
     # Save context data (Should go to key/value store for speed-up)
