@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
 
 ##################################################
 # Context related models
@@ -20,7 +21,8 @@ class ContextDefinition(models.Model):
     # No foreign key for now: deleting a parent abstract will delete all the descendants
     #parent = models.ForeignKey('self', null=True, default=None)
     data = models.TextField()
-    marketplace = models.BooleanField(default=False)    
+    marketplace = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(default = datetime.now)
     
     def delete(self, using=None):                
         # Remove storage
