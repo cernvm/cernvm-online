@@ -24,7 +24,7 @@ $(function() {
 
 </br>
 <div id="accordion" style="width: 450px;">
-	{% for item in context_list %}
+	{% for item in contacts %}
 		<h4 style="color: black; margin-bottom: 10px;">
 		{{ item.name }} </br>
 		{{ item.description }}
@@ -37,6 +37,22 @@ $(function() {
 		<button style="float: right;">Import to My Dashboard</button>
 		</div>
 	{% endfor %}
+</div>
+</br>
+<div class="pagination">
+    <span class="step-links">
+        {% if contacts.has_previous %}
+            <a href="?page={{ contacts.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+        </span>
+
+        {% if contacts.has_next %}
+            <a href="?page={{ contacts.next_page_number }}">next</a>
+        {% endif %}
+    </span>
 </div>
 </br> 
 {% endblock %}

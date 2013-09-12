@@ -15,13 +15,31 @@ import time
 import json
 import pickle
 
-def marketplace(request):
-    context = {
-        'context_list': ContextDefinition.objects.filter(marketplace=True).order_by('-public', 'name'),
-        'cluster_list': ClusterDefinition.objects.filter(owner=request.user.id).order_by('-public', 'name'),
-    }
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-    return uncache_response(render_to_response('pages/marketplace.html', context, RequestContext(request)))
+#def marketplace(request):
+#    context = {
+#        'context_list': ContextDefinition.objects.filter(marketplace=True).order_by('-public', 'name'),
+#        'cluster_list': ClusterDefinition.objects.filter(owner=request.user.id).order_by('-public', 'name'),
+#    }
+#
+#    return uncache_response(render_to_response('pages/marketplace.html', context, RequestContext(request)))
+
+def marketplace(request):
+    context_list = ContextDefinition.objects.filter(marketplace=True).order_by('-public', 'name')
+    paginator = Paginator(context_list, 2) # Show 25 contacts per page
+
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        contacts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        contacts = paginator.page(paginator.num_pages)
+
+    return uncache_response(render_to_response('pages/marketplace.html', {'contacts':contacts}, RequestContext(request)))
 
 @for_market
 def list(request):
