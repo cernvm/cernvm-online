@@ -24,7 +24,7 @@ $(function() {
 
 </br>
 <div id="accordion" style="width: 450px;">
-	{% for item in contacts %}
+	{% for item in contexts %}
 		<h4 style="color: black; margin-bottom: 10px;">
 		{{ item.name }} </br>
 		{{ item.description }}
@@ -41,16 +41,16 @@ $(function() {
 </br>
 <div class="pagination">
     <span class="step-links">
-        {% if contacts.has_previous %}
-            <a href="?page={{ contacts.previous_page_number }}">previous</a>
+        {% if contexts.has_previous %}
+            <a href="?page={{ contexts.previous_page_number }}">previous</a>
         {% endif %}
 
         <span class="current">
-            Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+            Page {{ contexts.number }} of {{ contexts.paginator.num_pages }}.
         </span>
 
-        {% if contacts.has_next %}
-            <a href="?page={{ contacts.next_page_number }}">next</a>
+        {% if contexts.has_next %}
+            <a href="?page={{ contexts.next_page_number }}">next</a>
         {% endif %}
     </span>
 </div>

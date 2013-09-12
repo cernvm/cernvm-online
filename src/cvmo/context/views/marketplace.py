@@ -27,19 +27,21 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def marketplace(request):
     context_list = ContextDefinition.objects.filter(marketplace=True).order_by('-public', 'name')
-    paginator = Paginator(context_list, 2) # Show 25 contacts per page
+    paginator = Paginator(context_list, 5) # Show 5 contexts per page
 
     page = request.GET.get('page')
     try:
-        contacts = paginator.page(page)
+        contexts = paginator.page(page)
     except PageNotAnInteger:
         # If page is not an integer, deliver first page.
-        contacts = paginator.page(1)
+        contexts = paginator.page(1)
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
-        contacts = paginator.page(paginator.num_pages)
+        contexts = paginator.page(paginator.num_pages)
 
-    return uncache_response(render_to_response('pages/marketplace.html', {'contacts':contacts}, RequestContext(request)))
+    return uncache_response(render_to_response('pages/marketplace.html', { 'contexts':contexts }, RequestContext(request)))
+
+
 
 @for_market
 def list(request):
