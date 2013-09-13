@@ -3,10 +3,36 @@
 
 {% block body %}
 {% load static %}{% load url from future %}
+
+<script type="text/javascript" src="/static/scripts/jquery-1.8.2.min.js"> </script>
+<script type="text/javascript" src="/static/scripts/jquery-latest.js"></script> 
+<script type="text/javascript" src="/static/scripts/jquery.tablesorter.js"></script> 
+<link type="text/css" rel="stylesheet" media="all" href="/static/themes/blue/style.css" />
+
+<script>
+jQuery(document).ready(function() { 
+        $("#myTable").tablesorter({
+		sortList: [[0,0], [1,0]],
+		// pass the headers argument and assing a object
+		headers: {
+			0: {
+				// disable it by setting the property sorter to false
+				sorter: false
+			},
+			3: {
+				// disable it by setting the property sorter to false
+				sorter: false
+			}
+		}
+	});
+}); 
+</script>
+
 <h1>Dashboard</h1>
 
 <h2>Your context definitions</h2>
-<table class="pad-5">
+<table class="tablesorter" id="myTable">
+	<thead>
 	<tr>
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
@@ -17,6 +43,8 @@
 		<th width="135">Operations</th>		
 		{% endif %}
 	</tr>
+	</thead>
+	<tbody>
 	{% for item in context_list %}
 		<tr>
 			<td>{% if item.public %}
@@ -69,6 +97,7 @@
 			<td colspan="4" align="center">No context defined yet</tr>
 		</tr>
 	{% endfor %}
+	</tbody>
 </table>
 <br />
 
