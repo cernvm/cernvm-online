@@ -43,20 +43,20 @@ def marketplace(request):
 
 def marketplace_detail(request, id):
     try:
-        post = ContextDefinition.objects.filter(id=id)[0]
+        context = ContextDefinition.objects.filter(id=id)[0]
         try:
-            previous_post = post.get_previous_by_timestamp()
+            previous_post = context.get_previous_by_timestamp()
         except:
             previous_post = ""
         try:
-            next_post = post.get_next_by_timestamp()
+            next_post = context.get_next_by_timestamp()
         except:
             next_post = ""
     except:
         next_post = ""
         previous_post = ""
-        post = ""
-    return uncache_response(render_to_response('pages/marketplace_detail.html', { 'post':post }, RequestContext(request)))
+        context = ""
+    return uncache_response(render_to_response('pages/marketplace_detail.html', { 'context':context }, RequestContext(request)))
 
 
 @for_market

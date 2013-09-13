@@ -6,7 +6,8 @@
 {% endblock %}
 {% block body %}
 {% load static %}{% load url from future %}
-<h1>Marketplace</h1>
+<div style="width: 500px;">
+<h2><strong>{{context.name}}</strong></h2>
 
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
@@ -23,8 +24,26 @@ $(function() {
 </script>
 
 </br>
-<div id="accordion" style="width: 450px;">
-{{post.name}}
+<div id="accordion" style="width: 500px;">
+	<h3> Information: </h3>
+	<div>
+		<p>
+		<strong>Author: </strong> {{ context.owner }} </a></br>
+		<strong>Date created: </strong> {{ context.timestamp }}
+		</p>
+	</div>
+	<h3> Description: </h3>
+	<div>
+		<p>
+		{{ context.description }} 
+		</p>
+	</div>
 </div>
+</br>
+<button style="float: right;">Import to My Dashboard</button>
+<a href="{% url 'marketplace' %}">
+	<button style="float: left;">Back to Marketplace</button>
+</a>
 </br> 
+</div>
 {% endblock %}
