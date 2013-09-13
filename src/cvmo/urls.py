@@ -101,6 +101,7 @@ if settings.ENABLE_MARKET:
         url(r'^market/list.search$', 'list_ajax',       name="market_list_search"),
         url(r'^market/vote.do$', 'vote_ajax',           name="market_vote"),
         url(r'^marketplace$', 'marketplace', name='marketplace'),
+        url(r'^marketplace_detail/(?P<id>.*)/$', 'marketplace_detail', name='marketplace_list'),
     )
     
     # Check if cloud is enabled

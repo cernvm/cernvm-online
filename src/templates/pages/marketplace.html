@@ -31,10 +31,13 @@ $(function() {
 		</h4>
 		<div>
 		<p>
-		<strong>Author: </strong> {{ item.owner }} </br>
+		<strong>Author: </strong> {{ item.owner }} </a></br>
 		<strong>Date created: </strong> {{ item.timestamp }}
 		</p>
-		<button style="float: right;">Import to My Dashboard</button>
+		<button style="float: left;">Import to My Dashboard</button>
+		<a href="/marketplace_detail/{{ item.id}}">
+			<button style="float: right;">More</button>
+		</a>
 		</div>
 	{% endfor %}
 </div>
