@@ -116,7 +116,8 @@ if settings.ENABLE_MARKET:
 
 # Admin UI
 urlpatterns += patterns('',
-    url(r'^admin/', include(admin.site.urls)),    
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^comments/', include('django.contrib.comments.urls')), 
 )
 
 # Wiki pages

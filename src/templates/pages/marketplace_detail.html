@@ -6,6 +6,8 @@
 {% endblock %}
 {% block body %}
 {% load static %}{% load url from future %}
+{% load comments %}
+
 <div style="width: 500px;">
 <h2><strong>{{context.name}}</strong></h2>
 
@@ -45,5 +47,36 @@ $(function() {
 	<button style="float: left;">Back to Marketplace</button>
 </a>
 </br> 
+</br>
+</br>
+{{comment.id}}
+	{% for object in object_list %}
+		<li>
+			<h2><a href="{{ object.url }}">{{ object.title }}</a></h2>
+			<p class="description">{{ object.summary}}</p>
+			<p class="details"><a href="{{ object.get_absolute_url }}">{{ comment_count }} Comments</a></p>
+		</li>
+	{% endfor %}
+
+{% render_comment_list for context %}
+{% get_comment_list for context as comment_list %}
+{% for comment in comment_list %}
+    {{comment}}
+{% endfor %}
+</br>
+{% if user.is_authenticated %}
+    <p><strong>Submit a comment:</strong></p>
+    <form action="/comments/posted/" method="post">
+		{% csrf_token %}
+	    <textarea name="comment" id="id_comment" rows="2" style="width: 90%;"></textarea>
+       	<input type="hidden" name="options" value="{{ options }}" />
+       	<input type="hidden" name="target" value="{{ target }}" />
+       	<input type="hidden" name="gonzo" value="{{ hash }}" />
+       	<input type="hidden" name="next" value="{{ entry.get_absolute_url }}" /> 
+        <span style="float:right; margin-right: 40px;"><input type="submit" name="post" value="Add"></span>
+    </form>
+    {% else %}
+        <p>Please <a href="/login/">log in</a> to post a comment.</p>
+    {% endif %}
 </div>
 {% endblock %}

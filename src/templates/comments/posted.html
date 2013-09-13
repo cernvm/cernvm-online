@@ -1,0 +1,16 @@
+{% extends "core/class_context.html" %}
+{% block title %}Context Definition{% endblock %}
+{% load formutils %}
+{% load static %}
+{% block head %}
+{% endblock %}
+{% block body %}
+{% load static %}{% load url from future %}
+
+<h2> Your comment has been posted! </h2>
+</br>
+<a href="/marketplace_detail/{{ context.id}} ">
+	<button>Get back</button>
+</a>
+
+{% endblock %}
