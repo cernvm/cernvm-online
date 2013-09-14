@@ -28,6 +28,25 @@ jQuery(document).ready(function() {
 }); 
 </script>
 
+<script>
+jQuery(document).ready(function() { 
+        $("#myTable_virtual").tablesorter({
+		sortList: [[0,0], [1,0]],
+		// pass the headers argument and assing a object
+		headers: {
+			0: {
+				// disable it by setting the property sorter to false
+				sorter: false
+			},
+			4: {
+				// disable it by setting the property sorter to false
+				sorter: false
+			}
+		}
+	});
+}); 
+</script>
+
 <h1>Dashboard</h1>
 
 <h2>Your context definitions</h2>
@@ -249,7 +268,8 @@ jQuery(document).ready(function() {
 {% endif %}
 
 <h2>Your virtual machines</h2>
-<table class="pad-5">
+<table class="tablesorter" id="myTable_virtual">
+	<thead>
 	<tr>
 		<th width="20">&nbsp;</th>
 		<th>Machine</th>
@@ -257,6 +277,8 @@ jQuery(document).ready(function() {
 		<th width="170">Context</th>
 		<th width="100">Operations</th>
 	</tr>
+	</thead>
+	<tbody>
 	{% for item in machine_list %}
 		<tr>
 			<td>
@@ -280,6 +302,7 @@ jQuery(document).ready(function() {
 			<td colspan="5" align="center">No instances paired yet</tr>
 		</tr>
 	{% endfor %}
+</tbody>
 </table>
 <br />
 <p><a href="{% url "vm_pair_begin" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/vm_contextualize.png" %}" /> Pair an instance of CernVM</a></p>
