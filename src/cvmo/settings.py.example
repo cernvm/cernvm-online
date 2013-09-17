@@ -39,6 +39,22 @@ SECRET_KEY = '^p+u-t6^*gtqmj85l$prq(q33#7i+(#$5o0*t0pvm4@1-t_a^w'
 
 ADMINS = (('CernVM', 'cernvm.administrator@cern.ch'))
 
+# WebAPI Configurations
+WEBAPI_CONFIGURATIONS = [
+    {
+        "cpus": 1, "memory": 1024, "disk_size": 10000,
+        "label": "1 CPU / 1 GB RAM / 10 GB disk"
+    },
+    {
+        "cpus": 1, "memory": 2048, "disk_size": 10000,
+        "label": "1 CPU / 2 GB RAM / 10 GB disk"
+    },
+    {
+        "cpus": 2, "memory": 2048, "disk_size": 20000,
+        "label": "2 CPU / 2 GB RAM / 20 GB disk"
+    }
+]
+
 ################################################################################
 # Advanced parameters
 ################################################################################
