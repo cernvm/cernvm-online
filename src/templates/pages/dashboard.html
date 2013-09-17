@@ -148,7 +148,11 @@
 		</tr>
 	{% empty %}
 		<tr>
-			<td colspan="4" align="center">No context defined yet</tr>
+			{% if enable_webapi %}
+				<td colspan="5" align="center">No context defined yet</tr>
+			{% else %}
+				<td colspan="4" align="center">No context defined yet</tr>
+			{% endif %}
 		</tr>
 	{% endfor %}
 </table>
