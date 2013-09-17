@@ -15,6 +15,8 @@ ENABLE_CLOUD = True
 ENABLE_MARKET = True
 # Whether to enable or disable the CSC UI
 ENABLE_CSC = False
+# Enable the WebAPI beta feature
+ENABLE_WEBAPI = True
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
