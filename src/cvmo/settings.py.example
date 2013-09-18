@@ -262,11 +262,11 @@ SHIBBOLETH_SSO = {
     ]
 }
 
-# 1 hour of session
-SESSION_COOKIE_AGE = 3600
-
-# Expire session at browser close
+# Cookies
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600
+SESSION_COOKIE_PATH = "/" + URL_PREFIX
+CSRF_COOKIE_PATH = "/" + URL_PREFIX
 
 # CSC list of students
 CSC_USER_CONFIG_FILE= SRC_PATH + PATH_DS + "students.conf"
