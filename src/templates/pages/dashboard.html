@@ -29,19 +29,27 @@
 
 							/* Start the VM with the CernVM Web API */
 							CVM.startCVMWebAPI(
-								function(plugin)
-								{
-									console.log(plugin);
-									plugin.requestSession(
-										"https://cernvm-online.cern.ch/vmcp/sign.php?contextualization_key="
-											+ request["contextId"]
-											+ "&name=" + request["name"],
-											+ "&cpus=" + request["CPUs"],
-											+ "&ram=" + request["memory"],
-											+ "&disk=" + request["diskSize"],
-										function(session) { session.start(); }
-									);
-								},
+                                function(plugin) 
+                                {
+                                    var url = "https://cernvm-online.cern.ch/vmcp/sign.php?contextualization_key="
+                                        + encodeURIComponent(request["contextId"]) 
+                                        + "&name=" + encodeURIComponent(request["name"])
+                                        + "&cpus=" + encodeURIComponent(request["CPUs"]) 
+                                        + "&ram=" + encodeURIComponent(request["memory"]) 
+                                        + "&disk=" + encodeURIComponent(request["diskSize"]);
+                                    plugin.requestSession(
+                                        url, 
+                                        function(session) 
+                                        {
+                                            session.start(); 
+                                        },
+                                        function(failure) 
+                                        { 
+                                            alert("Failed to create session: " 
+                                                  + failure);
+                                        }
+                                    );
+                                },
 								true // Let the plugin initialize the environment
 							);
 						}
