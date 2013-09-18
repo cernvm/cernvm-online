@@ -7,12 +7,15 @@ SRC_PATH = "<...>"
 # Directory separator
 PATH_DS = "/"
 
+# URL prefix
+URL_PREFIX = ""
+
 # Debug mode?
 DEBUG = True
 # Weather to enable or disable the cloud
-ENABLE_CLOUD = True
+ENABLE_CLOUD = False
 # Enable marketplace
-ENABLE_MARKET = True
+ENABLE_MARKET = False
 # Whether to enable or disable the CSC UI
 ENABLE_CSC = False
 # Enable the WebAPI beta feature
@@ -98,7 +101,7 @@ MEDIA_ROOT = SRC_PATH + PATH_DS + "media" + PATH_DS
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
+MEDIA_URL = '/' + URL_PREFIX + 'media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -108,7 +111,7 @@ STATIC_ROOT = ''
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = '/' + URL_PREFIX + 'static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -235,27 +238,27 @@ SHIBBOLETH_SSO = {
     ],
 
     # Where to redirect if the user is not authenticated
-    'redirect_login': '/login',
+    'redirect_login': '/' + URL_PREFIX + 'login',
 
     # Which website paths are publicly accessible
     'public_path': [
         # Login
-        r'/login$',
-        r'/login_action$',
+        r'/' + URL_PREFIX + 'login$',
+        r'/' + URL_PREFIX + 'login_action$',
         # Registration
-        r'/register$',
-        r'/register_action$',
-        r'/account_activation$',
+        r'/' + URL_PREFIX + 'register$',
+        r'/' + URL_PREFIX + 'register_action$',
+        r'/' + URL_PREFIX + 'account_activation$',
         # API - context
-        r'/api/context/?$',
-        r'/api/context/[0-9a-f]+/?$',
-        r'/api/context/[0-9a-f]+/plain/?$',
-        r'/api/fetch/?$',
+        r'/' + URL_PREFIX + 'api/context/?$',
+        r'/' + URL_PREFIX + 'api/context/[0-9a-f]+/?$',
+        r'/' + URL_PREFIX + 'api/context/[0-9a-f]+/plain/?$',
+        r'/' + URL_PREFIX + 'api/fetch/?$',
         # API - cluster
-        r'/api/cluster/.*$',
+        r'/' + URL_PREFIX + 'api/cluster/.*$',
         # API - marketplace
-        r'/api/market/search.clusters/?$',
-        r'/api/market/groups/?$'
+        r'/' + URL_PREFIX + 'api/market/search.clusters/?$',
+        r'/' + URL_PREFIX + 'api/market/groups/?$'
     ]
 }
 
