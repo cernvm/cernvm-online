@@ -9,13 +9,25 @@ from cvmo.context.models import ContextStorage, ContextDefinition, ClusterDefini
 from cvmo.context.utils.views import render_error, render_confirm, uncache_response, msg_info, set_memory, \
                                      msg_error, msg_confirm, for_market, for_cloud, redirect_memory, get_memory
 from cvmo.querystring_parser import parser
+from cvmo.context.views import context
+from cvmo.context.plugins import ContextPlugins
 
 import Image
 import time
 import json
 import pickle
+import re
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+# String corresponding to the generic plugin name
+global generic_plugin
+generic_plugin = {
+    'title': 'Basic CernVM configuration',
+    'name': 'generic_cernvm',
+    'display': True,
+    'enabled': True
+}
 
 #def marketplace(request):
 #    context = {
@@ -57,6 +69,92 @@ def marketplace_detail(request, id):
         previous_post = ""
         context = ""
     return uncache_response(render_to_response('pages/marketplace_detail.html', { 'context':context }, RequestContext(request)))
+
+def import_to_dashboard(request, id):
+    # Fetch the entry from the db
+    item = ContextDefinition.objects.get(id=id)
+    data = {}
+
+    # Check if the data are encrypted
+    if item.key == '':
+        data = pickle.loads(str(item.data))
+    else:
+        # Password-protected
+        resp = prompt_unencrypt_context(request, item,
+            reverse('import_to_dashboard', kwargs={'id': id}))
+        if 'httpresp' in resp:
+            return resp['httpresp']
+        elif 'data' in resp:
+            data = pickle.loads(resp['data'])
+   
+    # Render all of the plugins
+    plugins = ContextPlugins().renderAll(request, data['values'], data['enabled'])
+
+    # Append display property to every plugin, and set it to True
+    for p in plugins:
+        p['display'] = True
+
+    data['values']['name'] = name_increment_revision(data['values']['name'])
+
+    # Render the response
+    #raw = {'data':data}  # debug
+    return render_to_response('pages/import_to_dashboard.html', {
+        'cernvm': get_cernvm_config(),
+        'values': data['values'],
+        'id': id,
+        'disabled': False,
+        #'raw': json.dumps(raw, indent=2),
+        'plugins': plugins,
+        'cernvm_plugin': generic_plugin
+    }, RequestContext(request))
+
+# If the given (context) name ends with a number, returns the same name with
+# that number incremeted by one. In case it doesn't, appends a '(copy)' at the
+# end of the given name.
+def name_increment_revision(name):
+    revre = r'^(.*?)([0-9]+)$'
+    m = re.search(revre, name)
+    if m:
+        name = m.group(1) + str(int(m.group(2))+1)
+    else:
+        name = name + ' (marketplace)'
+    return name
+
+def get_cernvm_config():
+    """ Download the latest configuration parameters from CernVM """
+
+    try:
+        response = urllib2.urlopen('http://cernvm.cern.ch/config/')
+        _config = response.read()
+    
+        # Parse response
+        _params = {}
+        _config = _config.split("\n")
+        for line in _config:
+            if line:
+                (k, v) = line.split('=', 1)
+                _params[k] = v
+    
+    
+        # Generate JSON map for the CERNVM_REPOSITORY_MAP
+        _cvmMap = {}
+        _map = _params['CERNVM_REPOSITORY_MAP'].split(",")
+        for m in _map:
+            (name, _optlist) = m.split(":", 1)
+            options = _optlist.split("+")
+            _cvmMap[name] = options
+    
+        # Update CERNVM_REPOSITORY_MAP
+        _params['CERNVM_REPOSITORY_MAP'] = json.dumps(_cvmMap)
+        _params['CERNVM_ORGANISATION_LIST'] = _params['CERNVM_ORGANISATION_LIST'].split(',')
+
+        # Return parameters
+        return _params
+    
+    except Exception as ex:
+        print "Got error: %s\n" % str(ex)
+        return {
+        }
 
 
 @for_market

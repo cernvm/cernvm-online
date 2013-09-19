@@ -102,6 +102,7 @@ if settings.ENABLE_MARKET:
         url(r'^market/vote.do$', 'vote_ajax',           name="market_vote"),
         url(r'^marketplace$', 'marketplace', name='marketplace'),
         url(r'^marketplace_detail/(?P<id>.*)/$', 'marketplace_detail', name='marketplace_list'),
+        url(r'^import_to_dashboard/(?P<id>[-\w]+)$', 'import_to_dashboard', name="import_to_dashboard"),
     )
     
     # Check if cloud is enabled
@@ -117,7 +118,8 @@ if settings.ENABLE_MARKET:
 # Admin UI
 urlpatterns += patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^comments/', include('django.contrib.comments.urls')), 
+    url(r'^comments/', include('django.contrib.comments.urls')),
+    url(r'^search/', include('haystack.urls')), 
 )
 
 # Wiki pages

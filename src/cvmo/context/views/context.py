@@ -23,6 +23,8 @@ from cvmo.context.utils import crypt
 
 from cvmo.context.utils.views import get_list_allowed_abstract
 
+from haystack.query import SearchQuerySet
+
 # String corresponding to the generic plugin name
 global generic_plugin
 generic_plugin = {
@@ -665,3 +667,8 @@ def delete(request, context_id):
                               reverse('context_delete', kwargs={'context_id':context_id}) + '?confirm=yes',
                               reverse('dashboard')
                               )
+
+def autocomplete(request):
+    sqs = SearchQuerySet().autocomplete(content_auto=request.GET.get('q', ''))[:5]
+
+    return render_to_response('search/search.html', {'sqs': sqs})

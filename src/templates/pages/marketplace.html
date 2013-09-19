@@ -23,18 +23,31 @@ $(function() {
 </script>
 
 </br>
+<form action="/search/?q=">
+  <input type="text" name="q" id="id_q">
+  <button type="submit" class="search-btn"><span</span></button>
+</form>
+</br>
 <div id="accordion" style="width: 450px;">
 	{% for item in contexts %}
 		<h4 style="color: black; margin-bottom: 10px;">
 		{{ item.name }} </br>
-		{{ item.description }}
 		</h4>
 		<div>
 		<p>
-		<strong>Author: </strong> {{ item.owner }} </a></br>
-		<strong>Date created: </strong> {{ item.timestamp }}
+        <strong>Description:</strong> {{ item.description | truncatechars:30}} </br>
+    		<strong>Author: </strong> {{ item.owner }} </br>
+    		<strong>Date created: </strong> {{ item.timestamp }}
 		</p>
-		<button style="float: left;">Import to My Dashboard</button>
+    {% if user.is_authenticated %}
+      <a href={%url "context_clone" context_id=item.id%}>
+  		  <button style="float: left;">Import to My Dashboard</button>
+      </a>
+      {% else %}
+      <a href="/login">
+        <button style="float: left;">Import to My Dashboard</button>
+      </a>
+    {% endif %}
 		<a href="/marketplace_detail/{{ item.id}}">
 			<button style="float: right;">More</button>
 		</a>

@@ -1,0 +1,45 @@
+{% extends "core/class_context.html" %}
+{% block title %}Search{% endblock %}
+
+{% block body %}
+{% load static %}{% load url from future %}
+
+</br>	
+<form method="get" action=".">
+	{% csrf_token %}
+	{{form.as_p}}
+	<table style="width: 450px;">
+		{{form.as_table}}
+	  	<tr>
+			<td> {{ form.q.label }} </td>
+			<td> {{ form.q }} </td>	
+	  	</tr>
+	  	<tr>
+	  		{{form.models}}
+	  	</tr>
+	  	<tr>
+	      <td>&nbsp;</td>
+	      <td><input type="submit" value="Search"></td>
+	    </tr>
+	</table>
+	</br>
+	{% if query %}
+		<h3> Search results</h3>
+		{% for result in page.object_list %}
+			<p>
+				<a href="/marketplace_detail/{{ result.object.id}}">{{ result.object.name }}</a>
+				{{result.object.description}}
+				{{result.object.owner}}
+			</p>
+			{% empty %}
+				<p>No results found.</p>
+		{% endfor %}
+	{% endif %}
+</form>
+
+	{% for list in list_users %}
+	TEST
+		{{list.owner}}
+	{%endfor%}
+
+{% endblock %}
