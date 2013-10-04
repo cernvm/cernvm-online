@@ -24,7 +24,7 @@ $(document).addEvent('domready', function() {
 {% block body %}{% load url from future %}
 <h1>Edit action</h1>
 <p>Please update the action information and when you are ready hit update</p>
-<form action="/context/create" method="post">
+<form action="{% url "context_create" %}" method="post">
 	{% csrf_token %}
 	<div id='content-accordion' {% if disabled %}class="cvmo-context-disabled"{% endif %}>
 		<div class="accordion-header separator"><h2>General</h2></div>
