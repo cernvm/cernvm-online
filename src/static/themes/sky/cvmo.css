@@ -147,13 +147,23 @@ table.pad-5 td {
     font-size: 12px;
 }
 
+table.pad-5 td.buttons-container {
+    text-align: center;
+}
+
+table.pad-5 td.buttons-container div.btn {
+    margin-right: 1px;
+    margin-left: 1px;
+    display: inline-block;
+}
+
 .long-text input[type=text], table.long-text input[type=password] {
     width: 200px !important;
 }
 
 .long-text textarea {
     width: 425px;
-    height: 150px;    
+    height: 150px;
 }
 
 textarea.code {
@@ -291,9 +301,9 @@ label.slider > input {
     -moz-appearance: none !important;
     -o-appearance: none;
     -webkit-appearance: none;
-    
+
     border: 1px dotted rgba(0,0,0,.2);
-    
+
     clear: left;
     float: left;
     display: block;
@@ -301,12 +311,12 @@ label.slider > input {
     height: 27px;
     background: url(img/slider-l.png) no-repeat;
     background-position: 0px 0px;
-    
+
     transition: background-position 0.2s;
     -moz-transition: background-position 0.2s; /* Firefox 4 */
     -webkit-transition: background-position 0.2s; /* Safari and Chrome */
     -o-transition: background-position 0.2s; /* Opera */
-    
+
     cursor: pointer;
 }
 
@@ -354,7 +364,7 @@ div.accordion-inactive-content {
     overflow: hidden;
     position: absolute;
     z-index: 2000;
-    
+
     -moz-box-shadow: 2px 2px 2px #999;
     -webkit-box-shadow: 2px 2px 2px #999;
     box-shadow: 2px 2px 2px #999;
@@ -467,8 +477,8 @@ td.split {
     height: 1px;
 }
 
-td.v-middle, th.v-middle, 
-tr.v-middle > td, tr.v-middle > th, 
+td.v-middle, th.v-middle,
+tr.v-middle > td, tr.v-middle > th,
 table.v-middle > td, table.v-middle > th {
     vertical-align: middle !important;
 }
@@ -628,7 +638,7 @@ div.accordion-header.error h2 span.error {
 div#services_container img.arrow {
 	position: absolute;
 	visibility: collapse;
-} 
+}
 div#services_container table#services {
 	margin-top: 10px;
 }
@@ -650,7 +660,7 @@ div#services_container div.add-service-container {
 	-moz-border-radius: 8px;
 	border-radius: 8px;
 }
-div#services_container table.add-service {	
+div#services_container table.add-service {
 }
 div#services_container table.add-service tr.buttons-container td {
 	padding: 5px;
@@ -697,7 +707,7 @@ div#marketframe > div {
     position: absolute;
     top: 0;
 }
-div#marketplace { 
+div#marketplace {
     overflow-y: auto;
     overflow-x: hidden;
     left: 0;
@@ -772,9 +782,9 @@ div#marketinfo > div#marketfilter > ul > li > a {
     font-size: 1.2em;
     padding-top: 1px;
     color: #333;
-    
+
     transition: margin-left 0.2s;
-    -moz-transition: margin-left 0.2s; 
+    -moz-transition: margin-left 0.2s;
     -webkit-transition: margin-left 0.2s;
     -o-transition: margin-left 0.2s;
     margin-left: 0px;
@@ -904,14 +914,14 @@ div#marketplace > ul > li div.details {
     border-radius: 0px 0px 15px 0px;
     width: 100px;
     left: 0px;
-    
+
     visibility: hidden;
     max-height: 1px;
     transition: max-height 0.5s;
-    -moz-transition: max-height 0.5s; 
+    -moz-transition: max-height 0.5s;
     -webkit-transition: max-height 0.5s;
     -o-transition: max-height 0.5s;
-    
+
 }
 div#marketplace > ul > li > input:checked + div > div.details {
     visibility: visible;

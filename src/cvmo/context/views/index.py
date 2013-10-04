@@ -3,6 +3,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models import Q
 
+from cvmo import settings
+
 from cvmo.context.models import ContextDefinition, Machines, ClusterDefinition, MarketplaceContextEntry
 
 from cvmo.context.plugins import ContextPlugins
@@ -22,6 +24,8 @@ def dashboard(request):
         'cluster_list': ClusterDefinition.objects.filter(owner=request.user).order_by('-public', 'name'),
         'machine_list': Machines.objects.filter(owner=request.user)
     }
+    if settings.ENABLE_WEBAPI:
+        context["webapi_configurations"] = settings.WEBAPI_CONFIGURATIONS
     push_to_context("redirect_msg_info", "msg_info", context, request)
     push_to_context("redirect_msg_error", "msg_error", context, request)
     push_to_context("redirect_msg_warning", "msg_warning", context, request)
