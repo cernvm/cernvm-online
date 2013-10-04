@@ -9,7 +9,7 @@ def global_context(request):
     """
     Custom handler to append additional
     """
-        
+
     # Pop global messages from the session
     msg_error = ""
     if 'global__error' in request.session:
@@ -27,7 +27,7 @@ def global_context(request):
     if 'global__info' in request.session:
         msg_info=request.session['global__info']
         del request.session['global__info']
-    
+
     # Prepare custom context
     ans = {
         'msg_error': msg_error,
@@ -37,24 +37,25 @@ def global_context(request):
         'enable_cloud' : settings.ENABLE_CLOUD and is_cloud_enabled(request),
         'enable_csc': settings.ENABLE_CSC,
         'enable_market' : settings.ENABLE_CLOUD and is_market_enabled(request),
+        "enable_webapi":  settings.ENABLE_WEBAPI and is_webapi_enabled(request),
         'enable_abstract_creation' : is_abstract_creation_enabled(request)
     }
-    
+
     # Append some extra info if we are authenticated
     if request.user.is_authenticated():
         ans['ip_address'] = request.META['REMOTE_ADDR']
         ans['last_context_definitions'] = ContextDefinition.objects.filter(Q(Q(owner=request.user) | Q(public=True)) & Q(inherited=False) & Q(abstract=False)).order_by('-id')[:5]
         ans['last_cluster_definitions'] = ClusterDefinition.objects.filter(Q(owner=request.user) | Q(public=True)).order_by('-id')[:5]
-    
+
     # Delete memory
     if 'global__memory' in request.session:
         del request.session['global__memory']
-    
-    # Return resulting context    
+
+    # Return resulting context
     return ans
-    
+
 def set_memory(request, var='', data=''):
-    
+
     # No variable defined, update the whole entry
     if data == '':
         request.session['global__memory'] = var
@@ -65,19 +66,19 @@ def set_memory(request, var='', data=''):
         request.session['global__memory'] = { }
 
 def get_memory(request, var='', default=''):
-    
+
     # Memory not available, get default
     if not 'global__memory' in request.session:
         return default
-    
+
     # Var not specified, get entire memory
     if var == '':
         return request.session['global__memory']
-        
+
     # Var not exists, get default
     if not var in request.session['global__memory']:
         return default
-        
+
     # Return variable
     return request.session['global__memory'][var]
 
@@ -86,13 +87,13 @@ def redirect_memory(url, request):
     Store the request in memory (that can be obtained with get_memory) and
     return a redirect directive.
     """
-    
+
     # Get data
     if request.method == 'POST':
         request.session['global__memory'] = request.POST.dict()
     elif request.method == 'GET':
         request.session['global__memory'] = request.GET.dict()
-        
+
     # Redirect
     return redirect(url)
 
@@ -122,7 +123,7 @@ def uncache_response(response):
     """
     Disable caching on the response
     """
-    
+
     # Expired in the past
     response['Expires'] = 'Tue, 03 Jul 2001 06:00:00 GMT"'
 
@@ -142,7 +143,7 @@ def render_password_prompt(request, title, message, url_ok, extras={}):
     variables['message'] = message
     variables['url_ok'] = url_ok
     return render_to_response('core/password.html', variables, RequestContext(request))
-    
+
 def render_confirm(request, title, message, url_ok, url_cancel, extras={}):
     """
     Render the confirmation dialog
@@ -194,7 +195,7 @@ def render_error(request, code=400, title="", body=""):
             504: 'Gateway Timeout',
             505: 'HTTP Version Not Supported'
         }
-    
+
     # Guess the title if it's missing
     if title == "":
         title = def_titles.get(code, "")
@@ -206,7 +207,7 @@ def render_error(request, code=400, title="", body=""):
     # Render the error page
     t = loader.get_template('core/error.html')
     _html = t.render(RequestContext(request, { 'body': body, 'code': code, 'title': title }))
-    
+
     # Return the error page
     return HttpResponse(_html, status=code)
 
@@ -225,6 +226,14 @@ def is_market_enabled(request):
     """
     if request.user:
         return request.user.groups.filter(name='market').count() != 0
+    return False
+
+def is_webapi_enabled(request):
+    """
+    Check if the current user is allowed to use the WebAPI beta feature
+    """
+    if request.user:
+        return request.user.groups.filter(name="webapi").count() != 0
     return False
 
 def is_abstract_creation_enabled(request):
@@ -266,7 +275,7 @@ def for_cloud(fn):
 
         # It looks OK, run the view
         return fn(*args, **kwargs)
-    
+
     # Return the wrapped function
     return wrapped
 

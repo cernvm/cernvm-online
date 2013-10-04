@@ -1,4 +1,6 @@
 {% extends "core/class_context.html" %}
+{% load url from future %}
+
 {% block title %}Context Definition{% endblock %}
 {% load formutils %}
 {% load static %}
@@ -19,7 +21,7 @@
 {% endblock %}
 
 {% block body %}
-	<form action="/context/create" method="post" id="create_context_form">
+	<form action="{% url "context_create" %}" method="post" id="create_context_form">
 		{% csrf_token %}
 		<h1>Context template</h1>
 		<p>Please fill the following parameters and click create in order to create a new virtual machine context definition</p>
@@ -76,7 +78,7 @@
 
 				// Fill custom form with default content, whenever possible
 				json_path = input_name.replace(/\[([^\]]*)\]/g,
-					function(match, $1) { 
+					function(match, $1) {
 					  return '.' + $1;
 					});
 				try {
@@ -119,15 +121,15 @@
 				<table class="plain long-text">
 					<tr>
 						<th width="150"><label for="f_name">Context name:</label></th>
-						<td><input type="text" id="f_name" maxlength="100" name="values[name]" value="{{ values.name }}" {{disabled|dis}}/></td>			
+						<td><input type="text" id="f_name" maxlength="100" name="values[name]" value="{{ values.name }}" {{disabled|dis}}/></td>
 					</tr>
 					<tr>
 						<th><label for="f_description">Description:</label></th>
-						<td><textarea id="f_description" class="code" name="values[description]" name="other" {{disabled|dis}}>{{ values.description }}</textarea></td>			
+						<td><textarea id="f_description" class="code" name="values[description]" name="other" {{disabled|dis}}>{{ values.description }}</textarea></td>
 					</tr>
 					<tr>
 						<th>Secret key:</th>
-						<td><input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>			
+						<td><input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>
 					</tr>
 					<tr>
 						<th>&nbsp</th>
@@ -135,7 +137,7 @@
 					</tr>
 				</table>
 			</div>
-		
+
 			<div class="accordion-header separator">
 				<h2>
 					CVMFS Configuration
@@ -144,14 +146,14 @@
 			</div>
 			<div class="accordion-content">
 				<p class="description">Select the repositories you want your virtual machine to use.</p>
-		
+
 				<table class="plain">
 					<tr>
 						<th width="150"><label for="organisation">Main group:</label></th>
 						<td colspan="2">
-							<select {{disabled|dis}} id="organisation" name="values[general][organization]" onchange="javascript:CVMO.ContextUI.UpdateGroups(this.value)">   
+							<select {{disabled|dis}} id="organisation" name="values[general][organisation]" onchange="javascript:CVMO.ContextUI.UpdateGroups(this.value)">
 								{% for o in cernvm.CERNVM_ORGANISATION_LIST %}
-									<option value="{{ o }}" {{values.general.organization|sel:o}}>{{ o }}</options>
+									<option value="{{ o }}" {{values.general.organisation|sel:o}}>{{ o }}</options>
 								{% endfor %}
 					        </select>
 						</td>
@@ -159,9 +161,9 @@
 					<tr>
 						<th>Additional groups:</th>
 						<td colspan="2">
-		
+
 							<div id="cvmo_proxies">
-		
+
 								<!-- Visual components -->
 								<div class="list-wrapper">
 									<ul id="available_repos">
@@ -174,11 +176,11 @@
 									</ul>
 								</div>
 								<div class="float-clear"></div>
-		
+
 								<!-- INPUT to bind with form -->
 								<input {{disabled|dis}} type="hidden" name="repositories" id="available_repos_text" value="{{ cernvm.CERNVM_REPOSITORY_LIST }}" />
-								<input {{disabled|dis}} type="hidden" name="values[general][repositories]" value="{{ values.general.repositories }}" id="active_repos_text" />		
-							</div>								
+								<input {{disabled|dis}} type="hidden" name="values[general][repositories]" value="{{ values.general.repositories }}" id="active_repos_text" />
+							</div>
 						</td>
 					</tr>
 					<tr>
@@ -227,7 +229,7 @@
 					</tr>
 				</table>
 			</div>
-			
+
 			<div class="accordion-header separator">
 				<h2>
 					Users
@@ -236,8 +238,8 @@
 			</div>
 			<div class="accordion-content">
 				<p class="description">Define the users your configuration will have</p>
-				
-				<div id="cvmo_users">		
+
+				<div id="cvmo_users">
 					<table id="table_users" class="pad-5">
 						<tr>
 							<th>Username</th>
@@ -261,7 +263,7 @@
 						{% endfor %}
 						{% if not disabled %}
 							<tr id="newuser_row" class="tr-newuser">
-								<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value); $('f_contextcmduser').setProperty('value', this.value);" /></td>			
+								<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value); $('f_contextcmduser').setProperty('value', this.value);" /></td>
 								<td><input type="text" id="new_user_group" /></td>
 								<td><input type="text" id="new_user_home" value="/home/user" /></td>
 								<td><input type="password" id="new_user_password" value="" /></td>
@@ -280,10 +282,10 @@
 					        </select></td>
 						</tr>
 					</table>
-		
+
 				</div>
 			</div>
-			
+
 			<div class="accordion-header separator">
 				<h2>
 					Services
@@ -297,7 +299,7 @@
 						<tr>
 							<th width="150">Services to start</th>
 							<td colspan="2">
-								<div id="cvmo_services">		
+								<div id="cvmo_services">
 									<!-- Visual components -->
 									<div class="list-wrapper">
 										<ul id="available_services">
@@ -310,12 +312,12 @@
 										</ul>
 									</div>
 									<div class="float-clear"></div>
-		
+
 									<!-- INPUT to bind with form -->
 									<input {{disabled|dis}} type="hidden" name="services" id="available_services_text" value="acpid,amiconfig-cernvm,autofs,avahi-daemon,avahi-dnsconfd,cernvm,cernvm-context,crond,cups,cvmfs,distro-release,functions,gpm,haldaemon,halt,hepix_functions,iptables,irqbalance,killall,krb524,kudzu,lvm2-monitor,mdmonitor,mdmpd,messagebus,netconsole,netfs,netplugd,network,nfs,nfslock,nscd,ntpd,portmap,psacct,raa,raa-restore,rawdevices,rdisc,readahead_early,readahead_later,rpcgssd,rpcidmapd,rpcsvcgssd,saslauthd,single,snmpd,snmptrapd,sshd,svnserve,syslog,vmcontext_epilog,vmcontext_hepix,vmcontext_prolog,xfs" />
 									<input {{disabled|dis}} type="hidden" name="values[general][services]" value="{{values.general.services}}" id="active_services_text" />
-								</div>														
-							</td>			
+								</div>
+							</td>
 						</tr>
 						<tr>
 							<th><label for="f_customservices">Custom services:</label></th>
@@ -332,7 +334,7 @@
 					</table>
 				</div>
 			</div>
-			
+
 			<div class="accordion-header separator">
 				<h2>
 					Environment
@@ -379,16 +381,16 @@
 					{% if not disabled %}
 						<thead>
 							<tr id="newenv_row" class="tr-newenv">
-								<td><input type="text" id="new_env_var" style="width:98%" /></td>			
+								<td><input type="text" id="new_env_var" style="width:98%" /></td>
 								<td align="center">=</td>
-								<td><input type="text" id="new_env_value" style="width:98%" /></td>			
+								<td><input type="text" id="new_env_value" style="width:98%" /></td>
 								<td align="center"><a href="javascript:;" onclick="CVMO.ContextUI.AddEnvFromForm()" class="softbutton"><img border="0" src="{% static "images/page_add.png" %}" align="absmiddle"> Add variable</a></td>
 							</tr>
 						</thead>
 					{% endif %}
 				</table>
 			</div>
-			
+
 			<div class="accordion-header separator">
 				<h2>
 					CernVM Preferences
@@ -420,7 +422,7 @@
 					<tr class="cvmo-disclose-model-Desktop">
 						<th>Screen resolution:</th>
 						<td colspan="2">
-							<select name="values[general][cvm_resolution]"> 
+							<select name="values[general][cvm_resolution]">
 			                    <option value="640x480" {{ values.general.cvm_resolution|sel:"640x480" }}>640x480</option>
 								<option value="800x600" {{ values.general.cvm_resolution|sel:"800x600" }}>800x600</option>
 								<option value="1024x768" {{ values.general.cvm_resolution|sel_default:"1024x768" }}>1024x768</option>
@@ -439,7 +441,7 @@
 					<tr class="cvmo-disclose-model-Desktop">
 						<th>Keyboard Type</th>
 						<td colspan="2">
-							<select name="values[general][cvm_keyboard_layout]"> 
+							<select name="values[general][cvm_keyboard_layout]">
 			                    <option value="ar-azerty" {{ values.general.cvm_keyboard_layout|sel:"ar-azerty" }}>Arabic (azerty)</option>
 								<option value="ar-azerty-digits" {{ values.general.cvm_keyboard_layout|sel:"ar-azerty-digits" }}>Arabic (azerty/digits)</option>
 								<option value="ar-digits" {{ values.general.cvm_keyboard_layout|sel:"ar-digits" }}>Arabic (digits)</option>
@@ -519,32 +521,32 @@
 					</tr>
 					<tr class="cvmo-disclose-model-Desktop cvmo-disclose-model-Basic long-text">
 						<th width="150">Admin password:</th>
-						<td colspan="2"><input type="password" name="values[general][cvm_raa_password]" value="{{ values.general.cvm_raa_password }}" /></td>			
-					</tr>					
+						<td colspan="2"><input type="password" name="values[general][cvm_wa_password]" value="{{ values.general.cvm_wa_password }}" /></td>
+					</tr>
 				</table>
 			</div>
-		
+
 			<div class="accordion-header separator">
 				<h2>
 					Root SSH Key
 					<span class="error">section has errors!</span>
-				</h2>				
+				</h2>
 			</div>
 			<div class="accordion-content">
 				<p class="description">Here you can paste the contents of the public ssh key that will be used to authenticate the root user.</p>
 				<table class="plain long-text">
 					<tr>
 						<th>Root SSH Key:</th>
-						<td><textarea class="code" name="values[root_ssh_key]">{{ values.root_ssh_key }}</textarea></td>			
+						<td><textarea class="code" name="values[root_ssh_key]">{{ values.root_ssh_key }}</textarea></td>
 					</tr>
 				</table>
 			</div>
-	
+
 			<div class="accordion-header separator">
 				<h2>
 					Startup script
 					<span class="error">section has errors!</span>
-				</h2>				
+				</h2>
 			</div>
 			<div class="accordion-content">
 				<p class="description">Here you can write a shell script that will be executed as root during contextualization phase.</p>
@@ -557,7 +559,7 @@
 
 		</div>
 		<!-- End of the Generic CernVM plugin section -->
-				
+
 			{% for p in plugins %}
 				<div class="separator cvmo-module" {% if not p.display %}style="display:none"{% endif %}>
 					<h2>
@@ -576,14 +578,14 @@
 					{{ p.body }}
 				</div>
 			{% endfor %}
-		
+
 		</div>
 
 		{% if not disabled %}
 			<p><input type="submit" value="{{ submit_label|default:'Create context' }}" /></p>
 		{% endif %}
 	</form>
-	
+
 	{% autoescape off %}
 		<script type="text/javascript">
 		CVMO.ContextUI.Init({{ cernvm.CERNVM_REPOSITORY_MAP }});

@@ -10,7 +10,7 @@ from cvmo.context.utils.context import sanitize_env, sanitize
 #######################################################################
 class ContextPlugin(object):
     """ The base class to create context plugins """
-    
+
     # Defaults
     TEMPLATE        = "core/blank.html"
     TITLE           = "Untitled context plugin"
@@ -18,10 +18,10 @@ class ContextPlugin(object):
     CONFIG_GROUP    = "undefined"
     CONFIG_VARS     = { }
     REMOVE_BLANK    = False
-    
+
     def render(self, request, values):
         """ Render the module template into a string """
-        
+
         # Simulate the nested values dictionary
         # because we also used it in the field names
         _values = {
@@ -31,7 +31,7 @@ class ContextPlugin(object):
         }
         #print "Rendering to %s: " % self.CONFIG_GROUP, _values
         print "Doing %s" % self.TEMPLATE
-        
+
         # First render the plugin body
         t = loader.get_template(self.TEMPLATE)
         return t.render(RequestContext(request, _values))
@@ -42,21 +42,21 @@ class ContextPlugin(object):
             contextualization script for the specified variable.
             It should return a string in 'key=value' format or False if
             you want to completely ignore this variable. """
-        
+
         if (variable in self.CONFIG_VARS):
             return "%s=%s\n" % (variable,  str(value))
         else:
             return False
-    
+
     def renderContext(self, values):
         """ Render the context variables into a text string (AMIConfig-compatible) """
-        
+
         ans = "\n[%s]\n" % (self.CONFIG_GROUP)
         for k in self.CONFIG_VARS.keys():
 
             # Calculate template-safe key
             safeK = self.get_template_safe_key(k)
-            
+
             # Check for a value in values
             _val = self.CONFIG_VARS[k]
             print ">> Looking for %s (safe of %s) in %s" % ( safeK, k, str(values) )
@@ -68,24 +68,24 @@ class ContextPlugin(object):
                 v = self.renderContextVariable(k, _val)
                 if (v != False):
                     ans += v
-                
+
         return ans+"\n"
-    
+
     def get_template_safe_key(self, key):
         """ Translate the key into something that can be safely used as template name (ex. '-' -> '_' ) """
-        
+
         # Replace dashes
         safeK = key.replace("-","_")
-        
+
         # Return the new key
         return safeK
-    
+
     def validate_values(self, values):
         """ Return a validated dictionary based on the values that were passed """
-        
+
         # Check for missing keys
         for k in self.CONFIG_VARS.keys():
-            
+
             # Calculate template-safe key
             safeK = self.get_template_safe_key(k)
 
@@ -93,11 +93,11 @@ class ContextPlugin(object):
             if (k in values) and not (safeK in values):
                 values[safeK] = values[k]
                 del values[k]
-            
+
             # Place missing values
             if not safeK in values:
                 values[safeK] = self.CONFIG_VARS[k]
-        
+
         # Return values
         return values
 
@@ -108,43 +108,43 @@ class ContextPlugin(object):
 #######################################################################
 class ContextPlugins(object):
     """ Operations on all of the context plugins """
-    
+
     def __get_class( self, cls ):
         """ Fetch a class definition from the specified string """
         parts = cls.split('.')
         module = ".".join(parts[:-1])
         m = __import__( module )
         for comp in parts[1:]:
-            m = getattr(m, comp)            
+            m = getattr(m, comp)
         return m
-    
+
     def get_names( self ):
         """ Return the class names of all the plugins """
         return self.plugins.keys()
-    
+
     def get(self, name):
         """ Return the class instance of the spcified plugin """
         return self.plugins[name]
-    
+
     def renderAll(self, request, values, enabled = None):
         """ Render all the plugins """
         if enabled == None: enabled = { }
-        
+
         _ans = []
         for k in self.plugins.keys():
             _p = self.plugins[k]
-            
+
             # Extract the plugin variables
             _values = { }
             if _p.CONFIG_GROUP in values:
                 _values = values[_p.CONFIG_GROUP]
-            
+
             # Check if this is enabled
             is_enabled = False
             if k in enabled:
                 if enabled[k]:
                     is_enabled = True
-            
+
             # Render/place in dictionary
             _ans.append({
                 'body': _p.render(request, _values),
@@ -153,23 +153,28 @@ class ContextPlugins(object):
                 'id': k,
                 'enabled': is_enabled
             })
-        
-        return _ans     
+
+        return _ans
 
     def renderCoreContext(self, values, enable_plugins):
         """ Render the very basic, hard-coded stuff """
-        
+
         # Ensure enable_plugins is prefixed with ' '
         if enable_plugins != "":
             enable_plugins = " "+enable_plugins
 
         # Check if we should enable the raa plugin
-        _rpath = ""
-        if 'cvm_raa_password' in values['general']:
+        _cvm_wa_ctx = ""
+        if 'cvm_wa_password' in values['general']:
+            # for CernVM 2.x
             enable_plugins=" rapadminpassword"+enable_plugins
-            _rpath = "\n[rpath]\n"
-            _rpath+= "rap-password=%s\n" % values['general']['cvm_raa_password']
-            
+            _cvm_wa_ctx = "\n[rpath]\n"
+            _cvm_wa_ctx += "rap-password=%s\n" % values['general']['cvm_wa_password']
+            # for CernVM 3.x
+            enable_plugins=" cernvm_appliance"+enable_plugins
+            _cvm_wa_ctx += "\n[cernvm_appliance]\n"
+            _cvm_wa_ctx += "password=%s\n" % values['general']['cvm_wa_password']
+
         # If we have startup script put it here now
         _ans=""
         if ('startup_script' in values['general']) and (values['general']['startup_script']):
@@ -177,27 +182,27 @@ class ContextPlugins(object):
             _ans+=". /etc/cernvm/site.conf\n"
             _ans+=str(values['general']['startup_script']).replace("\r","")
             _ans+="exit\n"
-        
+
         # Prepare amiconfig header
         _ans+= "[amiconfig]\n"
         _ans+= "plugins=cernvm%s\n" % enable_plugins
-        
-        # Push rpath config
-        if _rpath != "":
-            _ans+= _rpath;
-        
+
+        # Push CernVM Web appliance context config
+        if _cvm_wa_ctx != "":
+            _ans+= _cvm_wa_ctx
+
         # Prepare some general stuff for CernVM
         _ans+= "\n[cernvm]\n"
-        _ans+= "organizations=%s\n" % values['general']['organization']
+        _ans+= "organisations=%s\n" % values['general']['organisation']
         _ans+= "repositories=%s\n" % values['general']['repositories']
         _ans+= "shell=%s\n" % values['general']['shell']
         _ans+= "config_url=%s\n" % values['general']['config_url']
-        
+
         # Prepare contextualization_command
         if ('context_cmd' in values['general']) and (values['general']['context_cmd'] != ''):
             if 'context_cmd_user' in values['general']:
                 _ans+= "contextualization_command=%s:%s\n" % (values['general']['context_cmd_user'], values['general']['context_cmd'])
-        
+
         # Prepare services
         if 'services' in values['general']:
             _svcs=values['general']['services']
@@ -207,7 +212,7 @@ class ContextPlugins(object):
                 _svcs+=values['general']['custom_services']
             if _svcs!="":
                 _ans+= "services=%s\n" % _svcs
-        
+
         # Prepare users string
         _userstr=""
         if 'users' in values['general']:
@@ -216,28 +221,28 @@ class ContextPlugins(object):
                     _userstr+=","
                 _userstr+=user['name']+":"+user['group']+":"+str(user['password'])
             _ans+= "users=%s\n" % _userstr
-        
+
         # Prepare proxy
         if values['general']['http_proxy_mode'] != 'auto':
             _proxy="DIRECT"
             if values['general']['http_proxy_mode'] != 'direct':
                 _proxy = values['general']['http_proxy_mode']+"://"
-                
+
                 # Check if we should add a user
                 if ('http_usecredentials' in values['general']) and (values['general']['http_usecredentials']):
                     _proxy+= values['general']['http_username']+":"
                     _proxy+= str(values['general']['http_password'])+"@"
-                    
+
                 # Set hostname/port
                 _proxy+= values['general']['http_proxy']+":"
                 _proxy+= str(values['general']['http_proxy_port'])
-                
+
                 # Check for fallback
                 if ('http_fallback' in values['general']) and (values['general']['http_fallback']):
                     _proxy+=";DIRECT"
-                
+
             _ans+= "proxy=%s\n" % _proxy
-            
+
         # Setup environment
         if 'environment' in values['general']:
             _env = ""
@@ -247,14 +252,14 @@ class ContextPlugins(object):
                     _env+= ","
                 _env += "%s=%s" % (k,v)
             _ans+= "environment=%s\n" % _env
-            
+
         # Setup CernVM-Edition
         if 'cvm_edition' in values['general']:
             _ans+="edition=%s\n" % values['general']['cvm_edition']
-            
+
             # If we have desktop, setup X and resolution
             if (values['general']['cvm_edition'] == 'Desktop'):
-            
+
                 # Setup resolution
                 if 'cvm_resolution' in values['general']:
                     _ans+="screenRes=%s\n" % values['general']['cvm_resolution']
@@ -265,16 +270,16 @@ class ContextPlugins(object):
                         _ans+="startXDM=on\n"
                     else:
                         _ans+="startXDM=off\n"
-        
+
         return _ans
 
     def renderContext(self, uuid, values, enabled):
         """ Render all the enabled plugins into a string """
-        
+
         # If enabled is nothing, make empty array
         if not enabled:
             enabled = []
-        
+
         # Find the group names of the enabled plugins
         _plugins = ""
         for k in self.plugins.keys():
@@ -285,11 +290,11 @@ class ContextPlugins(object):
         # Prepare context
         if enabled == None: enabled = {}
         _ans = self.renderCoreContext(values, _plugins)
-        
+
         # Process keys
         for k in self.plugins.keys():
             _p = self.plugins[k]
-            
+
             # Skip disabled plugins
             if not k in enabled: continue
             if not enabled[k]: continue
@@ -298,7 +303,7 @@ class ContextPlugins(object):
             _values = { }
             if _p.CONFIG_GROUP in values:
                 _values = values[_p.CONFIG_GROUP]
-            
+
             # Extract the plugin variables
             _ans += _p.renderContext(_values)
 
@@ -308,14 +313,14 @@ class ContextPlugins(object):
 
         # Then build the contextualization script
         _script += "EC2_USER_DATA=%s\n" % base64.b64encode(_ans)
-        
+
         # If we have a private key, add it too
         if ('root_ssh_key' in values) and (values['root_ssh_key'] != ""):
             _script+= "ROOT_PUBKEY=%s\n" % base64.b64encode(values['root_ssh_key'])
 
         # Return script
         return _script
-            
+
     def __init__(self):
         """ Initialize the context plugins store """
         self.plugins = {}
@@ -325,4 +330,4 @@ class ContextPlugins(object):
             _class = self.__get_class(clsname)
             _inst = _class()
             self.plugins[clsname] = _inst
-    
+
