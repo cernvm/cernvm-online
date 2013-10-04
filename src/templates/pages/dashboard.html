@@ -1,6 +1,65 @@
 {% extends "core/class_context.html" %}
 {% block title %}Dashboard{% endblock %}
 
+{% block head %}
+	{% if enable_webapi %}
+		<script type="text/javascript"
+			src="https://cernvm.cern.ch/releases/webapi/js/cvmwebapi-latest.js">
+		</script>
+		<script type="text/javascript">
+			jQuery(
+				function()
+				{
+					jQuery("a.webapi-deploy-handle").click(
+						function(e)
+						{
+							e.preventDefault();
+							/* Parse the request */
+							var request = {
+								"contextId": jQuery(this).data("context-id"),
+								"name": jQuery(this).data("name"),
+								"memory": jQuery(this).data("memory"),
+								"CPUs": jQuery(this).data("cpus"),
+								"diskSize": jQuery(this).data("disk-size")
+							};
+							console.log(request);
+
+							/* Validate the request */
+							// TODO
+
+							/* Start the VM with the CernVM Web API */
+							CVM.startCVMWebAPI(
+                                function(plugin) 
+                                {
+                                    var url = "https://cernvm-online.cern.ch/vmcp/sign.php?contextualization_key="
+                                        + encodeURIComponent(request["contextId"]) 
+                                        + "&name=" + encodeURIComponent(request["name"])
+                                        + "&cpus=" + encodeURIComponent(request["CPUs"]) 
+                                        + "&ram=" + encodeURIComponent(request["memory"]) 
+                                        + "&disk=" + encodeURIComponent(request["diskSize"]);
+                                    plugin.requestSession(
+                                        url, 
+                                        function(session) 
+                                        {
+                                            session.start(); 
+                                        },
+                                        function(failure) 
+                                        { 
+                                            alert("Failed to create session: " 
+                                                  + failure);
+                                        }
+                                    );
+                                },
+								true // Let the plugin initialize the environment
+							);
+						}
+					);
+				}
+			);
+		</script>
+	{% endif %}
+{% endblock %}
+
 {% block body %}
 {% load static %}{% load url from future %}
 <h1>Dashboard</h1>
@@ -12,9 +71,12 @@
 		<th>Name</th>
 		<th width="240">ID</th>
 		{% if enable_market %}
-		<th width="210">Operations</th>		
+		<th width="210">Operations</th>
 		{% else %}
-		<th width="135">Operations</th>		
+		<th width="135">Operations</th>
+		{% endif %}
+		{% if enable_webapi %}
+			<th width="100">Deployment</th>
 		{% endif %}
 	</tr>
 	{% for item in context_list %}
@@ -29,44 +91,75 @@
 			<td>
 				{{ item.id }}
 			</td>
-			<td>
+			<td class="buttons-container">
 				<!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
-				<div style="float:left;margin-right:2px"><a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/> Clone</a></div>
+				<div class="btn"><a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/> Clone</a></div>
 				{% if item.public %}
 
 					{% if enable_market %}
 					<!-- Unpublish button -->
-					<div style="float:left;margin-right:2px"><a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a></div>
+					<div class="btn"><a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a></div>
 					{% endif %}
 
 				{% else %}
 
 					{% if enable_market %}
 					<!-- Publish button -->
-					<div style="float:left;margin-right:2px"><a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a></div>
+					<div class="btn"><a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a></div>
 					{% endif %}
 
 					<!-- Delete button -->
-					<div style="float:left;margin-right:2px"><a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a></div>
+					<div class="btn"><a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a></div>
 
 				{% endif %}
 				<!-- Extra options -->
-				<div class="dropdownbutton" style="float:left;margin-right:2px">
-  					<span><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" width="16" height="16"/></span>
-  					<ul>
-  						{% if item.from_abstract %}
-  						<li><a href="{% url "context_clone" context_id=item.id %}">Clone with full options</a></li>
-  						{% endif %}
-  						<li><a href="{% url "context_view_plain" context_id=item.id %}">Get rendered context</b></a></li>
-  						<li><a href="{% url "context_view_raw" context_id=item.id %}">Get raw user data</b></a></li>
-  					</ul>
+				<div class="dropdownbutton btn">
+					<span><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" width="16" height="16"/></span>
+					<ul>
+						{% if item.from_abstract %}
+						<li><a href="{% url "context_clone" context_id=item.id %}">Clone with full options</a></li>
+						{% endif %}
+						<li><a href="{% url "context_view_plain" context_id=item.id %}">Get rendered context</b></a></li>
+						<li><a href="{% url "context_view_raw" context_id=item.id %}">Get raw user data</b></a></li>
+					</ul>
 				</div>
 				<!-- End of buttons -->
 			</td>
+			{% if enable_webapi %}
+				<td class="buttons-container">
+					<div class="dropdownbutton btn">
+						<span>
+							<img border="0" align="absmiddle"
+								src="{% static "images/vm_add.png" %}"
+								width="16" height="16"
+								title="Create a VM using CernVM WebAPI plugin"/>
+							WebAPI
+						</span>
+						<ul>
+							{% for conf in webapi_configurations %}
+								<li>
+									<a class="webapi-deploy-handle"
+										data-context-id="{{ item.id }}"
+										data-name="{{ item.name }} VM"
+										data-cpus="{{ conf.cpus }}"
+										data-memory="{{ conf.memory }}"
+										data-disk-size="{{ conf.disk_size }}" href="#">
+										{{ conf.label }}
+									</a>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</td>
+			{% endif %}
 		</tr>
 	{% empty %}
 		<tr>
-			<td colspan="4" align="center">No context defined yet</tr>
+			{% if enable_webapi %}
+				<td colspan="5" align="center">No context defined yet</tr>
+			{% else %}
+				<td colspan="4" align="center">No context defined yet</tr>
+			{% endif %}
 		</tr>
 	{% endfor %}
 </table>
@@ -78,7 +171,7 @@
 <div class="dropdownbutton" style="float:left;margin:5px 5px 15px;">
   <span><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}" /> Create new context...</span>
   <ul>
-  	<li><a href="{% url "context_new" %}"><b>New context</b></a></li>
+	<li><a href="{% url "context_new" %}"><b>New context</b></a></li>
 	{% for item in full_abstract_list %}
 	<li><a href="{% url "abstract_contextualize" context_id=item.id %}">{{ item.name }}</a></li>
 	{% endfor %}
@@ -142,7 +235,7 @@ jQuery(document).ready(function() {
 		<th>Name</th>
 		<th width="240">ID</th>
 		<th width="40">Public</th>
-		<th width="100">Operations</th>		
+		<th width="100">Operations</th>
 	</tr>
 	{% for item in my_abstract_list %}
 	<tr>
@@ -185,9 +278,9 @@ jQuery(document).ready(function() {
 		<th>Name</th>
 		<th width="240">ID</th>
 		{% if enable_market %}
-		<th width="180">Operations</th>		
+		<th width="180">Operations</th>
 		{% else %}
-		<th width="100">Operations</th>		
+		<th width="100">Operations</th>
 		{% endif %}
 	</tr>
 	{% for item in cluster_list %}

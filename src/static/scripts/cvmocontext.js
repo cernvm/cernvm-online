@@ -1,9 +1,9 @@
 
 CVMO.ContextUI = { };
 CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){  // Run only when we are fully loaded
-    
+
     CVMO.ContextUI.groups = groups;
-    
+
     // Replace lists with drag/drop widgets
     CVMO.ContextUI.repositories = new CVMO.Widgets.DragLists([
         [ 'available_repos', 'available_repos_text' ],
@@ -13,15 +13,15 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
         [ 'available_services', 'available_services_text' ],
         [ 'active_services', 'active_services_text' ]
     ]);
-    
+
     // Prepare accordion
     CVMO.ContextUI.Accordion = new Fx.Accordion($('content-accordion'), '#content-accordion .accordion-header', '#content-accordion .accordion-content', {
         alwaysHide: false
     });
-    
+
     // Setup accordion
     /*
-    jQuery( "#content-accordion" ).accordion({ 
+    jQuery( "#content-accordion" ).accordion({
         header: '.accordion-header',
         heightStyle: 'content',
         onBeforeActivate: function(event, ui) {
@@ -29,7 +29,7 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
         }
     });
     */
-    
+
     // Prepare the switches for the modules
     $$('#content-accordion .cvmo-module').each(function(el) {
         var header = el,
@@ -45,7 +45,7 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
                     CVMO.ContextUI.Accordion.addSection(header, content);
                     CVMO.ContextUI.Accordion.display(content);
                 } else {
-                    
+
                     // Locate the previous element to display, only if we were
                     // selected
                     var select_index = -1;
@@ -57,10 +57,10 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
                             select_index=i;
                         }
                     }
-                    
+
                     CVMO.ContextUI.Accordion.removeSection(header);
                     if (select_index!=-1) CVMO.ContextUI.Accordion.display(select_index);
-                    
+
                     fx.start({
                         'height': [content.getSize().y, 0]
                     }).chain(function() {
@@ -71,18 +71,18 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
                     });
                 }
             };
-        
+
         header.addEvent('change', updateView);
         updateView();
     });
-    
+
     // If we are using disabled mode, disable all the inputs
     if ($('content-accordion').hasClass('cvmo-context-disabled')) {
         $('content-accordion').getElements('input').each(function(e) { $(e).set('disabled',true); });
         $('content-accordion').getElements('select').each(function(e) { $(e).set('disabled',true); });
         $('content-accordion').getElements('textarea').each(function(e) { $(e).set('disabled',true); });
     }
-    
+
     // Update group name
     $(window).addEvent('domready',function() {
         var grp = $('organisation').getProperty('value');
@@ -91,41 +91,41 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
 
     // Enable sliders on browsers that support it
     if (Browser.chrome || Browser.safari || Browser.opera) {
-        $$('.cvmo-headcontrol').each(function(e) { 
+        $$('.cvmo-headcontrol').each(function(e) {
             $(e).addClass('slider');
         });
     } else {
-        $$('.cvmo-headcontrol').each(function(e) { 
+        $$('.cvmo-headcontrol').each(function(e) {
             $(e).addClass('thin-slider');
         });
     }
-    
+
     // Add validation command for custom command user
-    jQuery.validator.addMethod( "except_value", 
+    jQuery.validator.addMethod( "except_value",
     	function( value, element, forbiddenVal ) {
     		if( typeof forbiddenVal == "undefined" ) {
     			return true;
     		} else {
 	    		return this.optional( element )
-	    			|| value != forbiddenVal 
+	    			|| value != forbiddenVal
     		}
     	}, "Please check field value." );
     jQuery( "#create_context_form" ).validate(
     	{
     		rules: {
     			"values[name]": "required",
-    			"values[general][cvm_raa_password]": "required",
+    			"values[general][cvm_wa_password]": "required",
     			"values[general][context_cmd_user]": {
     				required: "#f_contextcmd:filled",
     				except_value: "root"
     			}
     		},
     		messages: {
-    			"values[general][context_cmd_user]": {    				
+    			"values[general][context_cmd_user]": {
     				except_value: "Please do not use user root here."
     			}
     		},
-    		highlight: function( element, errorClass, validClass ) 
+    		highlight: function( element, errorClass, validClass )
     			{
     				jQuery( element ).addClass( errorClass ).removeClass( validClass );
     				/* Find block */
@@ -140,7 +140,7 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
     				}
     			},
 
-    		unhighlight: function( element, errorClass, validClass ) 
+    		unhighlight: function( element, errorClass, validClass )
     			{
     				jQuery( element ).addClass( validClass ).removeClass( errorClass );
     				/* Find block */
@@ -185,9 +185,9 @@ CVMO.ContextUI.AddUser = function(name, group, home, password) {
     var table = $('table_users'),
         table_nu_form = $('newuser_row'),
         id = 0;
-        
+
     // Find the last used user ID
-    $$('tr.cvmo-user-entry').each(function(el) { 
+    $$('tr.cvmo-user-entry').each(function(el) {
         var eid = el.get('id');
         if (eid.substr(0,4) == 'user') {
             eid = eid.substr(4);
@@ -201,11 +201,11 @@ CVMO.ContextUI.AddUser = function(name, group, home, password) {
     new Element('td', { html: '<input type="hidden" name="values[general][users]['+id+'][name]" value="'+name+'" />'+name }).inject(row);
     new Element('td', { html: '<input type="hidden" name="values[general][users]['+id+'][group]" value="'+group+'" />'+group }).inject(row);
     new Element('td', { html: '<input type="hidden" name="values[general][users]['+id+'][home]" value="'+home+'" />'+home }).inject(row);
-    new Element('td', { html: '<input type="hidden" name="values[general][users]['+id+'][password]" value="'+password+'" />****' }).inject(row);    
+    new Element('td', { html: '<input type="hidden" name="values[general][users]['+id+'][password]" value="'+password+'" />****' }).inject(row);
     new Element('td', { html: '<a href="javascript:;" onclick="CVMO.ContextUI.RemoveUser('+id+');" class="softbutton"><img border="0" src="/static/images/user_delete.png" align="absmiddle"> Remove user</a>' }).inject(row);
     row.inject(table_nu_form, 'before');
     new Fx.Reveal(row.getChildren(), {duration: 500, mode: 'vertical', opacity: 0});
-    
+
 }
 
 CVMO.ContextUI.UpdateGroups = function(selected_group) {
@@ -238,11 +238,11 @@ CVMO.ContextUI.AddEnv = function(variable, value) {
 
     // Allocate environment variable entry
     var row = new Element('tr', { 'class':'cvm-environment-entry', 'id': id});
-    
+
     // Validate name
     variable = String(variable).replace(/['"]/g, '');
     variable = String(variable).replace(/\s/g, '_');
-    
+
     // Create the element
     new Element('td', { align: 'right',  html: '<strong>'+variable+'</strong>' }).inject(row);
     new Element('td', { html: '=' }).inject(row);
@@ -250,7 +250,7 @@ CVMO.ContextUI.AddEnv = function(variable, value) {
     new Element('td', { align: 'center', 'class': 'v-center', html: '<a href="javascript:;" onclick="CVMO.ContextUI.RemoveEnv(\''+id+'\');" class="softbutton"><img border="0" src="/static/images/page_delete.png" align="absmiddle"> Remove variable</a>' }).inject(row);
     row.inject(table);
     new Fx.Reveal(row.getChildren(), {duration: 500, mode: 'vertical', opacity: 0});
-    
+
 }
 
 // API => Remove environment variable row
@@ -269,14 +269,14 @@ CVMO.ContextUI.BlockSetError = function( block )
 	if( !jQuery( block ).is( ".accordion-content" ) ) {
 		return;
 	}
-	
+
 	/* Find header */
 	var header = jQuery( block ).prev( ".accordion-header" );
-	
+
 	/* Add classes */
 	jQuery( block ).addClass( "error" );
 	jQuery( header ).addClass( "error" );
-	
+
 	/* Show first with error */
 	CVMO.ContextUI.ShowFirstErrorBlock();
 }
@@ -287,10 +287,10 @@ CVMO.ContextUI.BlockRemoveError = function( block )
 	if( !jQuery( block ).is( ".accordion-content" ) ) {
 		return;
 	}
-	
+
 	/* Find header */
 	var header = jQuery( block ).prev( ".accordion-header" );
-	
+
 	/* Remove classes */
 	jQuery( block ).removeClass( "error" );
 	jQuery( header ).removeClass( "error" );
@@ -302,10 +302,10 @@ CVMO.ContextUI.ShowFirstErrorBlock = function()
 	if( jQuery( "div.accordion-content.error" ).length == 0 ) {
 		return;
 	}
-	
+
 	/* Find the first one */
 	var firstBlock = jQuery( "div.accordion-content.error" )[0];
-	
+
 	/* Display it */
 	CVMO.ContextUI.Accordion.display( firstBlock );
 }
