@@ -64,6 +64,7 @@ if __name__ == "__main__":
         author = "CernVM",
         author_email = "cernvm.administrator@cern.ch",
         description = "CernVM Online portal",
+        url = "http://cernvm.cern.ch/",
         long_description = open("README.txt").read(),
 
         # Packages, modules and scripts
