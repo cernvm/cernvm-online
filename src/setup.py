@@ -76,7 +76,7 @@ if __name__ == "__main__":
         install_requires = [
             "Django >= 1.5.0",
             "PIL",
-            "pyrypto >= 2.6",
+            "pycrypto >= 2.6",
             "django-cors-headers"
         ]
     )
