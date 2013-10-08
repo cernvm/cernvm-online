@@ -183,7 +183,7 @@ LOGGING = {
         "file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": config.LOG_PATH + "django.log",
+            "filename": config.LOG_PATH + "/django.log",
         },
     },
     "loggers": {

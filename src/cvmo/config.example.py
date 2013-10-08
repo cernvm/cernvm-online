@@ -15,6 +15,10 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "<...>"]
 # Django secret key, please use a different key for each deployment
 # Utility: http://www.miniwebtool.com/django-secret-key-generator/
 SECRET_KEY = "<...>"
+# URL prefix
+#   if CernVM online is deployed in https://cvmo.ch/example/ URL_PREFIX should
+#   be set to 'example/'
+URL_PREFIX = ""
 
 #
 # Paths
