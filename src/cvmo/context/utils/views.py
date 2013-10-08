@@ -36,8 +36,6 @@ def global_context(request):
         'msg_info': msg_info,
         'enable_cloud' : settings.ENABLE_CLOUD and is_cloud_enabled(request),
         'enable_csc': settings.ENABLE_CSC,
-        'enable_market' : settings.ENABLE_CLOUD and is_market_enabled(request),
-        "enable_webapi":  settings.ENABLE_WEBAPI and is_webapi_enabled(request),
         'enable_abstract_creation' : is_abstract_creation_enabled(request)
     }
 

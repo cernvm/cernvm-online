@@ -2,62 +2,60 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block head %}
-	{% if enable_webapi %}
-		<script type="text/javascript"
-			src="https://cernvm.cern.ch/releases/webapi/js/cvmwebapi-latest.js">
-		</script>
-		<script type="text/javascript">
-			jQuery(
-				function()
-				{
-					jQuery("a.webapi-deploy-handle").click(
-						function(e)
-						{
-							e.preventDefault();
-							/* Parse the request */
-							var request = {
-								"contextId": jQuery(this).data("context-id"),
-								"name": jQuery(this).data("name"),
-								"memory": jQuery(this).data("memory"),
-								"CPUs": jQuery(this).data("cpus"),
-								"diskSize": jQuery(this).data("disk-size")
-							};
-							console.log(request);
+	<script type="text/javascript"
+		src="https://cernvm.cern.ch/releases/webapi/js/cvmwebapi-latest.js">
+	</script>
+	<script type="text/javascript">
+		jQuery(
+			function()
+			{
+				jQuery("a.webapi-deploy-handle").click(
+					function(e)
+					{
+						e.preventDefault();
+						/* Parse the request */
+						var request = {
+							"contextId": jQuery(this).data("context-id"),
+							"name": jQuery(this).data("name"),
+							"memory": jQuery(this).data("memory"),
+							"CPUs": jQuery(this).data("cpus"),
+							"diskSize": jQuery(this).data("disk-size")
+						};
+						console.log(request);
 
-							/* Validate the request */
-							// TODO
+						/* Validate the request */
+						// TODO
 
-							/* Start the VM with the CernVM Web API */
-							CVM.startCVMWebAPI(
-                                function(plugin) 
-                                {
-                                    var url = "https://cernvm-online.cern.ch/vmcp/sign.php?contextualization_key="
-                                        + encodeURIComponent(request["contextId"]) 
-                                        + "&name=" + encodeURIComponent(request["name"])
-                                        + "&cpus=" + encodeURIComponent(request["CPUs"]) 
-                                        + "&ram=" + encodeURIComponent(request["memory"]) 
-                                        + "&disk=" + encodeURIComponent(request["diskSize"]);
-                                    plugin.requestSession(
-                                        url, 
-                                        function(session) 
-                                        {
-                                            session.start(); 
-                                        },
-                                        function(failure) 
-                                        { 
-                                            alert("Failed to create session: " 
-                                                  + failure);
-                                        }
-                                    );
-                                },
-								true // Let the plugin initialize the environment
-							);
-						}
-					);
-				}
-			);
-		</script>
-	{% endif %}
+						/* Start the VM with the CernVM Web API */
+						CVM.startCVMWebAPI(
+                            function(plugin)
+                            {
+                                var url = "https://cernvm-online.cern.ch/vmcp/sign.php?contextualization_key="
+                                    + encodeURIComponent(request["contextId"])
+                                    + "&name=" + encodeURIComponent(request["name"])
+                                    + "&cpus=" + encodeURIComponent(request["CPUs"])
+                                    + "&ram=" + encodeURIComponent(request["memory"])
+                                    + "&disk=" + encodeURIComponent(request["diskSize"]);
+                                plugin.requestSession(
+                                    url,
+                                    function(session)
+                                    {
+                                        session.start();
+                                    },
+                                    function(failure)
+                                    {
+                                        alert("Failed to create session: "
+                                              + failure);
+                                    }
+                                );
+                            },
+							true // Let the plugin initialize the environment
+						);
+					}
+				);
+			}
+		);
+	</script>
 {% endblock %}
 
 {% block body %}
@@ -70,14 +68,8 @@
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
 		<th width="240">ID</th>
-		{% if enable_market %}
 		<th width="210">Operations</th>
-		{% else %}
-		<th width="135">Operations</th>
-		{% endif %}
-		{% if enable_webapi %}
-			<th width="100">Deployment</th>
-		{% endif %}
+		<th width="100">Deployment</th>
 	</tr>
 	{% for item in context_list %}
 		<tr>
@@ -95,22 +87,13 @@
 				<!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
 				<div class="btn"><a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/> Clone</a></div>
 				{% if item.public %}
-
-					{% if enable_market %}
 					<!-- Unpublish button -->
 					<div class="btn"><a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a></div>
-					{% endif %}
-
 				{% else %}
-
-					{% if enable_market %}
 					<!-- Publish button -->
 					<div class="btn"><a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a></div>
-					{% endif %}
-
 					<!-- Delete button -->
 					<div class="btn"><a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a></div>
-
 				{% endif %}
 				<!-- Extra options -->
 				<div class="dropdownbutton btn">
@@ -125,41 +108,35 @@
 				</div>
 				<!-- End of buttons -->
 			</td>
-			{% if enable_webapi %}
-				<td class="buttons-container">
-					<div class="dropdownbutton btn">
-						<span>
-							<img border="0" align="absmiddle"
-								src="{% static "images/vm_add.png" %}"
-								width="16" height="16"
-								title="Create a VM using CernVM WebAPI plugin"/>
-							WebAPI
-						</span>
-						<ul>
-							{% for conf in webapi_configurations %}
-								<li>
-									<a class="webapi-deploy-handle"
-										data-context-id="{{ item.id }}"
-										data-name="{{ item.name }} VM"
-										data-cpus="{{ conf.cpus }}"
-										data-memory="{{ conf.memory }}"
-										data-disk-size="{{ conf.disk_size }}" href="#">
-										{{ conf.label }}
-									</a>
-								</li>
-							{% endfor %}
-						</ul>
-					</div>
-				</td>
-			{% endif %}
+			<td class="buttons-container">
+				<div class="dropdownbutton btn">
+					<span>
+						<img border="0" align="absmiddle"
+							src="{% static "images/vm_add.png" %}"
+							width="16" height="16"
+							title="Create a VM using CernVM WebAPI plugin"/>
+						WebAPI
+					</span>
+					<ul>
+						{% for conf in webapi_configurations %}
+							<li>
+								<a class="webapi-deploy-handle"
+									data-context-id="{{ item.id }}"
+									data-name="{{ item.name }} VM"
+									data-cpus="{{ conf.cpus }}"
+									data-memory="{{ conf.memory }}"
+									data-disk-size="{{ conf.disk_size }}" href="#">
+									{{ conf.label }}
+								</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</td>
 		</tr>
 	{% empty %}
 		<tr>
-			{% if enable_webapi %}
-				<td colspan="5" align="center">No context defined yet</tr>
-			{% else %}
-				<td colspan="4" align="center">No context defined yet</tr>
-			{% endif %}
+			<td colspan="5" align="center">No context defined yet</tr>
 		</tr>
 	{% endfor %}
 </table>
@@ -277,11 +254,7 @@ jQuery(document).ready(function() {
 		<th width="20">&nbsp;</th>
 		<th>Name</th>
 		<th width="240">ID</th>
-		{% if enable_market %}
 		<th width="180">Operations</th>
-		{% else %}
-		<th width="100">Operations</th>
-		{% endif %}
 	</tr>
 	{% for item in cluster_list %}
 		<tr>
@@ -295,9 +268,9 @@ jQuery(document).ready(function() {
 			<td>
 				<a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
 				{% if item.public %}
-					{% if enable_market %}<a href="{% url "market_cluster_revoke" cluster_id=item.id %}" class="softbutton" title="Remove this cluster definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>{% endif %}
+					<a href="{% url "market_cluster_revoke" cluster_id=item.id %}" class="softbutton" title="Remove this cluster definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>
 				{% else %}
-					{% if enable_market %}<a href="{% url "market_cluster_publish" cluster_id=item.id %}" class="softbutton" title="Publish this cluster definition to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a>{% endif %}
+					<a href="{% url "market_cluster_publish" cluster_id=item.id %}" class="softbutton" title="Publish this cluster definition to marketplace"><img border="0" align="absmiddle" src="{% static "images/cart_add.png" %}" /> Publish</a>
 					<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
 				{% endif %}
 			</td>

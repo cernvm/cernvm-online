@@ -72,6 +72,25 @@ urlpatterns += patterns('cvmo.context.views.actions',
     url(r'^' + URL_PREFIX + 'actions/save$', 'save',                  name="actions_save")
 )
 
+# Marketplace
+urlpatterns += patterns('cvmo.context.views.marketplace',
+    url(r'^' + URL_PREFIX + 'market/revoke/(?P<context_id>[-\w]+)$', 'revoke', name="market_revoke"),
+    url(r'^' + URL_PREFIX + 'market/publish/(?P<context_id>[-\w]+)$', 'publish', name="market_publish"),
+    url(r'^' + URL_PREFIX + 'market/publish.do$', 'publish_action',   name="market_publish_action"),
+    url(r'^' + URL_PREFIX + 'market/list$', 'list',                   name="market_list"),
+    url(r'^' + URL_PREFIX + 'market/list.search$', 'list_ajax',       name="market_list_search"),
+    url(r'^' + URL_PREFIX + 'market/vote.do$', 'vote_ajax',           name="market_vote"),
+)
+
+# Check if cloud is enabled
+if settings.ENABLE_CLOUD:
+    urlpatterns += patterns('cvmo.context.views.marketplace',
+        url(r'^' + URL_PREFIX + 'market/cluster_revoke/(?P<cluster_id>[-\w]+)$', 'cluster_revoke', name="market_cluster_revoke"),
+        url(r'^' + URL_PREFIX + 'market/cluster_publish/(?P<cluster_id>[-\w]+)$', 'cluster_publish', name="market_cluster_publish"),
+        url(r'^' + URL_PREFIX + 'market/cluster_publish.do$', 'cluster_publish_action',   name="market_cluster_publish_action"),
+        url(r'^' + URL_PREFIX + 'api/market/search.clusters$', 'list_cluster_ajax',   name="market_list_cluster_ajax"),
+        url(r'^' + URL_PREFIX + 'api/market/groups$', 'list_cluster_groups',   name="market_list_cluster_groups"),
+    )
 
 # Optional 1) Cluster defintion
 if settings.ENABLE_CLOUD:
@@ -92,28 +111,7 @@ if settings.ENABLE_CSC:
         url(r'^' + URL_PREFIX + 'csc/do_login$', 'csc_do_login',      name="csc_do_login")
     )
 
-# Optional 3) Marketplace
-if settings.ENABLE_MARKET:
-    urlpatterns += patterns('cvmo.context.views.marketplace',
-        url(r'^' + URL_PREFIX + 'market/revoke/(?P<context_id>[-\w]+)$', 'revoke', name="market_revoke"),
-        url(r'^' + URL_PREFIX + 'market/publish/(?P<context_id>[-\w]+)$', 'publish', name="market_publish"),
-        url(r'^' + URL_PREFIX + 'market/publish.do$', 'publish_action',   name="market_publish_action"),
-        url(r'^' + URL_PREFIX + 'market/list$', 'list',                   name="market_list"),
-        url(r'^' + URL_PREFIX + 'market/list.search$', 'list_ajax',       name="market_list_search"),
-        url(r'^' + URL_PREFIX + 'market/vote.do$', 'vote_ajax',           name="market_vote"),
-    )
-    
-    # Check if cloud is enabled
-    if settings.ENABLE_CLOUD:
-        urlpatterns += patterns('cvmo.context.views.marketplace',
-            url(r'^' + URL_PREFIX + 'market/cluster_revoke/(?P<cluster_id>[-\w]+)$', 'cluster_revoke', name="market_cluster_revoke"),
-            url(r'^' + URL_PREFIX + 'market/cluster_publish/(?P<cluster_id>[-\w]+)$', 'cluster_publish', name="market_cluster_publish"),
-            url(r'^' + URL_PREFIX + 'market/cluster_publish.do$', 'cluster_publish_action',   name="market_cluster_publish_action"),
-            url(r'^' + URL_PREFIX + 'api/market/search.clusters$', 'list_cluster_ajax',   name="market_list_cluster_ajax"),
-            url(r'^' + URL_PREFIX + 'api/market/groups$', 'list_cluster_groups',   name="market_list_cluster_groups"),
-        )
-
 # Admin UI
 urlpatterns += patterns('',
-    url(r'^' + URL_PREFIX + 'admin/', include(admin.site.urls)),    
+    url(r'^' + URL_PREFIX + 'admin/', include(admin.site.urls)),
 )

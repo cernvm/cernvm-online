@@ -10,7 +10,7 @@
 	    <link type="text/css" rel="stylesheet" media="all" href="{% static "themes/sky/custom.css" %}" />
 	    <link type="text/css" rel="stylesheet" media="all" href="{% static "themes/sky/cvmo.css" %}" />
 	    <link type="text/css" rel="stylesheet" media="all" href="{% static "themes/ui-lightness/jquery-ui-1.9.0.custom.css" %}" />
-        <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans:400,300,600' rel='stylesheet' type='text/css' /> <!--define the web fonts--> 
+        <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans:400,300,600' rel='stylesheet' type='text/css' /> <!--define the web fonts-->
 		<script type="text/javascript" src="{% static "scripts/mootools-core-1.4.5.js" %}"></script>
 		<script type="text/javascript" src="{% static "scripts/mootools-more-1.4.0.1.js" %}"></script>
 		<script type="text/javascript" src="{% static "scripts/cvmo.js" %}"></script>
@@ -23,11 +23,11 @@
 <body class="page-node page-cernvmonlinepages page-node-view anonymous-user left {% block body_class %}{% endblock %}" id="page-node-180">
 
 	<div id="wrapper">
-	
+
 	    <div id="header" class="layout-region">
-	
+
 			<div id="header-inner">
-				<a href="{% url "welcome" %}" title="" id="logo-inner"><img class="online" alt="CernVM Online Logo" src="{% static "themes/sky/img/online_logo.png" %}" /></a> 
+				<a href="{% url "welcome" %}" title="" id="logo-inner"><img class="online" alt="CernVM Online Logo" src="{% static "themes/sky/img/online_logo.png" %}" /></a>
 				<a href="http://cernvm.cern.ch/portal" title="home"><img class="logo-home" alt="Home" src="{% static "themes/sky/img/logo-home.png" %}" /></a>
 				<div class="header-fl-right">
 					<!-- LOGIN -->
@@ -70,11 +70,9 @@
 				<li class="leaf first">
 					<a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
 				</li>
-				{% if enable_market %}
 				<li class="leaf first">
 					<a href="{% url "market_list" %}" title="Marketplace">Marketplace</a>
 				</li>
-				{% endif %}
 				<li class="leaf first">
 					<a href="http://cernvm.cern.ch/portal/online/documentation" title="Documentation">Documentation</a>
 				</li>
@@ -97,16 +95,16 @@
 	         	<div class="inner">
 					{% block sidebar %}{% endblock %}
            	 	</div>
- 
+
         	</div>
 
       <!-- END HEADER -->
 
-      
+
       <div id="main">
 
         <div class="main-inner">
-	
+
 		    <!-- CONTENT HERE -->
 			<div id="content" class="clearfix">
 				{% autoescape off %}
@@ -117,7 +115,7 @@
 				{% block body %}{% endblock %}
 				{% endautoescape %}
             </div>
-			
+
 			<!-- CONTENT FOOTER -->
 			<div class="clearfix">
 				<div id="node-180" class="node clearfix node-cernvmonlinepages node-full published not-promoted not-sticky without-photo">

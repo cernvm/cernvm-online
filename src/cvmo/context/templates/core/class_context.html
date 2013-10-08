@@ -18,9 +18,7 @@
 			<li><a href="{% url "cluster_create" %}">Create Cluster</a></li>
 			<!-- <li><a href="#">Live Console</a></li> -->
 			{% endif %}
-			{% if enable_market %}
 			<li><a href="{% url "market_list" %}">Marketplace</a></li>
-			{% endif %}
 		</ul>
 	</div>
 </div>
@@ -48,7 +46,7 @@
 			<li><a href="{% url "cluster_view" cluster_id=item.id %}"><img src="{% static "images/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
 			{% empty %}
 			<li class="empty">No cluster definitions</li>
-			{% endfor %}			
+			{% endfor %}
 			{% endblock %}
 		</ul>
 	</div>
