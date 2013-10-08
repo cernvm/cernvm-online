@@ -26,6 +26,12 @@ ENABLE_CSC = False
 CSC_USER_CONFIG_FILE = "students.conf"
 
 #
+# Cloud
+#
+
+ENABLE_CLOUD = config.ENABLE_CLOUD
+
+#
 # WebAPI
 #
 
