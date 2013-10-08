@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # Invoke setup
     setup(
         # Meta data
-        name = "CernVM Online",
+        name = "CernVM-Online",
         version = "1.0",
         author = "CernVM",
         author_email = "cernvm.administrator@cern.ch",
