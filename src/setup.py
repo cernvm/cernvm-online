@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
         # Dependencies
         install_requires = [
-            "Django >= 1.5.0",
+            "Django == 1.4.0",
             "PIL",
             "PyCrypto >= 2.6",
             "django-cors-headers"
