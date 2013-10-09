@@ -37,7 +37,7 @@ DB = {
     "backend":  "mysql",
     "host":     "dbod-cvmonl.cern.ch",
     "user":     "admin",
-    "password": "*********",
+    "password": "oA@Yga51sE",
     "name":     "cvmo",
     "port":     5502
 }
