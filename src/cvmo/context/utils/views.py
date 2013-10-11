@@ -218,22 +218,6 @@ def is_cloud_enabled(request):
         return request.user.groups.filter(name='cloud').count() != 0
     return False
 
-def is_market_enabled(request):
-    """
-    Check if the current user has market permissions
-    """
-    if request.user:
-        return request.user.groups.filter(name='market').count() != 0
-    return False
-
-def is_webapi_enabled(request):
-    """
-    Check if the current user is allowed to use the WebAPI beta feature
-    """
-    if request.user:
-        return request.user.groups.filter(name="webapi").count() != 0
-    return False
-
 def is_abstract_creation_enabled(request):
     """
     Check if the current user can create abstract contexts
@@ -285,11 +269,6 @@ def for_market(fn):
 
         # Fetch request object
         request = args[0]
-
-        # Check if user is not member of cloud
-        if not is_market_enabled(request):
-            msg_info(request, "This is an experimental feature. Access is granted only to beta testers!")
-            return redirect('dashboard')
 
         # It looks OK, run the view
         return fn(*args, **kwargs)
