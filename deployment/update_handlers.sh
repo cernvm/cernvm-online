@@ -40,7 +40,7 @@ function install_new_do
 {
     cd $BASE_DIR/git/src
     managed_exec python setup.py sdist || return $?
-    managed_exec pip install --install-option="--prefix=$BASE_DIR" --upgrade dist/CernVM-Online-1.0.tar.gz || return $?
+    managed_exec pip install -Iv --install-option="--prefix=$BASE_DIR" --upgrade dist/CernVM-Online-1.0.tar.gz || return $?
     cd ../../
     managed_exec rm -Rf $BASE_DIR/git || return $?
     return $?

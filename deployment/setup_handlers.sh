@@ -50,7 +50,7 @@ function install_cmvo_do
 {
     cd $BASE_DIR/git/src
     managed_exec python setup.py sdist || return $?
-    managed_exec pip install --install-option="--prefix=$BASE_DIR" --upgrade dist/CernVM-Online-1.0.tar.gz || return $?
+    managed_exec pip install -Iv --install-option="--prefix=$BASE_DIR" --upgrade dist/CernVM-Online-1.0.tar.gz || return $?
     cd ../../
     managed_exec rm -Rf $BASE_DIR/git || return $?
     managed_exec mkdir $BASE_DIR/logs
@@ -96,6 +96,7 @@ function make_public_undo
 function install_mysql_do
 {
     managed_exec yum install mysql-devel -y || return $?
+    easy_install -U distribute
     managed_exec pip install mysql-python
     return $?
 }
