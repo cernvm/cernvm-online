@@ -310,7 +310,7 @@ def publish(request, context_id):
         return redirect("dashboard")
 
     # Check if context belongs to calling user
-    if request.user.id is not context.owner.id:
+    if request.user.id != context.owner.id:
         msg_error(request, "Context with id " + context_id + " does not belong to you!")
         return redirect("dashboard")
 
@@ -320,7 +320,7 @@ def publish(request, context_id):
         return redirect('dashboard')
 
     # Render values
-    return render_to_response('pages/marketplace_publish_ctx.html', {
+    return uncache_response(render_to_response('pages/marketplace_publish_ctx.html', {
         'groups': MarketplaceGroup.objects.all(),
         'context': context,
         'icons': get_icons(request.user),
@@ -331,7 +331,7 @@ def publish(request, context_id):
             'instructions': get_memory(request, 'instructions'),
             'tags': get_memory(request, 'tags')
         }
-    }, RequestContext(request))
+    }, RequestContext(request)))
 
 @for_market
 def publish_action(request):
@@ -418,7 +418,7 @@ def revoke(request, context_id):
         return redirect("dashboard")
 
     # Check if context belongs to calling user
-    if request.user.id is not entry.context.owner.id:
+    if request.user.id != entry.context.owner.id:
         msg_error(request, "Context with id " + context_id + " does not belong to you!")
         return redirect("dashboard")
 
@@ -467,7 +467,7 @@ def cluster_publish(request, cluster_id):
         return redirect("dashboard")
 
     # Check if context belongs to calling user
-    if request.user.id is not cluster.owner.id:
+    if request.user.id != cluster.owner.id:
         msg_error(request, "Cluster with id " + context_id + " does not belong to you!")
         return redirect("dashboard")
 
@@ -591,7 +591,7 @@ def cluster_revoke(request, cluster_id):
         return redirect("dashboard")
 
     # Check if cluster belongs to calling user
-    if request.user.id is not entry.cluster.owner.id:
+    if request.user.id != entry.cluster.owner.id:
         msg_error(request, "Cluster with id " + cluster_id + " does not belong to you!")
         return redirect("dashboard")
 

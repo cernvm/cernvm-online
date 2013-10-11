@@ -38,7 +38,7 @@ def get_cernvm_config():
     try:
         response = urllib2.urlopen('http://cernvm.cern.ch/config/')
         _config = response.read()
-    
+
         # Parse response
         _params = {}
         _config = _config.split("\n")
@@ -46,8 +46,8 @@ def get_cernvm_config():
             if line:
                 (k, v) = line.split('=', 1)
                 _params[k] = v
-    
-    
+
+
         # Generate JSON map for the CERNVM_REPOSITORY_MAP
         _cvmMap = {}
         _map = _params['CERNVM_REPOSITORY_MAP'].split(",")
@@ -55,14 +55,14 @@ def get_cernvm_config():
             (name, _optlist) = m.split(":", 1)
             options = _optlist.split("+")
             _cvmMap[name] = options
-    
+
         # Update CERNVM_REPOSITORY_MAP
         _params['CERNVM_REPOSITORY_MAP'] = json.dumps(_cvmMap)
         _params['CERNVM_ORGANISATION_LIST'] = _params['CERNVM_ORGANISATION_LIST'].split(',')
 
         # Return parameters
         return _params
-    
+
     except Exception as ex:
         print "Got error: %s\n" % str(ex)
         return {
@@ -212,35 +212,35 @@ def ajax_list(request):
     _ans = []
     resultset = ContextDefinition.objects.filter(Q(name__contains=query), Q(public=True) | Q(owner=request.user), Q(inherited=False))[:10]
     for c in resultset:
-        
+
         # Check for key and add the image suffix
         suffix = ''
         if c.key != '':
             suffix = '_key'
-        
+
         # Define the icon
         icon = '<img src="/static/images/user' + suffix + '.png" style="width:14px;height:14px" align="baseline" /> '
         if (c.public):
             icon = '<img src="/static/images/public' + suffix + '.png" style="width:14px;height:14px" align="baseline" /> '
-            
-        # Define if the 
+
+        # Define if the
         has_key = False
         if c.key != "":
             has_key = True
-        
+
         # Push the result
         _ans.append(
-            { 
+            {
                 'label':c.name,
-                'text':icon + c.name + '<br /><small>Author: <em>' 
-                    + c.owner.first_name + ' ' + c.owner.last_name + '</em><br />Description: <em>' 
+                'text':icon + c.name + '<br /><small>Author: <em>'
+                    + c.owner.first_name + ' ' + c.owner.last_name + '</em><br />Description: <em>'
                     + c.description + '</em></small>',
                 'attributes': {
                    "has_key": has_key,
                    "uid": c.id
-                } 
+                }
             }
-        )    
+        )
 
     # Return response
     return uncache_response(HttpResponse(json.dumps(_ans), content_type="application/json"))
@@ -323,7 +323,7 @@ def create_abstract(request):
 def blank(request):
     # Empty values
     values = { }
-    
+
     # Render all of the plugins
     plugins = ContextPlugins().renderAll(request, values)
 
@@ -343,7 +343,7 @@ def blank(request):
 
 def create(request):
     post_dict = parser.parse(request.POST.urlencode())
-    
+
     # The values of all the plugins and the enabled plugins
     values = post_dict.get('values')
     enabled = post_dict.get('enabled')
@@ -352,7 +352,7 @@ def create(request):
     # Generate a UUID for this context
     c_uuid = gen_context_key()
 
-    # Collect data to save. Non-indexed data is pickled    
+    # Collect data to save. Non-indexed data is pickled
     raw_values = { 'values': values, 'enabled': enabled }
     if abstract is not None:
         raw_values['abstract'] = abstract
@@ -364,21 +364,21 @@ def create(request):
     # (in case somebody wants to clone a template)
     c_values = pickle.dumps(raw_values)
     c_config = ContextPlugins().renderContext(c_uuid, values, enabled)
-    
-    # Generate checksum of the configuration 
+
+    # Generate checksum of the configuration
     c_checksum = hashlib.sha1(c_config).hexdigest()
-    
+
     # Get the possible secret key
     c_key = ""
     if ('protect' in values) and (values['protect']):
         c_key = str(values['secret'])
-    
+
     # If the content is encrypted process the data now
     if (c_key != ''):
         c_values = base64.b64encode(crypt.encrypt(c_values, c_key))
         c_config = "ENCRYPTED:" + base64.b64encode(crypt.encrypt(c_config, c_key))
         c_key = salt_context_key(c_uuid, c_key)
-    
+
     # Check if this is public
     c_public = False
     if ('public' in values) and (values['public']):
@@ -403,13 +403,13 @@ def create(request):
             abstract=False,  # only True for pure abstract contexts
             from_abstract=from_abstract
         )
-    
+
     # Save context data (Should go to key/value store for speed-up)
     e_data = ContextStorage.objects.create(
             id=c_uuid,
             data=c_config
         )
-    
+
     # Go to dashboard
     return redirect('dashboard')
 
@@ -466,7 +466,7 @@ def clone(request, context_id):
             return resp['httpresp']
         elif 'data' in resp:
             data = pickle.loads(resp['data'])
-   
+
     # Render all of the plugins
     plugins = ContextPlugins().renderAll(request, data['values'], data['enabled'])
 
@@ -596,7 +596,7 @@ def context_from_abstract(request, context_id, cloning=False):
     }, RequestContext(request))
 
 def view(request, context_id):
-    
+
     # Fetch the entry from the db
     item = ContextDefinition.objects.get(id=context_id)
     data = {}
@@ -637,12 +637,12 @@ def delete(request, context_id):
     except:
         request.session["redirect_msg_error"] = "Context with id " + context_id + " does not exist!"
         return redirect("dashboard")
-                
+
     # Check if context belongs to calling user
-    if request.user.id is not context.owner.id:
-        request.session["redirect_msg_error"] = "Cluster with id " + context_id + " does not belong to you!"
+    if request.user.id != context.owner.id:
+        request.session["redirect_msg_error"] = "Context with id " + context_id + " does not belong to you!"
         return redirect("dashboard")
-    
+
     # Is it confirmed?
     if ('confirm' in request.GET) and (request.GET['confirm'] == 'yes'):
         # Delete the specified contextualization entry
@@ -651,7 +651,7 @@ def delete(request, context_id):
         # Go to dashboard
         request.session["redirect_msg_info"] = "Context removed successfully!"
         return redirect('dashboard')
-        
+
     else:
         # Show the confirmation screen
         return render_confirm(request, 'Delete context',
