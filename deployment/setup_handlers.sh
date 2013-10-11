@@ -96,7 +96,7 @@ function make_public_undo
 function install_mysql_do
 {
     managed_exec yum install mysql-devel -y || return $?
-    easy_install -U distribute
+    managed_exec easy_install -U distribute
     managed_exec pip install mysql-python
     return $?
 }
@@ -116,14 +116,17 @@ function install_apache_do
     managed_exec mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/a_ssl.conf || return $?
     managed_exec chown apache:apache $BASE_DIR -R || return $?
     # seLinux fix
-    managed_exec setsebool -P httpd_can_network_connect on || return $?
+    # managed_exec setsebool -P httpd_can_network_connect on || return $?
+    managed_exec setenforce 0
+    managed_exec sed -i -e 's/^SELINUX=.*$/SELINUX=disabled/' /etc/selinux/config
     managed_exec /etc/init.d/httpd restart
     return 0 # ignore Apache for the moment...
 }
 function install_apache_undo
 {
     managed_exec yum remove httpd mod_wsgi -y || return $?
-    managed_exec setsebool -P httpd_can_network_connect off || return $?
+    # managed_exec setsebool -P httpd_can_network_connect off || return $?
+    managed_exec sed -i -e 's/^SELINUX=.*$/SELINUX=enforcing/' /etc/selinux/config
     managed_exec rm -Rf /etc/httpd
     return $?
 }
