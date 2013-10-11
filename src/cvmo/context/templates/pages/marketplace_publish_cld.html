@@ -13,7 +13,7 @@
 <p>Using this form you can make your cloud definition visible on the public marketplace. You can still however publish encrypted information.</p>
 <form action="{% url "market_cluster_publish_action" %}" id="market_publish" method="post" enctype="multipart/form-data">
 	{% csrf_token %}
-	
+
 	<div id="content-accordion">
 		<div class="accordion-header separator"><h2>General</h2></div>
 		<div class="accordion-content container">
@@ -29,11 +29,11 @@
 					<th width="150"><label for="instructions">Detailed instructions:</label></th>
 					<td>
 						<textarea name="instructions" id="instructions">{{ values.instructions }}</textarea>
-					</td>			
+					</td>
 				</tr>
 			</table>
 		</div>
-		
+
 		<div class="accordion-header separator"><h2>Environment variables</h2></div>
 		<div class="accordion-content container">
 			<p class="description">Template variables that the user can specify at instantiation time.</p>
@@ -60,16 +60,16 @@
 				</tbody>
 				<thead>
 					<tr id="newenv_row" class="tr-newenv">
-						<td><input type="text" id="new_env_var" style="width:98%" /></td>			
+						<td><input type="text" id="new_env_var" style="width:98%" /></td>
 						<td align="center">=</td>
-						<td><input type="text" id="new_env_value" style="width:98%" /></td>			
+						<td><input type="text" id="new_env_value" style="width:98%" /></td>
 						<td align="center"><input id="new_env_required" type="checkbox" /></td>
 						<td align="center" class="v-middle"><a href="javascript:;" onclick="CVMO.Market.addEnvFromForm()" class="softbutton"><img border="0" src="{% static "images/page_add.png" %}" align="absmiddle"> Add variable</a></td>
 					</tr>
 				</thead>
 			</table>
 		</div>
-		
+
 		<div class="accordion-header separator"><h2>Entry details</h2></div>
 		<div class="accordion-content container">
 			<table class="plain long-text">
@@ -81,13 +81,13 @@
 							<option value="{{g.id}}">{{g.name}}</option>
 						{% endfor %}
 						</select>
-					</td>			
+					</td>
 				</tr>
 				<tr>
-					<th width="150"><label for="tags">Tags:</label></th>
+					<th width="150"><label for="tags">Tags (separate them using commas):</label></th>
 					<td>
 						<input type="text" id="tags" maxlength="100" name="tags" value="{{ values.tags }}" />
-					</td>			
+					</td>
 				</tr>
 				<tr>
 					<th width="150"><label for="icon">Icon:</label></th>
@@ -111,18 +111,18 @@
 				<tr>
 					<td>&nbsp;</td>
 					<td>
-						<span style="vertical-align: middle">Upload one: <input type="file" id="icon" name="icon" /></span>
+						<span style="vertical-align: middle">Upload one (please use PNGs only): <input type="file" id="icon" name="icon" /></span>
 					</td>
 				</tr>
-				
+
 			</table>
 		</div>
-				
+
 	</div>
 
 	<div class="buttons-container">
 		<input type="submit" value="Publish context" />
-	</div>			
-</form>	
-		
+	</div>
+</form>
+
 {% endblock %}
