@@ -263,7 +263,7 @@
 						{% endfor %}
 						{% if not disabled %}
 							<tr id="newuser_row" class="tr-newuser">
-								<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value); $('f_contextcmduser').setProperty('value', this.value);" /></td>
+								<td><input type="text" id="new_user_name" value="{{ user.username|default:"user" }}" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value); $('f_contextcmduser').setProperty('value', this.value);" /></td>
 								<td><input type="text" id="new_user_group" /></td>
 								<td><input type="text" id="new_user_home" value="/home/user" /></td>
 								<td><input type="password" id="new_user_password" value="" /></td>
