@@ -15,19 +15,31 @@
 		<td><input type="text" name="values[condor][collector_name]" value="{{ values.condor.collector_name }}" /></td>			
 	</tr>
 	<tr>
-		<th>Condor user:</th>
+		<th>HTCondor user:</th>
 		<td><input type="text" name="values[condor][condor_user]" value="{{ values.condor.condor_user }}" /></td>			
 	</tr>
 	<tr>
-		<th>Condor group:</th>
+		<th>HTCondor group:</th>
 		<td><input type="text" name="values[condor][condor_group]" value="{{ values.condor.condor_group }}" /></td>			
 	</tr>
 	<tr>
-		<th>Condor directory:</th>
+		<th>HTCondor directory:</th>
 		<td><input type="text" name="values[condor][condor_dir]" value="{{ values.condor.condor_dir }}" /></td>			
 	</tr>
 	<tr>
-		<th>Condor admin:</th>
+		<th>HTCondor admin:</th>
 		<td><input type="text" name="values[condor][condor_admin]" value="{{ values.condor.condor_admin }}" /></td>			
+	</tr>
+	<tr>
+		<th>HTCondor UID domain:</th>
+		<td><input type="text" name="values[condor][uid_domain]" size="10" value="{{ values.condor.uid_domain }}" /></td>
+	</tr>
+	<tr>
+		<th>HTCondor lowport:</th>
+		<td><input type="text" name="values[condor][lowport]" value="{{ values.condor.lowport }}" /></td>
+	</tr>
+	<tr>
+		<th>HTCondor highport:</th>
+		<td><input type="text" name="values[condor][highport]" value="{{ values.condor.highport }}" /></td>
 	</tr>
 </table>
