@@ -36,6 +36,51 @@
         <td><input name="values[condor][condor_secret]" value="type in any password" autocomplete="off"/></td>
     </tr>
 
+    <tr class="cvmo-vaf-master">
+        <th>EC2 API URL:</th>
+        <td><input name="values[vaf][ec2_api_url]" value="http://openstack.cern.ch:8773/services/Cloud" autocomplete="off"/></td>
+    </tr>
+    
+    <tr class="cvmo-vaf-master">
+        <th>EC2 Access Key ID:</th>
+        <td><input name="values[vaf][ec2_aws_access_key_id]" value="" autocomplete="off"/></td>
+    </tr>
+
+    <tr class="cvmo-vaf-master">
+        <th>EC2 Secret Access Key:</th>
+        <td><input name="values[vaf][ec2_aws_secret_access_key]" value="" autocomplete="off"/></td>
+    </tr>
+
+    <tr class="cvmo-vaf-master">
+        <th>EC2 Flavour:</th>
+        <td><input name="values[vaf][ec2_flavour]" value="m1.tiny" autocomplete="off"/></td>
+    </tr>
+
+    <tr class="cvmo-vaf-master">
+        <th>EC2 VM key name:</th>
+        <td><input name="values[vaf][ec2_key_name]" value="" autocomplete="off"/></td>
+    </tr>
+
+    <tr class="cvmo-vaf-master">
+        <th>EC2 Image AMI ID:</th>
+        <td><input name="values[vaf][ec2_image_id]" value="ami-12345678" autocomplete="off"/></td>
+    </tr>
+
+    <tr class="cvmo-vaf-master">
+        <th>Jobs per VM:</th>
+        <td><input name="values[vaf][elastiq_n_jobs_per_vm]" value="4" autocomplete="off"/></td>
+    </tr>
+
+    <tr class="cvmo-vaf-master">
+        <th>Min quota of VMs:</th>
+        <td><input name="values[vaf][quota_min_vms]" value="1" autocomplete="off"/></td>
+    </tr>
+
+    <tr class="cvmo-vaf-master">
+        <th>Max quota of VMs:</th>
+        <td><input name="values[vaf][quota_max_vms]" value="2" autocomplete="off"/></td>
+    </tr>
+
     <tr>
         <th>Context password:</th>
         <td><input name="values[secret]" value="" autocomplete="off"/></td>
@@ -52,11 +97,30 @@ function CVMO_VAF_UpdateStartupScript() {
   auth = jQuery(':input[name="values[vaf][auth]"]').val();
   num_pool = jQuery(':input[name="values[vaf][num_pool]"]').val();
 
+  // Elastiq
+  elastiq = {
+    'ec2_api_url': jQuery(':input[name="values[vaf][ec2_api_url]"]').val(),
+    'ec2_aws_access_key_id': jQuery(':input[name="values[vaf][ec2_aws_access_key_id]"]').val(),
+    'ec2_aws_secret_access_key': jQuery(':input[name="values[vaf][ec2_aws_secret_access_key]"]').val(),
+    'ec2_image_id': jQuery(':input[name="values[vaf][ec2_image_id]"]').val(),
+    'ec2_key_name': jQuery(':input[name="values[vaf][ec2_key_name]"]').val(),
+    'ec2_flavour': jQuery(':input[name="values[vaf][ec2_flavour]"]').val(),
+    'quota_min_vms': jQuery(':input[name="values[vaf][quota_min_vms]"]').val(),
+    'quota_max_vms': jQuery(':input[name="values[vaf][quota_max_vms]"]').val(),
+    'elastiq_n_jobs_per_vm': jQuery(':input[name="values[vaf][elastiq_n_jobs_per_vm]"]').val()
+  };
+  elastiq_bash = '';
+  for (k in elastiq) {
+    elastiq_bash += "export VafConf_Elastiq_" +
+      k + "=\"" + elastiq[k] + "\"\n";
+  }
+
   jQuery(':input[name="values[general][startup_script]"]').val(
+    elastiq_bash + "\n" +
     "export VafConf_NodeType=" + role + "\n" + 
     "export VafConf_AuthMethod=" + auth + "\n" +
     "export VafConf_NumPoolAccounts='" + num_pool + "'\n" +
-    "CVM_ContextUrl='https://dl.dropbox.com/u/19379008/CernVM-VAF/2.7.0/context_vaf.sh'\n" +
+    "CVM_ContextUrl='https://dl.dropbox.com/u/19379008/CernVM-VAF/u1.11/context_vaf.sh'\n" +
     "CVM_ContextDest='/tmp/context_vaf.sh'\n" +
     "curl -L $CVM_ContextUrl -o $CVM_ContextDest && source $CVM_ContextDest\n" +
     "rm -f $CVM_ContextDest\n\n\n"
