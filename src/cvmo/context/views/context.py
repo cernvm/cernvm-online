@@ -342,7 +342,7 @@ def blank(request):
     }, RequestContext(request))
 
 def create(request):
-    post_dict = parser.parse(request.POST.urlencode())
+    post_dict = parser.parse( unicode(request.POST.urlencode()).encode('utf-8') )
 
     # The values of all the plugins and the enabled plugins
     values = post_dict.get('values')
