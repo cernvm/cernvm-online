@@ -127,7 +127,8 @@ function install_apache_do
     if [ -e /etc/httpd/conf.d/ssl.conf ] ; then
       managed_exec mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/a_ssl.conf || return $?
     fi
-    managed_exec chown apache:apache $BASE_DIR -R || return $?
+    managed_exec chown -R nobody:nobody "$BASE_DIR"/{bin,lib,lib64,public_html} || return $?
+    managed_exec chown -R apache:apache "$BASE_DIR"/logs || return $?
 
     # seLinux fix
     getsebool httpd_can_network_connect 2> /dev/null | \
