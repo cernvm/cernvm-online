@@ -38,7 +38,7 @@
 	<div class="option">
 		<h2>Using CERN Account</h2>
 		<div class="field clearfix button-container center">
-			<input type="button" onclick="window.location='https://cernvm-online.cern.ch/Shibboleth.sso/?target=https://cernvm-online.cern.ch/dashboard'" value="Login with CERN Account" />
+			<input type="button" onclick="window.location='https://' + window.location.host + '/Shibboleth.sso/?target=https://' + window.location.host + '/{{ url_prefix }}dashboard'" value="Login with CERN Account" />
 		</div>
 		{% if enable_csc %}
 		<div class="field clearfix button-container center">

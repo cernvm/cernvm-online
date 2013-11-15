@@ -15,12 +15,14 @@ from Crypto.Hash import SHA256
 from cvmo.context.models import UserActivationKey
 from cvmo.context.utils.views import msg_error, msg_warning, msg_confirm, redirect_memory, get_memory
 
+from cvmo.settings import URL_PREFIX
+
 def login(request):
     if user_is_logged(request):
         return redirect("dashboard")
 
     # Push session messages to the context
-    context = {}
+    context = { 'url_prefix' : URL_PREFIX }
     push_to_context("redirect_msg_info", "msg_info", context, request)
     push_to_context("redirect_msg_error", "msg_error", context, request)
     push_to_context("login_error", "msg_error", context, request)
