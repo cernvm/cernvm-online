@@ -284,7 +284,7 @@ def blank_abstract(request):
     }, RequestContext(request))
 
 def create_abstract(request):
-    post_dict = parser.parse(request.POST.urlencode())
+    post_dict = parser.parse( unicode(request.POST.urlencode()).encode('utf-8') )
 
     # We are interested in values, enabled and abstract. Let's insert empty
     # values in case some of them are null (values and abstract are never null)
@@ -307,7 +307,7 @@ def create_abstract(request):
 
     e_context = ContextDefinition.objects.create(
         id=c_uuid,
-        name=str( post_dict['values']['name'] ),
+        name=post_dict['values']['name'],
         description='',  # TODO
         owner=request.user,
         key='',
@@ -392,8 +392,8 @@ def create(request):
     # Save context definition
     e_context = ContextDefinition.objects.create(
             id=c_uuid,
-            name=str(values['name']),
-            description=str(values['description']),
+            name=values['name'],
+            description=values['description'],
             owner=request.user,
             key=c_key,
             public=c_public,
