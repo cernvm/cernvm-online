@@ -5,8 +5,12 @@
 #
 
 GIT_REPO="https://github.com/cernvm/cernvm-online.git"
-#GIT_BRANCH="master"
+
+# Set it to the appropriate branch or tag. If set to the special value
+# '<dont_change_branch>' it will use the currently selected version
+# without performing any 'git checkout'
 GIT_BRANCH="<dont_change_branch>"
+
 BASE_DIR="/var/www/cernvm-online"
 SCRIPT_PATH=$(cd `dirname "$BASH_SOURCE"` && pwd)
 LOG_FILE="$SCRIPT_PATH/log.txt"
