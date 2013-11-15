@@ -22,8 +22,13 @@ function make_dirs_undo
 function export_source_do
 {
     managed_exec yuminst git || return $?
-    mkdir -p "$BASE_DIR"/src
-    if [ ! -e "$BASE_DIR"/src/.git ] ; then
+
+    local SRCSRC=$( cd "$SCRIPT_PATH"/.. ; pwd )
+    local SRCDST=$( cd "$BASE_DIR" ; pwd )/src
+    if [ "$SRCSRC" != "$SRCDST" ] ; then
+        managed_exec ln -nfs "$SRCSRC" "$SRCDST"
+    fi
+    if [ ! -e "$SRCDST"/.git ] ; then
         managed_exec git clone $GIT_REPO "$BASE_DIR"/src || return $?
     fi
     if [ "$GIT_BRANCH" != '<dont_change_branch>' ] ; then
@@ -113,11 +118,9 @@ function install_mysql_undo
 ################################################################################
 function install_apache_do
 {
-    #rpm -e --nodeps mod_wsgi
-    #rpm -e --nodeps mod_ssl
     managed_exec yuminst httpd mod_wsgi mod_ssl || return $?
-    managed_exec cp $SCRIPT_PATH/app.wsgi $BASE_DIR/bin/app.wsgi || return $?
-    managed_exec cp $SCRIPT_PATH/cernvm-online.conf /etc/httpd/conf.d/b_cernvm-online.conf || return $?
+    managed_exec cp -v "$SCRIPT_PATH"/etc/app.wsgi "$BASE_DIR"/bin/app.wsgi || return $?
+    managed_exec cp -v "$SCRIPT_PATH"/etc/cernvm-online.conf /etc/httpd/conf.d/b_cernvm-online.conf || return $?
     if [ -e /etc/httpd/conf.d/wsgi.conf ] ; then
       managed_exec mv /etc/httpd/conf.d/wsgi.conf /etc/httpd/conf.d/a_wsgi.conf || return $?
     fi

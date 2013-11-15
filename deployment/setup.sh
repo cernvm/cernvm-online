@@ -13,7 +13,7 @@ LOG_FILE="$SCRIPT_PATH/log.txt"
 rm $LOG_FILE 2> /dev/null # clean files
 
 # Load utilities
-source $SCRIPT_PATH/utils.sh
+source "$SCRIPT_PATH"/lib/utils.sh
 
 # Steps
 declare -a STEPS=( make_dirs export_source \
@@ -32,7 +32,7 @@ for (( I=0 ; I<=$# ; I++ )) ; do
 done
 
 # Load setup handlers
-source $SCRIPT_PATH/setup_handlers.sh
+source "$SCRIPT_PATH"/lib/setup_handlers.sh
 
 # Main
 main
