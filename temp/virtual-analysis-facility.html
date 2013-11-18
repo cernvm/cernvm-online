@@ -32,6 +32,11 @@
     </tr>
 
     <tr>
+        <th>Proxy for CVMFS:</th>
+        <td><input name="values[vaf][proxy]" value="http://proxy.cern.ch:3128" autocomplete="off"/></td>
+    </tr>
+
+    <tr>
         <th>HTCondor shared secret:</th>
         <td><input name="values[condor][condor_secret]" value="type in any password" autocomplete="off"/></td>
     </tr>
@@ -127,6 +132,42 @@ function CVMO_VAF_UpdateStartupScript() {
   );
 }
 
+function CVMO_VAF_UpdateProxy() {
+    
+  uri = jQuery(':input[name="values[vaf][proxy]"]').val();
+  p = new CVMO.UriParser(uri);
+  p.Parse();
+
+  // Translate results in a CernVM Online-compatible structure
+  cvm_proxy = {};
+  if (p.GetVal('username') && p.GetVal('password')) {
+    cvm_proxy['http_usecredentials'] = 'on';
+    cvm_proxy['http_username'] = p.GetVal('username');
+    cvm_proxy['http_password'] = p.GetVal('password');
+  }
+  else {
+    cvm_proxy['http_usecredentials'] = '';
+    cvm_proxy['http_username'] = '';
+    cvm_proxy['http_password'] = '';
+  }
+  cvm_proxy['http_fallback'] = 'on';  // always fallback to DIRECT
+  cvm_proxy['http_proxy'] = p.GetVal('host');
+  if (p.GetVal('protocol')) cvm_proxy['http_proxy_mode'] = p.GetVal('protocol');
+  else cvm_proxy['http_proxy_mode'] = 'auto';
+  if (p.GetVal('port')) cvm_proxy['http_proxy_port'] = p.GetVal('port');
+  else cvm_proxy['http_proxy_port'] = '';
+
+  for (key in cvm_proxy) {
+    jo = jQuery(':input[name="values[general][' + key + ']"]');
+    if (jQuery(jo).attr('type') == 'checkbox') {
+      jQuery(jo).attr('checked', (cvm_proxy[key] == 'on'));
+    }
+    else {
+      jQuery(jo).val(cvm_proxy[key]);
+    }
+  }
+}
+
 function CVMO_VAF_UpdateSecret() {
   secret = jQuery(':input[name="values[secret]"]').val();
   jQuery(':input[name="values[protect]"]')
@@ -165,6 +206,10 @@ window.addEvent('domready', function() {
 
   sel = '#cvmo-vaf-form :input';
   jQuery(sel).change(CVMO_VAF_UpdateStartupScript);
+  jQuery(sel).trigger('change');
+
+  sel = ':input[name="values[vaf][proxy]"]';
+  jQuery(sel).change(CVMO_VAF_UpdateProxy);
   jQuery(sel).trigger('change');
 
   sel = ':input[name="values[secret]"]';
