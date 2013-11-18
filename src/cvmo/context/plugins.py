@@ -316,7 +316,7 @@ class ContextPlugins(object):
 
         # If we have a private key, add it too
         if ('root_ssh_key' in values) and (values['root_ssh_key'] != ""):
-            _script+= "ROOT_PUBKEY=%s\n" % base64.b64encode(values['root_ssh_key'])
+            _script+= "ROOT_PUBKEY=%s\n" % base64.b64encode( sanitize(values['root_ssh_key']) )
 
         # Return script
         return _script

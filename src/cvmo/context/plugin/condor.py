@@ -15,5 +15,9 @@ class Condor(ContextPlugin):
             'condor_user'   : 'condor',
             'condor_group'  : 'condor',
             'condor_dir'    : '',
-            'condor_admin'  : ''
+            'condor_admin'  : '',
+            'use_ips'       : 'true',
+            'uid_domain'    : '*',
+            'lowport'       : '41000',
+            'highport'      : '42000'
         }

@@ -18,7 +18,7 @@ from cvmo.context.models import ContextStorage, ContextDefinition
 from cvmo.querystring_parser import parser
 
 from cvmo.context.utils.views import uncache_response, render_error, render_confirm, render_password_prompt
-from cvmo.context.utils.context import gen_context_key, salt_context_key
+from cvmo.context.utils.context import gen_context_key, salt_context_key, tou
 from cvmo.context.utils import crypt
 
 from cvmo.context.utils.views import get_list_allowed_abstract
@@ -284,7 +284,7 @@ def blank_abstract(request):
     }, RequestContext(request))
 
 def create_abstract(request):
-    post_dict = parser.parse(request.POST.urlencode())
+    post_dict = parser.parse( unicode(request.POST.urlencode()).encode('utf-8') )
 
     # We are interested in values, enabled and abstract. Let's insert empty
     # values in case some of them are null (values and abstract are never null)
@@ -307,10 +307,10 @@ def create_abstract(request):
 
     e_context = ContextDefinition.objects.create(
         id=c_uuid,
-        name=str( post_dict['values']['name'] ),
-        description='',  # TODO
+        name=tou(post_dict['values']['name']),
+        description=u'',  # TODO
         owner=request.user,
-        key='',
+        key=u'',
         public=False,  # TODO
         data=c_data,
         checksum=0,  # TODO
@@ -342,7 +342,7 @@ def blank(request):
     }, RequestContext(request))
 
 def create(request):
-    post_dict = parser.parse(request.POST.urlencode())
+    post_dict = parser.parse( unicode(request.POST.urlencode()).encode('utf-8') )
 
     # The values of all the plugins and the enabled plugins
     values = post_dict.get('values')
@@ -392,8 +392,8 @@ def create(request):
     # Save context definition
     e_context = ContextDefinition.objects.create(
             id=c_uuid,
-            name=str(values['name']),
-            description=str(values['description']),
+            name=tou(values['name']),
+            description=tou(values['description']),
             owner=request.user,
             key=c_key,
             public=c_public,
@@ -474,7 +474,7 @@ def clone(request, context_id):
     for p in plugins:
         p['display'] = True
 
-    data['values']['name'] = name_increment_revision(data['values']['name'])
+    data['values']['name'] = name_increment_revision( tou(data['values']['name']) )
 
     # Render the response
     #raw = {'data':data}  # debug
@@ -516,7 +516,7 @@ def clone_abstract(request, context_id):
         p_dict.append({'title': p.TITLE, 'name': p_n,
             'enabled': p_e, 'display': p_d})
 
-    data['values']['name'] = name_increment_revision(data['values']['name'])
+    data['values']['name'] = name_increment_revision( tou(data['values']['name']) )
 
     return render_to_response('pages/abstract.html', {
         'values': data['values'],
@@ -575,7 +575,7 @@ def context_from_abstract(request, context_id, cloning=False):
 
     # Change original name
     if cloning:
-        data['values']['name'] = name_increment_revision(data['values']['name'])
+        data['values']['name'] = name_increment_revision( tou(data['values']['name']) )
     else:
         data['values']['name'] = 'Context from ' + data['values']['name']
 

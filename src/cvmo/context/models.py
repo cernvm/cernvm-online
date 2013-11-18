@@ -13,7 +13,6 @@ class ContextDefinition(models.Model):
     key = models.CharField(max_length=100, blank=True)
     checksum = models.CharField(max_length=40)
     public = models.BooleanField(verbose_name='Visible on public lists')
-    agent = models.BooleanField(verbose_name='Activate iAgent')
     inherited = models.BooleanField(default=False)
     abstract = models.BooleanField(default=False)
     from_abstract = models.BooleanField(default=False)

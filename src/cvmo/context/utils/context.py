@@ -137,13 +137,24 @@ def sanitize(s):
     """
 
     if isinstance(s, str):
-        s = s.decode('utf-8')
+        s = s.decode('utf-8')  # to unicode
     elif not isinstance(s, unicode):
-        raise TypeError('str or unicode expected (%s provided)' % \
-            type(s).__name__)
+        s = unicode(s)  # to unicode (tries)
+        #raise TypeError('str or unicode expected (%s provided)' % \
+        #    type(s).__name__)
     s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore') # accents
     s = re.sub(r'[^A-Za-z0-9-\ _]+', '_', s) # invalid chars
     s = re.sub(r'(^[_\s]+|[_\s]+$)', '', s) # trailing/leading invalid/spaces
+    return s
+
+def tou(s):
+    """
+    Converts input object to Unicode, where applicable.
+    """
+    if isinstance(s, str):
+        s = s.decode('utf-8')
+    elif not isinstance(s, unicode):
+        s = unicode(s)
     return s
 
 def sanitize_env(variable):
