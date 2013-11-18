@@ -93,8 +93,11 @@
 
 </table>
 
-<input type="hidden" name="values[general][startup_script]" autocomplete="off"/>
-<input type="checkbox" name="values[protect]" value="1" style="display:none" autocomplete="off"/>
+<input type="hidden" name="values[general][startup_script]"/>
+<input type="hidden" name="values[general][cvm_edition]" value="uCernVM"/>
+<input type="hidden" name="values[general][resize_rootfs]" value="true"/>
+<input type="hidden" name="values[general][cvmfs_branch]" value="cernvm-devel.cern.ch"/>
+<input type="checkbox" name="values[protect]" value="1" style="display:none"/>
 
 <script language="JavaScript">
 function CVMO_VAF_UpdateStartupScript() {
