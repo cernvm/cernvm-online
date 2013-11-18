@@ -413,9 +413,25 @@
 						<th width="150">CernVM Edition:</th>
 						<td colspan="2">
 							<select class="cvmo-disclose" id="model" name="values[general][cvm_edition]">
+								<option value="uCernVM" {{ values.general.cvm_edition|sel:"uCernVM" }}>µCernVM</option>
 		                    	<option value="Batch" {{ values.general.cvm_edition|sel_default:"Batch" }}>Batch</option>
 		                    	<option value="Basic" {{ values.general.cvm_edition|sel:"Basic" }}>Basic</option>
 								<option value="Desktop" {{ values.general.cvm_edition|sel:"Desktop" }}>Desktop</option>
+		                    </select>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-model-uCernVM">
+						<th>Resize root partition:</th>
+						<td colspan="2">
+							<input {{disabled|dis}} type="checkbox" name="values[general][resize_rootfs]" {{values.general.resize_rootfs|chk}} class="cvmo-disabling" id="resize_rootfs" value="true"><label for="resize_rootfs"> Use full root partition instead of the first 20 GB only</label>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-model-uCernVM">
+						<th width="150">µCernVM branch:</th>
+						<td colspan="2">
+							<select {{disabled|dis}} id="cernvmBranch" name="values[general][cvmfs_branch]">
+		                        <option {{values.general.cvmfs_branch|sel:"cernvm-testing.cern.ch"}} value="cernvm-testing.cern.ch">Testing</option>
+		                        <option {{values.general.cvmfs_branch|sel:"cernvm-devel.cern.ch"}} value="cernvm-devel.cern.ch">Development</option>
 		                    </select>
 						</td>
 					</tr>
