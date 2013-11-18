@@ -223,9 +223,12 @@ class ContextPlugins(object):
             _ans+= "users=%s\n" % _userstr
 
         # Prepare proxy
-        if values['general']['http_proxy_mode'] != 'auto':
-            _proxy="DIRECT"
-            if values['general']['http_proxy_mode'] != 'direct':
+        if values['general']['http_proxy_mode'] == 'auto':
+            _proxy = None
+        else:
+            if values['general']['http_proxy_mode'] == 'direct':
+                _proxy="DIRECT"
+            else:
                 _proxy = values['general']['http_proxy_mode']+"://"
 
                 # Check if we should add a user
@@ -270,6 +273,14 @@ class ContextPlugins(object):
                         _ans+="startXDM=on\n"
                     else:
                         _ans+="startXDM=off\n"
+
+        # Setup uCernVM specific section
+        _ucvm = '';
+        if _proxy is not None:
+            _ucvm += "cvmfs_http_proxy=\"%s\"\n" % _proxy
+        if _ucvm != '':
+            # Write only if necessary
+            _ans += "\n[ucernvm-begin]\n%s[ucernvm-end]\n" % _ucvm
 
         return _ans
 
