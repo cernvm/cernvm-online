@@ -670,7 +670,7 @@ CVMO.Widgets.MakeDropDown = function( element ) {
         // Open and position this dropdown
         opt.css('min-width', btn.outerWidth());
         mwth = 150;
-        mw = btn.outerWidth()*1.5;
+        mw = btn.outerWidth()*2.5;
         if (mw < mwth) mw = mwth;
         opt.css('max-width', mw);
 
