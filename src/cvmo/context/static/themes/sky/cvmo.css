@@ -34,6 +34,11 @@ div.sidenav > ul > li > a {
     vertical-align: middle;
     padding: 2px 8px 2px 8px;
     font-size: 12px;
+    white-space: nowrap;
+    vertical-align: top;  /* because of this: https://github.com/deitch/jstree-grid/issues/10 */;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
 }
 
 div.sidenav > ul > li.empty {
@@ -157,6 +162,13 @@ table.pad-5 td.buttons-container div.btn {
     display: inline-block;
 }
 
+table.pad-5 td.truncate-cell {
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 0;
+    text-overflow: ellipsis;
+}
+
 .long-text input[type=text], table.long-text input[type=password] {
     width: 200px !important;
 }
@@ -254,6 +266,10 @@ a.softbutton:hover {
     text-decoration: none;
     width: 100%;
     display: inline-block;
+    overflow: hidden;
+    vertical-align: top;  /* because of this: https://github.com/deitch/jstree-grid/issues/10 */;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .dropdownbutton > ul > li > a:hover {

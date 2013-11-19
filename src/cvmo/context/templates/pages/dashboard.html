@@ -74,24 +74,25 @@
 <h2>Your context definitions</h2>
 <table class="pad-5">
 	<tr>
-		<th width="20">&nbsp;</th>
-		<th>Name</th>
-		<th width="240">ID</th>
-		<th width="210">Operations</th>
-		<th width="100">Deployment</th>
+		<th width="5%">&nbsp;</th>
+		<th width="48%" style="">Name</th>
+		<th width="47%">Operations</th>
 	</tr>
 	{% for item in context_list %}
 		<tr>
-			<td>{% if item.public %}
+
+			<!-- Icon column -->
+			<td style="text-align:center">{% if item.public %}
 				<img alt="Public" title="Definition visible in market listings" src="{% if item.key %}{% static "images/cart_key.png" %}{% else %}{% static "images/cart.png" %}{% endif %}" />
 				{% else %}
 				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" />
 				{% endif %}
 			</td>
-			<td>{{ item.name }}{% if item.from_abstract %} <img alt="Simple" title="Simple definition" src="{% static "images/thumb_up.png" %}"/>{% endif %}</td>
-			<td>
-				{{ item.id }}
-			</td>
+
+			<!-- Name column -->
+			<td class="truncate-cell" title="{{ item.name|escape }}">{{ item.name|escape }}</td>
+
+			<!-- Operations column -->
 			<td class="buttons-container">
 				<!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
 				<div class="btn"><a href="{% if item.from_abstract %}{% url "context_clone_simple" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_add.png" %}"/> Clone</a></div>
@@ -115,16 +116,14 @@
 						<li><a href="{% url "context_view_raw" context_id=item.id %}">Get raw user data</b></a></li>
 					</ul>
 				</div>
-				<!-- End of buttons -->
-			</td>
-			<td class="buttons-container">
+				<!-- Deploy now with WebAPI -->
 				<div class="dropdownbutton btn">
 					<span>
 						<img border="0" align="absmiddle"
 							src="{% static "images/vm_add.png" %}"
 							width="16" height="16"
 							title="Create a VM using CernVM WebAPI plugin"/>
-						WebAPI
+						Launch now
 					</span>
 					<ul>
 						{% for conf in webapi_configurations %}
@@ -141,11 +140,13 @@
 						{% endfor %}
 					</ul>
 				</div>
+				<!-- End of buttons -->
 			</td>
+
 		</tr>
 	{% empty %}
 		<tr>
-			<td colspan="5" align="center">No context defined yet</tr>
+			<td colspan="3" align="center">No context defined yet</tr>
 		</tr>
 	{% endfor %}
 </table>
@@ -218,25 +219,21 @@ jQuery(document).ready(function() {
 </script>
 <table class="pad-5">
 	<tr>
-		<th>Name</th>
-		<th width="240">ID</th>
-		<th width="40">Public</th>
-		<th width="100">Operations</th>
+		<th width="72%">Name</th>
+		<th width="6%">Public</th>
+		<th width="22%">Operations</th>
 	</tr>
 	{% for item in my_abstract_list %}
 	<tr>
 
 		<!-- Name column -->
-		<td>{{ item.name }}</td>
+		<td class="truncate-cell" title="{{ item.name|escape }}">{{ item.name|escape }}</td>
 
-		<!-- ID column -->
-		<td>{{ item.id }}</td>
-
-		<!-- Public column (checkbox) -->
+		<!-- Public column (AJAX checkbox) -->
 		<td align="center"><input type="checkbox" disabled name="absctx[{{ item.id }}][public]"/></td>
 
 		<!-- Operations column -->
-		<td>
+		<td class="buttons-container">
 
 			<!-- Clone -->
 			<a href="{% url "abstract_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
@@ -248,7 +245,7 @@ jQuery(document).ready(function() {
 	</tr>
 	{% empty %}
 	<tr>
-		<td colspan="4" align="center">No abstract context defined yet</tr>
+		<td colspan="3" align="center">No abstract context defined yet</tr>
 	</tr>
 	{% endfor %}
 </table>
