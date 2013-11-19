@@ -82,7 +82,7 @@
 		<tr>
 
 			<!-- Icon column -->
-			<td style="text-align:center">{% if item.public %}
+			<td class="buttons-container">{% if item.public %}
 				<img alt="Public" title="Definition visible in market listings" src="{% if item.key %}{% static "images/cart_key.png" %}{% else %}{% static "images/cart.png" %}{% endif %}" />
 				{% else %}
 				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" />
@@ -257,21 +257,23 @@ jQuery(document).ready(function() {
 <h2>Your cluster definitions</h2>
 <table class="pad-5">
 	<tr>
-		<th width="20">&nbsp;</th>
-		<th>Name</th>
-		<th width="240">ID</th>
-		<th width="180">Operations</th>
+		<th width="4%">&nbsp;</th>
+		<th width="69%">Name</th>
+		<th width="27%">Operations</th>
 	</tr>
 	{% for item in cluster_list %}
 		<tr>
-			<td>{% if item.public %}
+			<td class="buttons-container">{% if item.public %}
 				<img alt="Public" title="Definition visible in public listings" src="{% static "images/world.png" %}" /></td>
 				{% else %}
 				<img alt="Private" title="Private definition" src="{% static "images/lock.png" %}" /></td>
 				{% endif %}
-			<td>{{ item.name }}</td>
-			<td>{{ item.uid }}</td>
-			<td>
+
+			<!-- Cluster name column -->
+			<td class="truncate-cell" title="{{ item.name|escape }} ({{ item.uid }})">{{ item.name|escape }}</td>
+
+			<!-- Cluster operations column -->
+			<td class="buttons-container">
 				<a href="{% url "cluster_clone" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_go.png" %}" /> Clone</a>
 				{% if item.public %}
 					<a href="{% url "market_cluster_revoke" cluster_id=item.id %}" class="softbutton" title="Remove this cluster definition from the marketpace"><img border="0" align="absmiddle" src="{% static "images/cart_delete.png" %}" /> Withdraw</a>
@@ -280,10 +282,11 @@ jQuery(document).ready(function() {
 					<a href="{% url "cluster_delete" cluster_id=item.id %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "images/brick_delete.png" %}" /></a>
 				{% endif %}
 			</td>
+
 		</tr>
 	{% empty %}
 		<tr>
-			<td colspan="4" align="center">No clusters defined yet</tr>
+			<td colspan="3" align="center">No clusters defined yet</tr>
 		</tr>
 	{% endfor %}
 </table>
