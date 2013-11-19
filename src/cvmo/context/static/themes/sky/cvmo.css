@@ -169,6 +169,10 @@ table.pad-5 td.truncate-cell {
     text-overflow: ellipsis;
 }
 
+table.pad-5 tr:hover {
+    background-color: #eee;
+}
+
 .long-text input[type=text], table.long-text input[type=password] {
     width: 200px !important;
 }
