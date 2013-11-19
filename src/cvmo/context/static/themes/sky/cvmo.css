@@ -154,6 +154,7 @@ table.pad-5 td {
 
 table.pad-5 td.buttons-container {
     text-align: center;
+    vertical-align: middle;
 }
 
 table.pad-5 td.buttons-container div.btn {

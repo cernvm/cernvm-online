@@ -9,19 +9,19 @@
 <p>Please select the contextualization template you want to use for your VM:</p>
 <table class="pad-5">
 	<tr>
-		<th width="20">&nbsp;</th>
-		<th>Name</th>
-		<th width="200">Operations</th>		
+		<th width="4%">&nbsp;</th>
+		<th width="65%">Name</th>
+		<th width="31%">Operations</th>		
 	</tr>
 	{% for item in context_list %}
 		<tr>
-			<td>{% if item.public %}
+			<td class="buttons-container">{% if item.public %}
 				<img alt="Public" title="Definition visible in public listings" src="{% if item.key %}{% static "images/world_key.png" %}{% else %}{% static "images/world.png" %}{% endif %}" /></td>
 				{% else %}
 				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "images/user_key.png" %}{% else %}{% static "images/user.png" %}{% endif %}" /></td>
 				{% endif %}
-			<td><strong>{{ item.name }}</strong><br />{{ item.description }}</td>
-			<td class="v-middle" align="center">
+			<td><strong>{{ item.name|escape }}</strong><br />{{ item.description|escape }}</td>
+			<td class="buttons-container">
 				<a href="{% url "vm_pair_request" context_id=item.id %}" class="softbutton" title="Use this contextualization information to pair a VM"><img border="0" align="absmiddle" src="{% static "images/vm_contextualize.png" %}" /> Pair with this context</a>
 			</td>
 		</tr>
