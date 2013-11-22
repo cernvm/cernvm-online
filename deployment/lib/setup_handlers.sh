@@ -56,6 +56,8 @@ function prepare_python_env_undo
 ################################################################################
 function install_cvmo_do
 {
+    # Cleanup pip stuff
+    managed_exec rm -rf /tmp/pip-build-root
     # Don't operate in cernvm-online src dir. Clone it somewhere else.
     managed_exec rsync -a --delete --exclude '**/.git' "$BASE_DIR"/src/ "$BASE_DIR"/tmp || return $?
     ( cd "$BASE_DIR"/tmp/src && \
@@ -68,6 +70,8 @@ function install_cvmo_do
 }
 function install_cvmo_undo
 {
+    # Cleanup pip stuff
+    managed_exec rm -rf /tmp/pip-build-root
     if [ -d $BASE_DIR/git ]; then
         managed_exec rm -Rf $BASE_DIR/git || return $?
     fi
