@@ -77,6 +77,11 @@
     </tr>
 
     <tr class="cvmo-vaf-master">
+        <th>VM deploy time (secs):</th>
+        <td><input name="values[vaf][elastiq_estimated_vm_deploy_time_s]" value="600" autocomplete="off"/></td>
+    </tr>
+    
+    <tr class="cvmo-vaf-master">
         <th>Min quota of VMs:</th>
         <td><input name="values[vaf][quota_min_vms]" value="1" autocomplete="off"/></td>
     </tr>
@@ -86,6 +91,11 @@
         <td><input name="values[vaf][quota_max_vms]" value="2" autocomplete="off"/></td>
     </tr>
 
+    <tr class="cvmo-vaf-master">
+        <th>Custom shell script:</th>
+        <td><textarea name="values[vaf][extra_shell_script]" value="2"># echo hello world</textarea></td>
+    </tr>
+    
     <tr>
         <th>Context password:</th>
         <td><input name="values[secret]" value="" autocomplete="off"/></td>
@@ -115,7 +125,8 @@ function CVMO_VAF_UpdateStartupScript() {
     'ec2_flavour': jQuery(':input[name="values[vaf][ec2_flavour]"]').val(),
     'quota_min_vms': jQuery(':input[name="values[vaf][quota_min_vms]"]').val(),
     'quota_max_vms': jQuery(':input[name="values[vaf][quota_max_vms]"]').val(),
-    'elastiq_n_jobs_per_vm': jQuery(':input[name="values[vaf][elastiq_n_jobs_per_vm]"]').val()
+    'elastiq_n_jobs_per_vm': jQuery(':input[name="values[vaf][elastiq_n_jobs_per_vm]"]').val(),
+    'elastiq_estimated_vm_deploy_time_s': jQuery(':input[name="values[vaf][elastiq_estimated_vm_deploy_time_s]"]').val()
   };
   elastiq_bash = '';
   for (k in elastiq) {
@@ -123,6 +134,8 @@ function CVMO_VAF_UpdateStartupScript() {
       k + "=\"" + elastiq[k] + "\"\n";
   }
 
+    
+  extra_shell_script = jQuery(':input[name="values[vaf][extra_shell_script]"]').val();
   jQuery(':input[name="values[general][startup_script]"]').val(
     elastiq_bash + "\n" +
     "export VafConf_NodeType=" + role + "\n" + 
@@ -131,7 +144,8 @@ function CVMO_VAF_UpdateStartupScript() {
     "CVM_ContextUrl='https://dl.dropbox.com/u/19379008/CernVM-VAF/u1.11/context_vaf.sh'\n" +
     "CVM_ContextDest='/tmp/context_vaf.sh'\n" +
     "curl -L $CVM_ContextUrl -o $CVM_ContextDest && source $CVM_ContextDest\n" +
-    "rm -f $CVM_ContextDest\n\n\n"
+    "rm -f $CVM_ContextDest\n\n\n" +
+    extra_shell_script + "\n\n\n"
   );
 }
 
