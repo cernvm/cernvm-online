@@ -60,7 +60,8 @@
 		// All the parameters defined in this section override other form
 		// elements located elsewhere. We thus need to list elements in this
 		// section and disable other elements with the same name
-		jQuery(document).ready(function() {
+
+		function CVMO_Disable_Default(doDisable, doDefault) {
 			custom_input_objs = jQuery('#cvmo-custom-plugin :input');
 			values = {{ json_values }};
 
@@ -76,29 +77,44 @@
 					jQuery('form#create_context_form :input[name="' +
 					input_name + '"]');
 
-				// Fill custom form with default content, whenever possible
-				json_path = input_name.replace(/\[([^\]]*)\]/g,
-					function(match, $1) {
-					  return '.' + $1;
-					});
-				try {
-					// May walk on paths containing undefined elements
-					jQuery( custom_input_objs[i] ).val(
-						eval('('+json_path+')') ).trigger('change');
+				if (doDefault) {
+					// Fill custom form with default content, whenever possible
+					json_path = input_name.replace(/\[([^\]]*)\]/g,
+						function(match, $1) {
+						  return '.' + $1;
+						});
+					try {
+						// May walk on paths containing undefined elements
+						jQuery( custom_input_objs[i] ).val(
+							eval('('+json_path+')') ).trigger('change');
+					}
+					catch (e) {};
 				}
-				catch (e) {};
 
-				// Disable all elements from the second on (the first one is
-				// the custom one)
-				for (j=0; j<name_input_objs.length; j++) {
-					if ( name_input_objs[j] !== custom_input_objs[i] ) {
-						// Not the same custom object: disable it
-						jQuery( name_input_objs[j] ).prop('disabled', true);
+				if (doDisable) {
+					// Disable all elements from the second on (the first one is
+					// the custom one)
+					for (j=0; j<name_input_objs.length; j++) {
+						if ( name_input_objs[j] !== custom_input_objs[i] ) {
+							// Not the same custom object: disable it
+							jQuery( name_input_objs[j] ).prop('disabled', true);
+						}
 					}
 				}
 
 			}
-		})
+		}
+
+		jQuery(document).ready(function() {
+			// Disable and set to default when loading page
+			CVMO_Disable_Default(true, true);
+		});
+
+		jQuery("form#create_context_form").submit(function() {
+			// Disabling again duplicated values when submitting form
+			CVMO_Disable_Default(true, false);
+		});
+
 		</script>
 		</div>
 		{% endif %}
