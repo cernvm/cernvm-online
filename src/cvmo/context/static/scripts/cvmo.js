@@ -223,29 +223,75 @@ $(window).addEvent('load', function() {
  * <p class="cvmo-disclose-curtain-1">The curtain is visible</p>
  * <p class="cvmo-disclose-curtain-0">The curtain is hidden</p>
  *
+ * This code also works for checkboxes. Consider the following example:
+ *
+ * <input type="checkbox" id="curtain" class="cvmo-disclose"/>
+ * <p class="cvmo-disclose-curtain-checked">The curtain is visible</p>
+ * <p class="cvmo-disclose-curtain-unchecked">The curtain is hidden</p>
+ *
+ * Special "value suffixes" are "checked" and "unchecked".
  */
 CVMO.Widgets.DisclosureList = function( list ) {
     var options = list.getChildren("option"),
         id = list.get('id'),
         updateVisibleItems = function() {
-            // Get selection
-            var value = list.get('value');
-            // Hide all
-            for (var i=0; i<options.length; i++) {
-                $$('.cvmo-disclose-'+id+'-'+options[i].get('value')).each(function(e) {
-                    $(e).addClass('cvmo-disclosed');
+
+            // Checkbox
+            if ( list.get('type') == 'checkbox' ) {
+
+                var checked = list.get('checked');
+                var classChecked  = '.cvmo-disclose-' + id + '-checked';
+                var classUnchecked = '.cvmo-disclose-' + id + '-unchecked';
+
+                if (checked) {
+                    classToEnable = classChecked;
+                    classToDisable = classUnchecked;
+                }
+                else {
+                    classToEnable = classUnchecked;
+                    classToDisable = classChecked;
+                }
+
+                // Enable
+                $$(classToEnable).each(function(e) {
+                    $(e).addClass('cvmo-disclosed');  // show
                 });
-                $$('.cvmo-disclose-'+id+'-'+options[i].get('value')+' input').each(function(e) {                	
-                	$(e).set('disabled',true);
+                $$(classToEnable + ' input').each(function(e) {
+                    $(e).set('disabled', false);  // enable
                 });
+
+                // Disable
+                $$(classToDisable).each(function(e) {
+                    $(e).removeClass('cvmo-disclosed');  // hide
+                });
+                $$(classToDisable).each(function(e) {
+                    $(e).set('disabled', true);  // disable
+                });
+
             }
-            // Activate only the ones that have that value
-            $$('.cvmo-disclose-'+id+'-'+value).each(function(el) {
-                el.removeClass('cvmo-disclosed');
-            });
-            $$('.cvmo-disclose-'+id+'-'+value+' input').each(function(el) {
-            	el.set('disabled',false);
-            });
+            else {
+
+                // Get selection
+                var value = list.get('value');
+                // Hide all
+                for (var i=0; i<options.length; i++) {
+                    $$('.cvmo-disclose-'+id+'-'+options[i].get('value')).each(function(e) {
+                        $(e).addClass('cvmo-disclosed');
+                    });
+                    $$('.cvmo-disclose-'+id+'-'+options[i].get('value')+' input').each(function(e) {                	
+                    	$(e).set('disabled', true);
+                    });
+                }
+                // Activate only the ones that have that value
+                $$('.cvmo-disclose-'+id+'-'+value).each(function(el) {
+                    el.removeClass('cvmo-disclosed');
+                });
+                $$('.cvmo-disclose-'+id+'-'+value+' input').each(function(el) {
+                	el.set('disabled', false);
+                });
+
+            }
+
         };
     
     // Bind the change listener
@@ -256,6 +302,10 @@ CVMO.Widgets.DisclosureList = function( list ) {
 };
 $(window).addEvent('load', function() {
     $$('select.cvmo-disclose').each(function(e) {
+        new CVMO.Widgets.DisclosureList(e);
+    });
+    $$('input[type=checkbox].cvmo-disclose').each(function(e) {
+        //alert('yay');
         new CVMO.Widgets.DisclosureList(e);
     });
 });
