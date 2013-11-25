@@ -274,19 +274,19 @@ class ContextPlugins(object):
                     else:
                         _ans+="startXDM=off\n"
 
-            elif values['general']['cvm_edition'] == 'uCernVM':
+        if 'cvm_version' in values['general'] and values['general']['cvm_version'] == 'uCernVM':
 
-                # Setup uCernVM specific section
-                _ucvm = '';
-                if _proxy is not None:
-                    _ucvm += "cvmfs_http_proxy=\"%s\"\n" % _proxy
-                if 'resize_rootfs' in values['general'] and values['general']['resize_rootfs'] == 'true':
-                    _ucvm += "resize_rootfs=true\n"
-                if 'cvmfs_branch' in values['general'] and values['general']['cvmfs_branch'] != '':
-                    _ucvm += "cvmfs_branch=%s\n" % values['general']['cvmfs_branch']
-                if _ucvm != '':
-                    # Write only if necessary
-                    _ans += "\n[ucernvm-begin]\n%s[ucernvm-end]\n" % _ucvm
+            # Setup uCernVM specific section
+            _ucvm = '';
+            if _proxy is not None:
+                _ucvm += "cvmfs_http_proxy=\"%s\"\n" % _proxy
+            if 'resize_rootfs' in values['general'] and values['general']['resize_rootfs'] == 'true':
+                _ucvm += "resize_rootfs=true\n"
+            if 'cvmfs_branch' in values['general'] and values['general']['cvmfs_branch'] != '':
+                _ucvm += "cvmfs_branch=%s\n" % values['general']['cvmfs_branch']
+            if _ucvm != '':
+                # Write only if necessary
+                _ans += "\n[ucernvm-begin]\n%s[ucernvm-end]\n" % _ucvm
 
         return _ans
 
