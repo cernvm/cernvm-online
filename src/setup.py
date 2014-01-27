@@ -77,6 +77,7 @@ if __name__ == "__main__":
             "Django>=1.5.0",
             "PIL",
             "PyCrypto>=2.6",
-            "django-cors-headers"
+            "django-cors-headers",
+            "passlib"
         ]
     )
