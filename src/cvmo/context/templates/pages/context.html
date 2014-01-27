@@ -289,6 +289,7 @@
 					</table>
 					<br />
 					<table class="plain long-text">
+
 						<tr>
 							<th width="150">Default login shell:</th>
 							<td><select {{disabled|dis}} id="new_user_shell" name="values[general][shell]">
@@ -297,6 +298,15 @@
 					        	<option value="/bin/false" {{ values.general.shell|sel:"/bin/false" }}> /bin/false </option>
 					        </select></td>
 						</tr>
+
+						<!-- Issue a message to warn when using plain text passwords -->
+						<tr class="cvmo-disclose-cvm_version-CernVM2">
+							<td colspan="3"><span class="red"><b>Beware: passwords are stored in clear text, so don't use any of your conventional passwords here! Create a context for µCernVM for storing hashed passwords instead.</b></span></td>
+						</tr>
+						<!--<tr class="cvmo-disclose-cvm_version-uCernVM">
+							<td colspan="3">uCernVM</td>
+						</tr>-->
+
 					</table>
 
 				</div>
