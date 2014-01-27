@@ -5,6 +5,7 @@ import hashlib
 import base64
 import re
 import copy
+from passlib.hash import sha512_crypt
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
@@ -351,6 +352,17 @@ def create(request):
 
     # Generate a UUID for this context
     c_uuid = gen_context_key()
+
+    # We need to generate hashes for passwords here: only on uCernVM for
+    # compatibility reasons
+    if 'cvm_version' in values['general'] and values['general']['cvm_version'] == 'uCernVM':
+        if 'users' in values['general']:
+            for k,v in values['general']['users'].iteritems():
+                # Don't re-hash (useful when cloning)
+                if not str(v['password']).startswith('$6$'):
+                    # rounds=5000 is used to avoid the $round=xxx$ placed into out string
+                    # see: http://pythonhosted.org/passlib/lib/passlib.hash.sha256_crypt.html
+                    values['general']['users'][k]['password'] = sha512_crypt.encrypt( str(v['password']), salt_size=8, rounds=5000 )
 
     # Collect data to save. Non-indexed data is pickled
     raw_values = { 'values': values, 'enabled': enabled }
