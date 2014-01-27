@@ -1,4 +1,5 @@
 import base64
+import passlib.hash
 from django.conf import settings
 from django.template import RequestContext, loader
 from cvmo.context.utils.context import sanitize_env, sanitize
@@ -213,13 +214,30 @@ class ContextPlugins(object):
             if _svcs!="":
                 _ans+= "services=%s\n" % _svcs
 
+        # Are we on uCernVM?
+        if 'cvm_version' in values['general'] and values['general']['cvm_version'] == 'uCernVM':
+            is_ucernvm = True
+        else:
+            is_ucernvm = False
+
         # Prepare users string
         _userstr=""
         if 'users' in values['general']:
             for user in values['general']['users'].values():
                 if _userstr != "":
-                    _userstr+=","
-                _userstr+=user['name']+":"+user['group']+":"+str(user['password'])
+                    _userstr += ","
+                _userstr += user['name'] + ":" + user['group'] + ":"
+                if is_ucernvm:
+                    # uCernVM: let's store the SHA-512 hash in a format compatible with /etc/shadow
+
+                    # rounds=5000 is used to avoid the $round=xxx$ placed into out string
+                    # see: http://pythonhosted.org/passlib/lib/passlib.hash.sha256_crypt.html
+                    _userstr += passlib.hash.sha512_crypt.encrypt( str( user['password'] ), salt_size=8, rounds=5000 )
+
+                else:
+                    # Cleartext password (CernVM 2 compatible)
+                    _userstr += str(user['password'])
+
             _ans+= "users=%s\n" % _userstr
 
         # Prepare proxy
@@ -274,7 +292,7 @@ class ContextPlugins(object):
                     else:
                         _ans+="startXDM=off\n"
 
-        if 'cvm_version' in values['general'] and values['general']['cvm_version'] == 'uCernVM':
+        if is_ucernvm:
 
             # Setup uCernVM specific section
             _ucvm = '';
