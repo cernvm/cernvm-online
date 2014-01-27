@@ -1,3 +1,4 @@
+{% load formutils %}
 <table class="plain long-text">
 	<tr>
 		<th width="150">Master hostname:</th>
@@ -29,6 +30,15 @@
 	<tr>
 		<th>HTCondor admin:</th>
 		<td><input type="text" name="values[condor][condor_admin]" value="{{ values.condor.condor_admin }}" /></td>			
+	</tr>
+	<tr>
+		<th>Use IP addresses:</th>
+		<td>
+			<select name="values[condor][use_ips]">
+				<option value="true" {{ values.condor.use_ips|sel:"true" }}>Yes</option>
+				<option value="false" {{ values.condor.use_ips|sel:"false" }}>No</option>
+			</select>
+		</td>
 	</tr>
 	<tr>
 		<th>HTCondor UID domain:</th>
