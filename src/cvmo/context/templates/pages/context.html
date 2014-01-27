@@ -301,7 +301,7 @@
 
 						<!-- Issue a message to warn when using plain text passwords -->
 						<tr class="cvmo-disclose-cvm_version-CernVM2">
-							<td colspan="3"><span class="red"><b>Beware: passwords are stored in clear text, so don't use any of your conventional passwords here! Create a context for µCernVM for storing hashed passwords instead.</b></span></td>
+							<td colspan="3"><span class="red"><b>Beware: passwords are stored in clear text, so don't use any of your conventional passwords here! Create a context for µCernVM for storing salted and hashed passwords instead.</b></span></td>
 						</tr>
 						<!--<tr class="cvmo-disclose-cvm_version-uCernVM">
 							<td colspan="3">uCernVM</td>
@@ -472,6 +472,11 @@
 		                        <option {{values.general.cvmfs_branch|sel:"cernvm-slc4.cern.ch"}} value="cernvm-slc4.cern.ch">SLC4 (experimental)</option>
 		                    </select>
 						</td>
+					</tr>
+
+					<!-- Warning if using CernVM 2 -->
+					<tr class="cvmo-disclose-cvm_version-CernVM2">
+						<td colspan="3"><span class="red"><b>Beware: when creating a context for CernVM 2 with user definitions, their passwords will be stored in clear text. If you use µCernVM instead, a salted and hashed version of each password is saved.</b></span></td>
 					</tr>
 
 					<tr class="cvmo-disclose-model-Desktop">
