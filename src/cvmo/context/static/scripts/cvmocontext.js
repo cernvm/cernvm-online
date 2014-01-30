@@ -114,7 +114,6 @@ CVMO.ContextUI.Init = function(groups) { window.addEvent('domready', function(){
     	{
     		rules: {
     			"values[name]": "required",
-    			"values[general][cvm_wa_password]": "required",
     			"values[general][context_cmd_user]": {
     				required: "#f_contextcmd:filled",
     				except_value: "root"
