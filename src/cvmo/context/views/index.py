@@ -23,7 +23,12 @@ def dashboard(request):
         'cluster_list': ClusterDefinition.objects.filter(owner=request.user).order_by('-public', 'name'),
         'machine_list': Machines.objects.filter(owner=request.user)
     }
-    context["webapi_configurations"] = settings.WEBAPI_CONFIGURATIONS
+    webapi_configs = settings.WEBAPI_CONFIGURATIONS
+    for c in webapi_configs:
+        if "ucenrvm_version" not in c:
+            # if defined in configuration will override the default setting
+            c["ucernvm_version"] = settings.WEBAPI_UCERNVM_VERSION
+    context["webapi_configurations"] = webapi_configs
     push_to_context("redirect_msg_info", "msg_info", context, request)
     push_to_context("redirect_msg_error", "msg_error", context, request)
     push_to_context("redirect_msg_warning", "msg_warning", context, request)
