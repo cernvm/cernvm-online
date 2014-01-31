@@ -27,7 +27,9 @@
 							"name": jQuery(this).data("name"),
 							"memory": jQuery(this).data("memory"),
 							"CPUs": jQuery(this).data("cpus"),
-							"diskSize": jQuery(this).data("disk-size")
+							"diskSize": jQuery(this).data("disk-size"),
+							"uCernvmVersion": "" + jQuery(this).data("ucernvm-version") // 1.16 is interpreted as float,
+																						// it must be string
 						};
 						console.log(request);
 
@@ -44,7 +46,8 @@
 									+ "&name=" + encodeURIComponent(request["name"] + " " + randomString)
 									+ "&cpus=" + encodeURIComponent(request["CPUs"])
 									+ "&ram=" + encodeURIComponent(request["memory"])
-									+ "&disk=" + encodeURIComponent(request["diskSize"]);
+									+ "&disk=" + encodeURIComponent(request["diskSize"])
+									+ "&ucernvm_version=" + encodeURIComponent(request["uCernvmVersion"]);
 								plugin.requestSession(
 									url,
 									function(session)
@@ -133,7 +136,9 @@
 									data-name="{{ item.name }} VM"
 									data-cpus="{{ conf.cpus }}"
 									data-memory="{{ conf.memory }}"
-									data-disk-size="{{ conf.disk_size }}" href="#">
+									data-disk-size="{{ conf.disk_size }}"
+									data-ucernvm-version="{{ conf.ucernvm_version }}"
+									href="#">
 									{{ conf.label }}
 								</a>
 							</li>

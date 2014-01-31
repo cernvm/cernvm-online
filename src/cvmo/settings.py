@@ -35,6 +35,7 @@ ENABLE_CLOUD = config.ENABLE_CLOUD
 # WebAPI
 #
 
+WEBAPI_UCERNVM_VERSION = config.WEBAPI_UCERNVM_VERSION
 WEBAPI_CONFIGURATIONS = config.WEBAPI_CONFIGURATIONS
 
 
@@ -161,12 +162,12 @@ USE_TZ = True
 
 DATABASES = {
     "default": {
-        "ENGINE":   "django.db.backends." + config.DB["backend"],
-        "HOST":     config.DB["host"],
-        "USER":     config.DB["user"],
-        "PASSWORD": config.DB["password"],
-        "NAME":     config.DB["name"],
-        "PORT":     config.DB["port"]
+        "ENGINE":   "django.db.backends." + config.DB.get("backend", "mysql"),
+        "HOST":     config.DB.get("host", ""),
+        "USER":     config.DB.get("user", None),
+        "PASSWORD": config.DB.get("password", None),
+        "NAME":     config.DB.get("name", None),
+        "PORT":     config.DB.get("port", 3306)
     }
 }
 
