@@ -290,6 +290,8 @@ class ContextPlugins(object):
                 _ucvm += "resize_rootfs=true\n"
             if 'cvmfs_branch' in values['general'] and values['general']['cvmfs_branch'] != '':
                 _ucvm += "cvmfs_branch=%s\n" % values['general']['cvmfs_branch']
+                if values['general']['cvmfs_branch'] != 'cernvm-prod.cern.ch':
+                    _ucvm += "cvmfs_server=hepvm.cern.ch\n"
             if _ucvm != '':
                 # Write only if necessary
                 _ans += "\n[ucernvm-begin]\n%s[ucernvm-end]\n" % _ucvm
