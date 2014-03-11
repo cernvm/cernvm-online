@@ -161,12 +161,12 @@ USE_TZ = True
 
 DATABASES = {
     "default": {
-        "ENGINE":   "django.db.backends." + config.DB["backend"],
-        "HOST":     config.DB["host"],
-        "USER":     config.DB["user"],
-        "PASSWORD": config.DB["password"],
-        "NAME":     config.DB["name"],
-        "PORT":     config.DB["port"]
+        "ENGINE":   "django.db.backends." + config.DB.get("backend", "mysql"),
+        "HOST":     config.DB.get("host", "localhost"),
+        "USER":     config.DB.get("user", "root"),
+        "PASSWORD": config.DB.get("password", ""),
+        "NAME":     config.DB.get("name", "cvmo"),
+        "PORT":     config.DB.get("port", 3306)
     }
 }
 
