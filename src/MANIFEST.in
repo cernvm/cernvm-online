@@ -1,1 +1,12 @@
-recursive-include cvmo/ *
+recursive-include cvmo *.html
+recursive-include cvmo *.css
+recursive-include cvmo *.js
+recursive-include cvmo *.png
+recursive-include cvmo *.jpg
+recursive-include cvmo *.jpeg
+recursive-include cvmo *.gif
+recursive-include cvmo *.ico
+recursive-include cvmo *.woff
+recursive-include cvmo *.otf
+recursive-include cvmo *.svg
+
