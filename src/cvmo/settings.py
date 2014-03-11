@@ -2,6 +2,7 @@
 # CernVM Online Configuration file
 # Modify the config.py file for the current deployment
 #
+import os
 from cvmo import config
 
 #
@@ -77,27 +78,30 @@ SHIBBOLETH_SSO = {
     ],
 
     # Where to redirect if the user is not authenticated
-    "redirect_login": "/" + config.URL_PREFIX + "login",
+    "redirect_login": "/%suser/login" % config.URL_PREFIX,
 
     # Which website paths are publicly accessible
     "public_path": [
+        # Admin
+        r"/%sadmin[/]{0,1}.*$" % config.URL_PREFIX,
         # Login
-        r"/" + config.URL_PREFIX + "login$",
-        r"/" + config.URL_PREFIX + "login_action$",
+        r"/%suser/login$" % config.URL_PREFIX,
+        r"/%suser/login_action$" % config.URL_PREFIX,
         # Registration
-        r"/" + config.URL_PREFIX + "register$",
-        r"/" + config.URL_PREFIX + "register_action$",
-        r"/" + config.URL_PREFIX + "account_activation$",
+        r"/%suser/register$" % config.URL_PREFIX,
+        r"/%suser/register_action$" % config.URL_PREFIX,
+        r"/%suser/account_activation$" % config.URL_PREFIX,
+
         # API - context
-        r"/" + config.URL_PREFIX + "api/context/?$",
-        r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/?$",
-        r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/plain/?$",
-        r"/" + config.URL_PREFIX + "api/fetch/?$",
-        # API - cluster
-        r"/" + config.URL_PREFIX + "api/cluster/.*$",
-        # API - marketplace
-        r"/" + config.URL_PREFIX + "api/market/search.clusters/?$",
-        r"/" + config.URL_PREFIX + "api/market/groups/?$"
+        # r"/" + config.URL_PREFIX + "api/context/?$",
+        # r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/?$",
+        # r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/plain/?$",
+        # r"/" + config.URL_PREFIX + "api/fetch/?$",
+        # # API - cluster
+        # r"/" + config.URL_PREFIX + "api/cluster/.*$",
+        # # API - marketplace
+        # r"/" + config.URL_PREFIX + "api/market/search.clusters/?$",
+        # r"/" + config.URL_PREFIX + "api/market/groups/?$"
     ]
 }
 
@@ -128,8 +132,12 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     # Admin
     "django.contrib.admin",
+    # CernVM-Online
+    "cvmo.core",
+    # CernVM-Online user
+    "cvmo.user"
     # CernVM Contextualization
-    "cvmo.context"
+    # "cvmo.context"
 )
 
 #
@@ -182,16 +190,29 @@ LOGGING = {
             "()": "django.utils.log.RequireDebugFalse"
         }
     },
+    "formatters": {
+        "verbose": {
+            "format": "[%(asctime)s] %(levelname)s %(module)s %(message)s"
+        },
+        "simple": {
+            "format": "%(levelname)s %(message)s"
+        }
+    },
     "handlers": {
         "mail_admins": {
             "level": "ERROR",
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler"
         },
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose"
+        },
         "file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": config.LOG_PATH + "/django.log",
+            "filename": os.path.join(config.LOG_PATH, "django.log"),
         },
     },
     "loggers": {
@@ -200,6 +221,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
+        "cvmo": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": True,
+        }
     }
 }
 
