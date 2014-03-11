@@ -16,7 +16,7 @@ from django.db.models import Q
 
 from cvmo.context.plugins import ContextPlugins
 from cvmo.context.models import ContextStorage, ContextDefinition
-from cvmo.querystring_parser import parser
+from querystring_parser import parser
 
 from cvmo.context.utils.views import uncache_response, render_error, render_confirm, render_password_prompt
 from cvmo.context.utils.context import gen_context_key, salt_context_key, tou

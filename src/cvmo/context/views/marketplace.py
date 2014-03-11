@@ -8,7 +8,7 @@ from cvmo.context.models import MarketplaceGroup, MarketplaceContextEntry, Marke
 from cvmo.context.models import ContextStorage, ContextDefinition, ClusterDefinition
 from cvmo.context.utils.views import render_error, render_confirm, uncache_response, msg_info, set_memory, \
                                      msg_error, msg_confirm, for_market, for_cloud, redirect_memory, get_memory
-from cvmo.querystring_parser import parser
+from querystring_parser import parser
 
 from PIL import Image
 import time

@@ -4,7 +4,7 @@ from cvmo.context.models import ServiceOffering, DiskOffering, NetworkOffering, 
     Template, ServiceDefinition, ClusterDefinition, ContextStorage, \
     ContextDefinition
 from cvmo.context.utils.views import msg_info, msg_error
-from cvmo.querystring_parser import parser
+from querystring_parser import parser
 import re
 from cvmo.context.utils.context import salt_context_key, gen_context_key
 import base64
