@@ -11,8 +11,8 @@ from django.shortcuts import render_to_response, redirect
 from django.core.urlresolvers import reverse
 
 from cvmo.context.models import ClaimRequests, Machines, ContextDefinition, ContextStorage
-from cvmo.context.utils.views import render_error, render_confirm, uncache_response
-from cvmo.context.utils.context import gen_pin, get_uuid_salt, salt_context_key
+from cvmo.core.utils.views import render_error, render_confirm, uncache_response
+from cvmo.core.utils.context import gen_pin, get_uuid_salt, salt_context_key
 from django.db.models.query_utils import Q
 
 ##############
@@ -26,17 +26,17 @@ REQUEST_TIMEOUT = timedelta(minutes=5)
 def source_ip(request):
     """ Try to detect the real source IP """
     if 'HTTP_X_FORWARDED_FOR' in request.META:
-        
+
         # Fetch the proxy headers
         ip = request.META['HTTP_X_FORWARDED_FOR']
-        
+
         # Get the very first ip if we have a list
         if ',' in ip:
             ip = ip.split(', ')[0]
-        
+
     else:
         ip = request.META['REMOTE_ADDR']
-    
+
     # Return the guessed IP
     return ip
 
@@ -46,7 +46,7 @@ def source_ip(request):
 
 def context_fetch(request):
     """ First step in pairing or contextualization sequence """
-    
+
     # Validate request
     if not 'REMOTE_ADDR' in request.META:
         return render_error(request, 400)
@@ -64,21 +64,21 @@ def context_fetch(request):
     uuid = request.GET['uuid']
     ver = request.GET['ver']
     ip = source_ip(request)
-        
+
     # Check if we are using PIN or CONTEXT_ID
     if ('pin' in request.GET):
-        
+
         ################################################################
         #                Use Pin-Based pairing mechanism
         ################################################################
 
         # Prepare missing parameters
         pin = request.GET['pin']
-    
+
         # Get our current timestamp and calculate validity time
         ts = datetime.utcnow().replace(tzinfo=utc)
         ts_expire = ts - REQUEST_TIMEOUT
-        
+
         # Lookup the pin
         try:
             claim_request = ClaimRequests.objects.get(pin=pin, status='U', alloc_date__gte=ts_expire)
@@ -86,7 +86,7 @@ def context_fetch(request):
             # If the request is encrypted, make sure the user knows how to decrypt it
             if (claim_request.context.key != ""):
                 if (claim_request.context.key != checksum):
-                    return uncache_response(HttpResponse('invalid-checksum', content_type="text/plain"))                    
+                    return uncache_response(HttpResponse('invalid-checksum', content_type="text/plain"))
 
             # Request is now claimed
             claim_request.status='C'
@@ -131,27 +131,27 @@ def context_fetch(request):
         except:
             # Something went wrong. Stop
             return uncache_response(HttpResponse('not-found', content_type="text/plain"))
-            
+
 
     elif ('context_id' in request.GET):
-        
+
         ################################################################
         #       Use ContextID-based contextualization mechanism
         ################################################################
-        
+
         # Prepare missing parameters
         context_id = request.GET['context_id']
-        
+
         # Lookup the context ID
         try:
-            
+
             # Fetch context definition
             context = ContextDefinition.objects.get(id=context_id)
-            
+
             # If the context is encrypted, make sure the user knows how to decrypt it
             if (context.key != ""):
                 if (context.key != checksum):
-                    return uncache_response(HttpResponse('invalid-checksum', content_type="text/plain"))                    
+                    return uncache_response(HttpResponse('invalid-checksum', content_type="text/plain"))
 
             # Register/update VM registration only if the VM is private
             if not context.public:
@@ -180,7 +180,7 @@ def context_fetch(request):
 
         except:
             return HttpResponse("not-found", content_type="text/plain")
-    
+
 def pair_status(request, claim_key):
     """ Poll the pairing status of a VM """
     _entry = ClaimRequests.objects.get(pin=claim_key)
@@ -209,24 +209,24 @@ def pair_status(request, claim_key):
 
 def pair_begin(request):
     # First screen of the pairing process: Show the available contextualization options
-    return uncache_response(render_to_response('pages/machine_pair.html', {
+    return uncache_response(render_to_response('context/machine_pair.html', {
             'context_list': ContextDefinition.objects.filter(Q(owner=request.user) & Q(inherited=False) & Q(abstract=False)),
             'context_public': ContextDefinition.objects.filter(public=True).exclude(owner=request.user)
         }, RequestContext(request)))
-    
+
 
 def pair_request(request, context_id):
-    
+
     # Get our current timestamp - useful
     ts = datetime.utcnow().replace(tzinfo=utc)
     ts_expire = ts - REQUEST_TIMEOUT
 
     # Fetch the context definition for this pairing request
     context_definition = ContextDefinition.objects.get(id=context_id)
-    
+
     # Destroy all previous requests in pending state
     prev_requests = ClaimRequests.objects.filter(requestby=request.user, status='U').delete()
-    
+
     # Ensure that we don't have a pin collision (since our entropy is quite small)
     valid=0
     while valid == 0:
@@ -237,22 +237,22 @@ def pair_request(request, context_id):
 
     # Create an entry with unique PIN
     entry = ClaimRequests.objects.create(pin=key, status='U', alloc_date=ts, requestby=request.user, context=context_definition)
-    
+
     # Show claim screen
-    return uncache_response(render_to_response('pages/machine_pair_pin.html', {
+    return uncache_response(render_to_response('context/machine_pair_pin.html', {
         'key': entry.pin
     }, RequestContext(request)))
 
 
 def pair_setup(request, claim_key):
-    
+
     # Fetch claim information
     claim_request = ClaimRequests.objects.get(pin=claim_key)
-    
+
     # Fetch the associated VM
     vm = claim_request.machine
-    
-    return uncache_response(render_to_response('pages/machine_setup.html', {
+
+    return uncache_response(render_to_response('context/machine_setup.html', {
         'vm': vm
     }, RequestContext(request)))
 
@@ -268,7 +268,7 @@ def delete(request, machine_uuid):
 
     else:
         # Show the confirmation screen
-        return uncache_response(render_confirm(request, 'Delete instance', 
+        return uncache_response(render_confirm(request, 'Delete instance',
                               'Are you sure you want to delete this virtual machine instance from you CernVM online account? This action is not undoable!',
                               reverse('vm_delete', kwargs={'machine_uuid':machine_uuid})+'?confirm=yes',
                               reverse('dashboard')

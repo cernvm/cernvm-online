@@ -1,0 +1,19 @@
+{% extends "base/class_context.html" %}
+{% load static %}
+{% block head %}<script type="text/javascript" src="{% static "base/js/cvmoclaim.js" %}"></script>{% endblock %}
+{% block title %}Claim instance{% endblock %}
+
+{% block body %}
+{% load url from future %}
+<h1>Pair instance - Step 2</h1>
+<p>Wait your virtual machine to boot and put the following key in your virtual machine contextualization screen. You will have the option to contextualize it right after.</p>
+<br />
+<p align="center" class="cloud">
+	<span class="yellowframe" id="pinframe">{{ key|slice:":2" }} {{ key|slice:"2:4" }} {{ key|slice:"4:6" }}</span>
+	<br />
+</p>
+<p align="right" class="pairspin">
+	This website will reload when the VM is successfully paired &nbsp;<img align="absmiddle" src="{% static "base/img/spinner.gif" %}" />
+</p>
+<script type="text/javascript">CVMO.setupClaim('{% url "vm_ajax_status" key %}', '{% url "vm_setup" key %}');</script>
+{% endblock %}

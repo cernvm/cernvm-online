@@ -1,64 +1,65 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-##################################################
-# Context related models
-##################################################
 
 class ContextDefinition(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)    
+    id = models.CharField(max_length=64, primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
     owner = models.ForeignKey(User)
     key = models.CharField(max_length=100, blank=True)
     checksum = models.CharField(max_length=40)
-    public = models.BooleanField(verbose_name='Visible on public lists')
+    public = models.BooleanField(verbose_name="Visible on public lists")
     inherited = models.BooleanField(default=False)
     abstract = models.BooleanField(default=False)
     from_abstract = models.BooleanField(default=False)
-    # No foreign key for now: deleting a parent abstract will delete all the descendants
-    #parent = models.ForeignKey('self', null=True, default=None)
+    # No foreign key for now: deleting a parent abstract will delete all the
+    # descendants
+    # parent = models.ForeignKey("self", null=True, default=None)
     data = models.TextField()
-    
-    def delete(self, using=None):                
+
+    def delete(self, using=None):
         # Remove storage
         try:
             cs = ContextStorage.objects.get(id=self.id)
             cs.delete()
-        except Exception as ex:
+        except:
             pass
-        
+
         # Remove base
         models.Model.delete(self, using=using)
 
     def __str__(self):
         return self.name
-    
+
     def __unicode__(self):
         return self.name
 
+
 class ContextStorage(models.Model):
     id = models.CharField(max_length=64, primary_key=True)
-    data = models.TextField()    
+    data = models.TextField()
 
     def __str__(self):
         return self.id
-    
+
     def __unicode__(self):
         return self.id
-        
-##################################################
+
+#
 # Pairing related models
-##################################################
-    
+#
+
+
 class Machines(models.Model):
+
     """ Instantiated machines """
 
     MACHINE_STATUS = (
-            ('P', 'Paired'),
-            ('D', 'Discovered'),
-            ('C', 'Cloud')
-        )
+        ("P", "Paired"),
+        ("D", "Discovered"),
+        ("C", "Cloud")
+    )
 
     uuid = models.CharField(max_length=64, primary_key=True)
     version = models.CharField(max_length=128)
@@ -66,23 +67,25 @@ class Machines(models.Model):
     owner = models.ForeignKey(User)
     context = models.ForeignKey(ContextDefinition, blank=True, null=True)
     status = models.CharField(max_length=2, choices=MACHINE_STATUS)
-    
+
     def __str__(self):
         return self.uuid
 
     def __unicode__(self):
         return self.uuid
 
+
 class ClaimRequests(models.Model):
+
     """ Amiconfig plugin definition """
 
     CLAIM_STATUS = (
-            ('C', 'Claimed'),
-            ('E', 'Error'),
-            ('P', 'Pairing'),
-            ('U', 'Unclaimed'),
-        )
-        
+        ("C", "Claimed"),
+        ("E", "Error"),
+        ("P", "Pairing"),
+        ("U", "Unclaimed"),
+    )
+
     pin = models.CharField(max_length=6, primary_key=True)
     status = models.CharField(max_length=2, choices=CLAIM_STATUS)
     alloc_date = models.DateTimeField()
@@ -92,136 +95,6 @@ class ClaimRequests(models.Model):
 
     def __str__(self):
         return self.pin
-    
+
     def __unicode__(self):
         return self.pin
-    
-##################################################
-# Cluster related models
-##################################################
-
-class ClusterDefinition(models.Model):
-    uid = models.CharField(max_length=128, db_index=True, unique=True)
-    name = models.CharField(max_length=250)
-    description = models.TextField(null=True, blank=True)
-    owner = models.ForeignKey(User)
-    key = models.CharField(max_length=64, blank=True)
-    public = models.BooleanField(default=False)
-    
-    def __unicode__(self):
-        return self.name
-   
-class ServiceOffering(models.Model):
-    uid = models.CharField(max_length=16, db_index=True, unique=True)
-    name = models.CharField(max_length=250)
-    
-    def __unicode__(self):
-        return self.name
-    
-class DiskOffering(models.Model):
-    uid = models.CharField(max_length=16, db_index=True, unique=True)
-    name = models.CharField(max_length=250)
-    
-    def __unicode__(self):
-        return self.name
-    
-class NetworkOffering(models.Model):
-    uid = models.CharField(max_length=16, db_index=True, unique=True)
-    name = models.CharField(max_length=250)
-    
-    def __unicode__(self):
-        return self.name
-        
-class Template(models.Model):
-    uid = models.CharField(max_length=128, db_index=True, unique=True)
-    name = models.CharField(max_length=250)
-    
-    def __unicode__(self):
-        return self.name
-        
-class ServiceDefinition(models.Model):
-    uid = models.CharField(max_length=128, db_index=True)
-    name = models.CharField(max_length=250)
-    cluster = models.ForeignKey(ClusterDefinition)    
-    service_offering = models.ForeignKey(ServiceOffering)
-    disk_offering = models.ForeignKey(DiskOffering, null = True, blank = True)
-    network_offering = models.ForeignKey(NetworkOffering, null = True, blank = True)
-    template = models.ForeignKey(Template)
-    context = models.ForeignKey(ContextDefinition)
-
-    MACHINE_STATUS = (
-            ('S', 'Scalable'),
-            ('F', 'Fixed'),
-        )
-    service_type = models.CharField(max_length=2, choices=MACHINE_STATUS)
-    
-    order = models.IntegerField(null = True, blank = True)
-    min_instances = models.IntegerField(null = True, blank = True)
-    
-    def __unicode__(self):
-        return self.cluster.uid + " service "  + self.uid + '('+ self.service_type +')'
-    
-##################################################
-# User related models
-##################################################
-
-class UserActivationKey(models.Model):
-    user = models.OneToOneField(User)
-    key = models.CharField(max_length=150)
-    created_on = models.DateTimeField(auto_now_add=True)
-
-
-##################################################
-# Marketplace models
-##################################################
-
-class MarketplaceGroup(models.Model):
-    name = models.CharField(max_length=150)
-    
-    def __unicode__(self):
-        return self.name
-
-class MarketplaceContextEntry(models.Model):
-    details = models.TextField()
-    context = models.ForeignKey(ContextDefinition)
-    group = models.ForeignKey(MarketplaceGroup)
-    icon = models.ImageField(upload_to='market/icons')
-    tags = models.TextField()
-    rank = models.IntegerField(default=0)
-    
-    def __unicode__(self):
-        return self.context.name
-
-class MarketplaceContextVotes(models.Model):
-    entry = models.ForeignKey(MarketplaceContextEntry)
-    user = models.ForeignKey(User)
-    vote = models.IntegerField()
-    
-class MarketplaceClusterEntry(models.Model):
-    details = models.TextField()
-    cluster = models.ForeignKey(ClusterDefinition)
-    group = models.ForeignKey(MarketplaceGroup)
-    icon = models.ImageField(upload_to='market/icons')
-    tags = models.TextField()
-    variables = models.TextField()
-    rank = models.IntegerField(default=0)
-
-    def __unicode__(self):
-        return self.context.name
-
-class MarketplaceClusterVotes(models.Model):
-    entry = models.ForeignKey(MarketplaceClusterEntry)
-    user = models.ForeignKey(User)
-    vote = models.IntegerField()
-
-##################################################
-# Deprecated models
-##################################################
-
-class ActionDefinition(models.Model):
-    id = models.CharField(max_length=64, primary_key=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    owner = models.ForeignKey(User)
-    script = models.TextField()
-    

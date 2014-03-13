@@ -1,0 +1,23 @@
+{% extends "base/class_context.html" %}
+{% block title %}Setup instance{% endblock %}
+
+{% block body %}
+<h1>Setup instance - Completed</h1>
+<p>Your vm is now paired with CernVM Online!</p>
+<br />
+<table>
+	<tr>
+		<th width="200">Instance UUID:</th>
+		<td>{{ vm.uuid }}</td>
+	</tr>
+	<tr>
+		<th>CernVM Version:</th>
+		<td>{{ vm.version }}</td>
+	</tr>
+	<tr>
+		<th>IP Address:</th>
+		<td>{{ vm.ip }}</td>
+	</tr>
+</table>
+
+{% endblock %}
