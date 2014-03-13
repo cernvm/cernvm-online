@@ -108,6 +108,7 @@ SHIBBOLETH_SSO = {
 
 CONTEXT_PLUGINS = (
     "cvmo.context.plugin.condor.Condor",
+    "cvmo.context.plugin.vafsetup.VAFSetup",
     "cvmo.context.plugin.hostname.Hostname",
     "cvmo.context.plugin.noip.NoIP",
     "cvmo.context.plugin.storage.Storage",

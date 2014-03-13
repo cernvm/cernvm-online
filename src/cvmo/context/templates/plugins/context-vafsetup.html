@@ -1,0 +1,100 @@
+{% load formutils %}
+
+<h3>Authentication</h3>
+
+<table class="plain long-text">
+
+	<tr>
+		<th width="300">Authentication method:</th>
+		<td>
+			<select name="values[vaf_setup][auth_method]" id="vaf_auth_method" class="cvmo-disclose">
+				<option value="" {{ values.vaf_setup.auth_method|sel_default:"" }}>Don't configure</option>
+				<option value="alice_ldap" {{ values.vaf_setup.auth_method|sel:"alice_ldap" }}>ALICE LDAP</option>
+				<option value="pool_users" {{ values.vaf_setup.auth_method|sel:"pool_users" }}>Pool accounts</option>
+			</select>
+		</td>
+	</tr>
+	<tr class="cvmo-disclose-vaf_auth_method-pool_users">
+		<th>Number of pool accounts:</th>
+		<td><input type="text" name="values[vaf_setup][num_pool_accounts]" value="{{ values.vaf_setup.num_pool_accounts }}" /></td>
+	</tr>
+	<tr>
+		<th>Enable HTTPS+SSH authentication:</th>
+		<td>
+			<select name="values[vaf_setup][node_type]">
+				<option value="master" {{ values.vaf_setup.node_type|sel:"master" }}>Yes</option>
+				<option value="slave" {{ values.vaf_setup.node_type|sel_default:"slave" }}>No</option>
+			</select>
+		</td>
+	</tr>
+
+</table>
+
+
+<h3>PROOF and PoD</h3>
+
+<table class="plain long-text">
+
+	<tr>
+		<th width="300">Client settings:</th>
+		<td>
+			<select name="values[vaf_setup][client_settings]" id="vaf_client_settings" class="cvmo-disclose">
+				<option value="" {{ values.vaf_setup.client_settings|sel:"" }}>None</option>
+				<option value="alice" {{ values.vaf_setup.client_settings|sel:"alice" }}>ALICE</option>
+				<option value="cms" {{ values.vaf_setup.client_settings|sel:"cms" }}>CMS</option>
+			</select>
+		</td>
+	</tr>
+	<tr class="cvmo-disclose-vaf_client_settings-alice">
+		<th>URL template <i>(i.e. root://server/&lt;path&gt;</i>) or Storage Element <i>(i.e. ALICE::CERN::EOS)</i>:</th>
+		<td><input type="text" name="values[vaf_setup][alice_storage]" value="{{ values.vaf_setup.alice_storage }}" /></td>
+	</tr>
+
+</table>
+
+<!--
+<h3>Optional information:</h3>
+<table class="plain long-text">
+	<tr>
+		<th width="150">Collector name:</th>
+		<td><input type="text" name="values[condor][collector_name]" value="{{ values.condor.collector_name }}" /></td>
+	</tr>
+	<tr>
+		<th>HTCondor user:</th>
+		<td><input type="text" name="values[condor][condor_user]" value="{{ values.condor.condor_user }}" /></td>			
+	</tr>
+	<tr>
+		<th>HTCondor group:</th>
+		<td><input type="text" name="values[condor][condor_group]" value="{{ values.condor.condor_group }}" /></td>			
+	</tr>
+	<tr>
+		<th>HTCondor directory:</th>
+		<td><input type="text" name="values[condor][condor_dir]" value="{{ values.condor.condor_dir }}" /></td>			
+	</tr>
+	<tr>
+		<th>HTCondor admin:</th>
+		<td><input type="text" name="values[condor][condor_admin]" value="{{ values.condor.condor_admin }}" /></td>			
+	</tr>
+	<tr>
+		<th>Use IP addresses:</th>
+		<td>
+			<select name="values[condor][use_ips]">
+				<option value="true" {{ values.condor.use_ips|sel:"true" }}>Yes</option>
+				<option value="false" {{ values.condor.use_ips|sel:"false" }}>No</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th>HTCondor UID domain:</th>
+		<td><input type="text" name="values[condor][uid_domain]" size="10" value="{{ values.condor.uid_domain }}" /></td>
+	</tr>
+	<tr>
+		<th>HTCondor lowport:</th>
+		<td><input type="text" name="values[condor][lowport]" value="{{ values.condor.lowport }}" /></td>
+	</tr>
+	<tr>
+		<th>HTCondor highport:</th>
+		<td><input type="text" name="values[condor][highport]" value="{{ values.condor.highport }}" /></td>
+	</tr>
+</table>
+-->
