@@ -1,0 +1,113 @@
+#header div.container {
+    background: url("../img/bg-header.jpg") no-repeat top center;
+    height: 96px;
+}
+#header #div_logo {
+    background: url("../img/logo-bg.png") no-repeat left top;
+    width: 219px;
+    height: 64px;
+    margin-top: 20px;
+    /*margin-left: -13px;*/
+    margin-left: -18px;
+}
+#header #div_logo #img_logo {
+    margin-top: 6px;
+    margin-left: 36px;
+    float: left;
+}
+#header #div_logo #img_home {
+    float: left;
+    margin-top: 15px;
+    margin-left: 21px;
+}
+
+#header_line {
+    width: 960px;
+    margin: 0 auto;
+    background: #f09d27;
+    height: 3px;
+    padding: 0px;
+    font-size: 0px;
+}
+
+#navbar div.container {
+    background: #fff url("../img/bg-shade-light.png") repeat-x bottom left;
+    border-bottom: solid 1px #ddd;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -moz-border-radius-bottomleft: 20px;
+    -webkit-border-bottom-left-radius: 0px;
+    height: 30px;
+}
+#navbar div.container div.col-xs-12 {
+    margin-left: 0;
+    padding-left: 0;
+}
+#navbar ul {
+    line-height: 30px;
+    text-align:left;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 998;
+    opacity: 0.9999;
+    /*
+        /* Fixes bug FF2 with Superfish menus
+        border: none;
+        position: relative;
+    */
+}
+#navbar ul li {
+    border-right: solid 1px #ddd;
+    float: left;
+    list-style: none;
+    list-style-image: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    z-index: 999;
+}
+#navbar ul li.last {
+    border-right: none;
+}
+#navbar ul a,
+#navbar ul a:visited {
+    /* background: #fff url('../img/bg-shade-light.png') repeat-x 0 100%; */
+    border: none;
+    color: #000;
+    display: block;
+    font-size: 12px;
+    font-weight: normal;
+    margin: 0;
+    overflow: hidden;
+    padding: 0 14.4px;
+    text-decoration: none;
+    /* text-shadow: #fff 1px 1px 1px; */
+}
+#navbar ul a:hover,
+#navbar ul a:visited:hover,
+#navbar .active .active-trail a.active:hover,
+#navbar .active .active-trail a:hover {
+    background: url('../img/bg-menu-arrow-cernvm.png') no-repeat top;
+    color: #000; text-shadow: none;
+}
+
+#footer{
+    margin-top:20px;
+}
+#footer div.container {
+    font-size: 12px;
+    text-align: center;
+    border-radius:10px;
+    padding: 5px;
+    color: white;
+    background: #395e78;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    -ms--border-radius:10px;
+}
+            #footer #footer-inner .content {border:none;}
+            #footer #footer-inner .content p{color:#FFF;}
+            #footer #footer-inner .block .content{padding:0; margin:0;}
+            #footer #footer-inner .block .content p{padding:5px; margin:0;}
