@@ -1,0 +1,91 @@
+{% extends "base/class_context.html" %}
+{% load formutils %}
+{% load static %}
+{% load url from future %}
+
+{% block title %}Publish Context{% endblock %}
+{% block head %}
+	<script type="text/javascript" src="{% static "base/js/cvmompublish.js" %}"></script>
+{% endblock %}
+
+{% block body %}
+<h1>Publish to marketplace</h1>
+<p>Using this form you can make your context visible on the public marketplace. You can still however publish encrypted information.</p>
+<form action="{% url "market_publish_action" %}" id="market_publish" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+
+	<div id="content-accordion">
+		<div class="accordion-header separator"><h2>General</h2></div>
+		<div class="accordion-content container">
+			<table class="plain long-text">
+				<tr>
+					<th width="150"><label for="name">Context name:</label></th>
+					<td>
+						<strong>{{context.name}}</strong>
+						<input type="hidden" name="context" value="{{context.id}}" />
+					</td>
+				</tr>
+				<tr>
+					<th width="150"><label for="instructions">Detailed instructions:</label></th>
+					<td>
+						<textarea name="instructions" id="instructions">{{ values.instructions }}</textarea>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="accordion-header separator"><h2>Entry details</h2></div>
+		<div class="accordion-content container">
+			<table class="plain long-text">
+				<tr>
+					<th width="150"><label for="group">Category:</label></th>
+					<td>
+						<select id="group" name="group">
+						{% for g in groups %}
+							<option value="{{g.id}}" {{g.id|sel:values.group}}>{{g.name}}</option>
+						{% endfor %}
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th width="150"><label for="tags">Tags (separate them using commas):</label></th>
+					<td>
+						<input type="text" id="tags" maxlength="100" name="tags" value="{{ values.tags }}" />
+					</td>
+				</tr>
+				<tr>
+					<th width="150"><label for="icon">Icon:</label></th>
+					<td>
+						<div id="imgselect">
+							{% if icons %}
+								<ul>
+								{% for img in icons %}
+									<li>
+										<input type="radio" id="mrktimg{{forloop.counter}}" name="prev_icon" value="{{img.name}}" />
+										<label for="mrktimg{{forloop.counter}}" style="background-image: url({{img.url}})">&nbsp;</label>
+									</li>
+								{% endfor %}
+								</ul>
+							{% else %}
+								<div class="empty">You have not uploaded any image yet</div>
+							{% endif %}
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td>
+						<span style="vertical-align: middle">Upload one (please use PNGs only): <input type="file" id="icon" name="icon" /></span>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+	</div>
+
+	<div class="buttons-container">
+		<input type="submit" value="Publish context" />
+	</div>
+</form>
+
+{% endblock %}
