@@ -91,17 +91,14 @@ SHIBBOLETH_SSO = {
         r"/%suser/register$" % config.URL_PREFIX,
         r"/%suser/register_action$" % config.URL_PREFIX,
         r"/%suser/account_activation$" % config.URL_PREFIX,
+        # API
+        r"/%sapi/.*$" % config.URL_PREFIX
 
         # API - context
         # r"/" + config.URL_PREFIX + "api/context/?$",
         # r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/?$",
         # r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/plain/?$",
         # r"/" + config.URL_PREFIX + "api/fetch/?$",
-        # # API - cluster
-        # r"/" + config.URL_PREFIX + "api/cluster/.*$",
-        # # API - marketplace
-        # r"/" + config.URL_PREFIX + "api/market/search.clusters/?$",
-        # r"/" + config.URL_PREFIX + "api/market/groups/?$"
     ]
 }
 
@@ -110,13 +107,13 @@ SHIBBOLETH_SSO = {
 #
 
 CONTEXT_PLUGINS = (
-    "cvmo.context.plugin.condor.Condor",
-    "cvmo.context.plugin.hostname.Hostname",
-    "cvmo.context.plugin.noip.NoIP",
-    "cvmo.context.plugin.storage.Storage",
-    "cvmo.context.plugin.openvpn.OpenVPN",
-    "cvmo.context.plugin.ganglia.Ganglia",
-    "cvmo.context.plugin.puppet.Puppet",
+    "cvmo.core.plugin.condor.Condor",
+    "cvmo.core.plugin.hostname.Hostname",
+    "cvmo.core.plugin.noip.NoIP",
+    "cvmo.core.plugin.storage.Storage",
+    "cvmo.core.plugin.openvpn.OpenVPN",
+    "cvmo.core.plugin.ganglia.Ganglia",
+    "cvmo.core.plugin.puppet.Puppet",
 )
 
 #
@@ -135,9 +132,15 @@ INSTALLED_APPS = (
     # CernVM-Online
     "cvmo.core",
     # CernVM-Online user
-    "cvmo.user"
-    # CernVM Contextualization
-    # "cvmo.context"
+    "cvmo.user",
+    # CernVM-Online dashboard
+    "cvmo.dashboard",
+    # CernVM-Online context
+    "cvmo.context",
+    # CernVM-Online cluster
+    "cvmo.cluster",
+    # CernVM-Online market
+    "cvmo.market"
 )
 
 #
@@ -151,7 +154,7 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     # Shibboleth SSO
-    "cvmo.context.middleware.shibsync.ShibbolethUserSync",
+    "cvmo.core.middleware.shibsync.ShibbolethUserSync",
     # CORS fix
     "corsheaders.middleware.CorsMiddleware"
 )
@@ -261,7 +264,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    "cvmo.context.utils.views.global_context"
+    "cvmo.core.utils.views.global_context"
 )
 
 #
