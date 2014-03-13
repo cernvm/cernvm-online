@@ -1,3 +1,7 @@
 ._*
 src/db.sqlite3
 *.pyc
+/deployment/log
+/deployment/db.sqlite3
+.DS_Store
+._.*
