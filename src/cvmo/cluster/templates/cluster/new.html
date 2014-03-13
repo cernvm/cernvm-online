@@ -1,0 +1,108 @@
+{% extends "base/main_tw.html" %}
+{% load static %}
+{% load url from future %}
+{% block title %}New cluster definition{% endblock %}
+{% block body %}
+    <div class="page-header">
+        <h1>New cluster definition</h1>
+    </div>
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+            <label for="cluster_name" class="col-xs-2 control-label required">Cluster name</label>
+            <div class="col-xs-5">
+                <input type="text" class="form-control" id="cluster_name" name="cluster_name">
+            </div>
+        </div>
+
+
+        <fieldset>
+            <legend>Amazon configuration</legend>
+            <div class="form-group">
+                <label for="cluster_name" class="col-xs-2 control-label required">AWS Access key</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" id="cluster_name" name="cluster_name">
+                </div>
+                <div class="col-xs-5">
+                    <div class="secure-data-icon">
+                        <span class="glyphicon glyphicon-lock"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cluster_name" class="col-xs-2 control-label required">AWS secret key</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" id="cluster_name" name="cluster_name">
+                </div>
+                <div class="col-xs-5">
+                    <div class="secure-data-icon">
+                        <span class="glyphicon glyphicon-lock"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cluster_name" class="col-xs-2 control-label required">Scalable nodes' flavor</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" id="cluster_name" name="cluster_name" placeholder="m1.medium">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cluster_name" class="col-xs-2 control-label required">Scalable nodes' image</label>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" id="cluster_name" name="cluster_name" placeholder="ami-123456">
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>elastiq configuration</legend>
+            <div class="form-group">
+                <label for="cluster_name" class="col-xs-2 control-label">Min. workers</label>
+                <div class="col-xs-1">
+                    <input type="text" class="form-control" id="cluster_name" name="cluster_name" value="2">
+                </div>
+                <label for="cluster_name" class="col-xs-2 control-label">Max. workers</label>
+                <div class="col-xs-1">
+                    <input type="text" class="form-control" id="cluster_name" name="cluster_name" value="">
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Fixed node context</legend>
+        </fieldset>
+
+        <fieldset>
+            <legend>Scalable node context</legend>
+        </fieldset>
+
+        <div class="form-group">
+            <div class="col-xs-offset-2 col-xs-10">
+                <button type="submit" class="btn btn-default">Create cluster</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+{% block styles %}
+    <style>
+        label.required:after {
+            content: " *";
+        }
+        div.secure-data-icon {
+            color: green;
+            line-height: 34px;
+        }
+    </style>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript">
+        jQuery(
+            function()
+            {
+                jQuery(".secure-data-icon span").tooltip({
+                    "title": "Your sensitive data are securely stored in our database.",
+                    "placement": "right"
+                });
+            }
+        );
+    </script>
+{% endblock %}
