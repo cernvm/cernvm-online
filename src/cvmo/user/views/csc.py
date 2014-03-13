@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.models import User
 from django.conf import settings
-from cvmo.context.utils.views import msg_error, uncache_response
+from cvmo.core.utils.views import msg_error, uncache_response
 from django.contrib.auth import login as django_login
 
 

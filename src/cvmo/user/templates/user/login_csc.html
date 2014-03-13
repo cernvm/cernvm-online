@@ -1,10 +1,10 @@
-{% extends "core/main.html" %}
+{% extends "base/main.html" %}
 {% load static %}
 {% block body_class %}single_column{% endblock %}
 {% block title %}Login{% endblock %}
 
 {% block body %}{% load url from future %}
-<div style="background: url({% static "images/csc-vector.png" %}) top right no-repeat">
+<div style="background: url({% static "base/img/csc-vector.png" %}) top right no-repeat">
 	<h1>Welcome to CernVM Online</h1>
 	<p class="gray">Please login using your CSC credentials. After you login, you will have the option to create contextualization information for your CernVM instances.</p>
 

@@ -12,7 +12,7 @@ from django.core import urlresolvers
 from Crypto.Random import random
 from Crypto.Hash import SHA256
 from cvmo.settings import URL_PREFIX
-from cvmo.context.utils.views import msg_error, msg_warning, msg_confirm, \
+from cvmo.core.utils.views import msg_error, msg_warning, msg_confirm, \
     redirect_memory, get_memory
 from ..models import UserActivationKey
 

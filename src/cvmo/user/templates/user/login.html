@@ -1,4 +1,4 @@
-{% extends "core/main.html" %}
+{% extends "base/main.html" %}
 {% load static %}
 {% block body_class %}single_column{% endblock %}
 {% block title %}Login{% endblock %}
@@ -43,7 +43,7 @@
 		{% if enable_csc %}
 		<div class="field clearfix button-container center">
 			<a href="[% url "csc_login" %]" class="imglink">
-				<img src="{% static "images/csc-login-lite.png" %}" />
+				<img src="{% static "base/img/csc-login-lite.png" %}" />
 			</a>
 		</div>
 		{% endif %}
