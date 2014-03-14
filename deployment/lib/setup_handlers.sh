@@ -95,6 +95,8 @@ function configure_cvmo_undo
 function make_public_do
 {
     managed_exec mkdir -p "$BASE_DIR"/public_html || return $?
+    managed_exec mkdir -p "$BASE_DIR"/public_html/media || return $?
+    managed_exec mkdir -p "$BASE_DIR"/public_html/static || return $?
     export PATH="$PATH:$BASE_DIR/bin"
     export PYTHONPATH="$PYTHONPATH:$BASE_DIR/lib/python2.6/site-packages"
     export PYTHONPATH="$PYTHONPATH:$BASE_DIR/lib64/python2.6/site-packages"
@@ -131,14 +133,15 @@ function install_apache_do
     if [ -e /etc/httpd/conf.d/ssl.conf ] ; then
       managed_exec mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/a_ssl.conf || return $?
     fi
-    managed_exec chown -R nobody:nobody "$BASE_DIR"/{bin,lib,lib64,public_html} || return $?
+    managed_exec chown -R root:root "$BASE_DIR"/{bin,lib,lib64,public_html} || return $?
+    managed_exec chown -R apache:apache "$BASE_DIR"/public_html/media || return $?
     managed_exec chown -R apache:apache "$BASE_DIR"/logs || return $?
 
     # seLinux fix
     getsebool httpd_can_network_connect 2> /dev/null | \
       grep -q ' --> on$' || \
       managed_exec setsebool -P httpd_can_network_connect on || return $?
-  
+
     #managed_exec /etc/init.d/httpd restart
     return 0 # ignore Apache for the moment...
 }

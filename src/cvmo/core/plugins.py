@@ -19,6 +19,7 @@ class ContextPlugin(object):
     TITLE = "Untitled context plugin"
     DESCRIPTION = ""
     CONFIG_GROUP = "undefined"
+    CONFIG_GROUP_RENDERED = None
     CONFIG_VARS = {}
     REMOVE_BLANK = False
 
@@ -53,7 +54,11 @@ class ContextPlugin(object):
     def renderContext(self, values):
         """ Render the context variables into a text string (AMIConfig-compatible) """
 
-        ans = "\n[%s]\n" % (self.CONFIG_GROUP)
+        secname = self.CONFIG_GROUP_RENDERED
+        if secname is None:
+            secname = self.CONFIG_GROUP
+
+        ans = "\n[%s]\n" % (secname)
         for k in self.CONFIG_VARS.keys():
 
             # Calculate template-safe key
@@ -323,7 +328,10 @@ class ContextPlugins(object):
             if (k in enabled) and (enabled[k]):
                 if _plugins != "":
                     _plugins += " "
-                _plugins += self.plugins[k].CONFIG_GROUP
+                if self.plugins[k].CONFIG_GROUP_RENDERED is not None:
+                    _plugins += self.plugins[k].CONFIG_GROUP_RENDERED
+                else:
+                    _plugins += self.plugins[k].CONFIG_GROUP
 
         # Prepare context
         if enabled == None:

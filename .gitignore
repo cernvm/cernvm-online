@@ -1,5 +1,8 @@
 ._*
-src/db.sqlite3
 *.pyc
 *.pyo
 src/cvmo/config.py
+/deployment/log
+/deployment/db.sqlite3
+.DS_Store
+
