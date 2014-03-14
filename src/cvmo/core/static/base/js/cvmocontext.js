@@ -201,7 +201,7 @@ CVMO.ContextUI.AddUser = function(name, group, home, password) {
     new Element('td', { html: '<input type="hidden" name="values[general][users]['+id+'][group]" value="'+group+'" />'+group }).inject(row);
     new Element('td', { html: '<input type="hidden" name="values[general][users]['+id+'][home]" value="'+home+'" />'+home }).inject(row);
     new Element('td', { html: '<input type="hidden" name="values[general][users]['+id+'][password]" value="'+password+'" />****' }).inject(row);
-    new Element('td', { html: '<a href="javascript:;" onclick="CVMO.ContextUI.RemoveUser('+id+');" class="softbutton"><img border="0" src="/static/images/user_delete.png" align="absmiddle"> Remove user</a>' }).inject(row);
+    new Element('td', { html: '<a href="javascript:;" onclick="CVMO.ContextUI.RemoveUser('+id+');" class="softbutton"><img border="0" src="/static/context/img/user_delete.png" align="absmiddle"> Remove user</a>' }).inject(row);
     row.inject(table_nu_form, 'before');
     new Fx.Reveal(row.getChildren(), {duration: 500, mode: 'vertical', opacity: 0});
 
@@ -246,7 +246,7 @@ CVMO.ContextUI.AddEnv = function(variable, value) {
     new Element('td', { align: 'right',  html: '<strong>'+variable+'</strong>' }).inject(row);
     new Element('td', { html: '=' }).inject(row);
     new Element('td', { align: 'left',   html: '<input type="hidden" name="values[general][environment]['+variable+']" value="'+value+'" />'+value }).inject(row);
-    new Element('td', { align: 'center', 'class': 'v-center', html: '<a href="javascript:;" onclick="CVMO.ContextUI.RemoveEnv(\''+id+'\');" class="softbutton"><img border="0" src="/static/images/page_delete.png" align="absmiddle"> Remove variable</a>' }).inject(row);
+    new Element('td', { align: 'center', 'class': 'v-center', html: '<a href="javascript:;" onclick="CVMO.ContextUI.RemoveEnv(\''+id+'\');" class="softbutton"><img border="0" src="/static/context/img/page_delete.png" align="absmiddle"> Remove variable</a>' }).inject(row);
     row.inject(table);
     new Fx.Reveal(row.getChildren(), {duration: 500, mode: 'vertical', opacity: 0});
 

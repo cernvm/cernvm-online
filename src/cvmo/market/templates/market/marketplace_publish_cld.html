@@ -54,7 +54,7 @@
 							<td align="center">=</td>
 							<td><input type="hidden" name="environment[{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
 							<td align="center"><input type="checkbox" name="required[{{v_name}}]" value="1" /></td>
-							<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.Market.removeEnv('env-entry-{{v_name}}');" class="softbutton"><img border="0" src="{% static "base/img/page_delete.png" %}" align="absmiddle"> Remove variable</a></td>
+							<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.Market.removeEnv('env-entry-{{v_name}}');" class="softbutton"><img border="0" src="{% static "market/img/page_delete.png" %}" align="absmiddle"> Remove variable</a></td>
 						</tr>
 					{% endfor %}
 				</tbody>
@@ -64,7 +64,7 @@
 						<td align="center">=</td>
 						<td><input type="text" id="new_env_value" style="width:98%" /></td>
 						<td align="center"><input id="new_env_required" type="checkbox" /></td>
-						<td align="center" class="v-middle"><a href="javascript:;" onclick="CVMO.Market.addEnvFromForm()" class="softbutton"><img border="0" src="{% static "base/img/page_add.png" %}" align="absmiddle"> Add variable</a></td>
+						<td align="center" class="v-middle"><a href="javascript:;" onclick="CVMO.Market.addEnvFromForm()" class="softbutton"><img border="0" src="{% static "market/img/page_add.png" %}" align="absmiddle"> Add variable</a></td>
 					</tr>
 				</thead>
 			</table>

@@ -270,7 +270,7 @@
 								<td><input type="hidden" name="values[general][users][{{uid}}][home]" value="{{u.home}}" />{{u.home}}</td>
 								<td><input type="hidden" name="values[general][users][{{uid}}][password]" value="{{u.password}}" />****</td>
 								{% if not disabled %}
-								<td><a href="javascript:;" onclick="CVMO.ContextUI.RemoveUser({{uid}});" class="softbutton"><img border="0" src="{% static "base/img/user_delete.png" %}" align="absmiddle"> Remove user</a></td>
+								<td><a href="javascript:;" onclick="CVMO.ContextUI.RemoveUser({{uid}});" class="softbutton"><img border="0" src="{% static "context/img/user_delete.png" %}" align="absmiddle"> Remove user</a></td>
 								{% endif %}
 							</tr>
 						{% endfor %}
@@ -280,7 +280,7 @@
 								<td><input type="text" id="new_user_group" /></td>
 								<td><input type="text" id="new_user_home" value="/home/user" /></td>
 								<td><input type="password" id="new_user_password" value="" /></td>
-								<td><a href="javascript:;" onclick="CVMO.ContextUI.AddUserFromForm()" class="softbutton"><img border="0" src="{% static "base/img/user_add.png" %}" align="absmiddle"> Add user</a></td>
+								<td><a href="javascript:;" onclick="CVMO.ContextUI.AddUserFromForm()" class="softbutton"><img border="0" src="{% static "context/img/user_add.png" %}" align="absmiddle"> Add user</a></td>
 							</tr>
 						{% endif %}
 					</table>
@@ -389,7 +389,7 @@
 								<td align="center">=</td>
 								{% if not disabled %}
 									<td><input type="hidden" name="values[general][environment][{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
-									<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.ContextUI.RemoveEnv('env-entry-{{v_name}}');" class="softbutton"><img border="0" src="{% static "base/img/page_delete.png" %}" align="absmiddle"> Remove variable</a></td>
+									<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.ContextUI.RemoveEnv('env-entry-{{v_name}}');" class="softbutton"><img border="0" src="{% static "context/img/page_delete.png" %}" align="absmiddle"> Remove variable</a></td>
 								{% else %}
 									<td><input type="hidden" name="values[general][environment][{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
 								{% endif %}
@@ -408,7 +408,7 @@
 								<td><input type="text" id="new_env_var" style="width:98%" /></td>
 								<td align="center">=</td>
 								<td><input type="text" id="new_env_value" style="width:98%" /></td>
-								<td align="center"><a href="javascript:;" onclick="CVMO.ContextUI.AddEnvFromForm()" class="softbutton"><img border="0" src="{% static "base/img/page_add.png" %}" align="absmiddle"> Add variable</a></td>
+								<td align="center"><a href="javascript:;" onclick="CVMO.ContextUI.AddEnvFromForm()" class="softbutton"><img border="0" src="{% static "context/img/page_add.png" %}" align="absmiddle"> Add variable</a></td>
 							</tr>
 						</thead>
 					{% endif %}
