@@ -8,11 +8,13 @@ from passlib.hash import sha512_crypt
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
+from django.db.models import Q
 from django.core.urlresolvers import reverse
 from querystring_parser import parser
 from cvmo.core.plugins import ContextPlugins
 from cvmo.context.models import ContextStorage, ContextDefinition
-from cvmo.core.utils.views import render_confirm, render_password_prompt
+from cvmo.core.utils.views import render_confirm, render_password_prompt, \
+    render_error, uncache_response
 from cvmo.core.utils.context import gen_context_key, salt_context_key, tou
 from cvmo.core.utils import crypt
 
@@ -352,14 +354,36 @@ def api_get(request, context_id, format, askpass):
             return HttpResponse('render-encoding-error',
                                 content_type='text/plain')
 
-    # Return
-    # if ctx.key:
-    #     enc = 'yes'
-    # else:
-    #     enc = 'no'
-    # return HttpResponse('format:'+format+';encrypted:'+enc+';data:'+output,
-    # content_type='text/plain')
     return HttpResponse(output, content_type='text/plain')
+
+
+def ajax_publish_context(request):
+    """
+    Changes the published value of a given context. Obtains all the parameters
+    (id and action) through HTTP GET. Returns a HTTP status != 200 in case of
+    errors, or an HTTP 200 with a JSON file containing the string '1' when OK
+    """
+    # id, do required
+    if not 'do' in request.GET or not 'id' in request.GET:
+        return render_error(request, 400, 'Action and/or id are missing')
+
+    # Actions allowed: [un]publish
+    if request.GET['do'] == 'publish':
+        publish = True
+    elif request.GET['do'] == 'unpublish':
+        publish = False
+    else:
+        return render_error(request, 400, 'Invalid action')
+
+    # Check if context exists and it's mine
+    id = request.GET['id']
+    ctx = ContextDefinition.objects.filter(
+        Q(id=id) & Q(inherited=False) & Q(owner=request.user))
+    if not ctx.exists or ctx.update(public=publish) != 1:
+        return render_error(request, 500, 'Update error')
+
+    # Will return the string '1' in case of success, '0' in case of failure
+    return uncache_response(HttpResponse('1', content_type="application/json"))
 
 
 #
@@ -408,8 +432,7 @@ def _get_cernvm_config():
 
     except Exception as ex:
         print "Got error: %s\n" % str(ex)
-        return {
-        }
+        return {}
 
 
 def _prompt_unencrypt_context(request, ctx, callback_url, decode_data=True,

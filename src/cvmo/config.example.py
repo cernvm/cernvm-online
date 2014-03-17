@@ -19,8 +19,6 @@ SECRET_KEY = "<...>"
 #   if CernVM online is deployed in https://cvmo.ch/example/ URL_PREFIX should
 #   be set to 'example/'
 URL_PREFIX = ""
-# Enable the cloud interfaces?
-ENABLE_CLOUD = False
 
 #
 # Paths

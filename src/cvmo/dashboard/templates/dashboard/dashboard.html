@@ -96,7 +96,7 @@
             <td class="buttons-container">
                 <!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
                 <div class="btn">
-                    <a href="{% if item.from_abstract %}{# url "context_clone_simple" context_id=item.id #}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}"
+                    <a href="{% if item.from_abstract %}{% url "context_abstract_contextualize" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}"
                         class="softbutton" title="Use this context as template">
                         <img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}"/>
                          Clone
@@ -166,7 +166,7 @@
   <ul>
     <li><a href="{% url "context_new" %}"><b>New context</b></a></li>
     {% for item in full_abstract_list %}
-    <li><a href="{# url "abstract_contextualize" context_id=item.id #}">{{ item.name }}</a></li>
+    <li><a href="{% url "context_abstract_contextualize" context_id=item.id %}">{{ item.name }}</a></li>
     {% endfor %}
   </ul>
 </div><p style="float:left">&nbsp;</p>
@@ -192,7 +192,7 @@ absCheckboxCallback = function(e, id) {
     obj = this;
     jQuery.ajax({
         type: 'GET',
-        url: '{# url "ajax_publish_context" #}?' +
+        url: '{% url "context_ajax_publish_context" %}?' +
             'id=' + id + '&do=' + (chk ? 'publish' : 'unpublish')
     }).done(function(resp) {
         if (parseInt(resp) == 1) {
@@ -207,7 +207,7 @@ absCheckboxCallback = function(e, id) {
 jQuery(document).ready(function() {
     jQuery.ajax({
         type: 'GET',
-        url: '{# url "ajax_abstract_list" #}'
+        url: '{% url "context_ajax_abstract_list" %}'
     }).always(function() {
         jQuery(':checkbox[name^="absctx"]').attr('disabled', true);
     }).done(function(resp) {
@@ -242,7 +242,7 @@ jQuery(document).ready(function() {
         <td class="buttons-container">
 
             <!-- Clone -->
-            <a href="{# url "abstract_clone" context_id=item.id #}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "base/img/brick_go.png" %}" /> Clone</a>
+            <a href="{% url "context_abstract_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "base/img/brick_go.png" %}" /> Clone</a>
 
             <!-- Delete (since it is a ContextDefinition, we can reuse the same action) -->
             <a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "base/img/brick_delete.png" %}" /></a>
@@ -256,7 +256,7 @@ jQuery(document).ready(function() {
     {% endfor %}
 </table>
 <br />
-<p><a href="{# url "abstract_new" #}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}" /> Create new abstract context</a></p>
+<p><a href="{% url "context_abstract_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}" /> Create new abstract context</a></p>
 {% endif %}
 
 <h2>Your virtual machines</h2>

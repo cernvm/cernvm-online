@@ -8,12 +8,11 @@ from cvmo.market.models import MarketplaceGroup, MarketplaceContextVotes, \
 from cvmo.context.models import ContextDefinition
 from cvmo.core.utils.views import render_error, render_confirm, \
     uncache_response, msg_info, set_memory, msg_error, msg_confirm, \
-    for_market, for_cloud, redirect_memory, get_memory
+    redirect_memory, get_memory
 from PIL import Image
 import json
 
 
-@for_market
 def list(request):
     templates = range(40)
 
@@ -25,7 +24,6 @@ def list(request):
     }, RequestContext(request))
 
 
-@for_market
 def vote_ajax(request):
 
     # Validate request
@@ -73,7 +71,6 @@ def vote_ajax(request):
     )
 
 
-@for_market
 def list_ajax(request):
 
     # Validate request
@@ -173,7 +170,6 @@ def list_ajax(request):
 #
 
 
-@for_market
 def publish(request, context_id):
 
     # Try to find the context
@@ -216,7 +212,6 @@ def publish(request, context_id):
     )
 
 
-@for_market
 def publish_action(request):
 
     # Fetch entries
@@ -304,7 +299,6 @@ def publish_action(request):
     return redirect('dashboard')
 
 
-@for_market
 def revoke(request, context_id):
 
     # Try to find the context

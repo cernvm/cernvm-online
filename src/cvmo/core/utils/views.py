@@ -35,7 +35,6 @@ def global_context(request):
         'msg_warning': msg_warning,
         'msg_confirm': msg_confirm,
         'msg_info': msg_info,
-        'enable_cloud': settings.ENABLE_CLOUD and is_cloud_enabled(request),
         'enable_csc': settings.ENABLE_CSC,
         'enable_abstract_creation': is_abstract_creation_enabled(request)
     }
@@ -240,15 +239,6 @@ def render_error(request, code=400, title="", body=""):
     return HttpResponse(_html, status=code)
 
 
-def is_cloud_enabled(request):
-    """
-    Check if the current user has cloud permissions
-    """
-    if request.user:
-        return request.user.groups.filter(name='cloud').count() != 0
-    return False
-
-
 def is_abstract_creation_enabled(request):
     """
     Check if the current user can create abstract contexts
@@ -273,42 +263,3 @@ def get_list_allowed_abstract(request):
                 Q(owner=request.user) | Q(public=True)
             )).order_by('name')
     return ab_list
-
-
-def for_cloud(fn):
-    """
-    Decorator to reject access if the user is not member of the cloud group
-    """
-    def wrapped(*args, **kwargs):
-
-        # Fetch request object
-        request = args[0]
-
-        # Check if user is not member of cloud
-        if not is_cloud_enabled(request):
-            msg_info(
-                request, "This is an experimental feature. Access is granted\
- only to beta testers!")
-            return redirect('dashboard')
-
-        # It looks OK, run the view
-        return fn(*args, **kwargs)
-
-    # Return the wrapped function
-    return wrapped
-
-
-def for_market(fn):
-    """
-    Decorator to reject access if the user is not member of the market group
-    """
-    def wrapped(*args, **kwargs):
-
-        # Fetch request object
-        # request = args[0]
-
-        # It looks OK, run the view
-        return fn(*args, **kwargs)
-
-    # Return the wrapped function
-    return wrapped
