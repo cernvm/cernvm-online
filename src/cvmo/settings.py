@@ -127,15 +127,11 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     # CernVM-Online
     "cvmo.core",
-    # CernVM-Online user
     "cvmo.user",
-    # CernVM-Online dashboard
     "cvmo.dashboard",
-    # CernVM-Online context
     "cvmo.context",
-    # CernVM-Online cluster
+    "cvmo.vm",
     "cvmo.cluster",
-    # CernVM-Online market
     "cvmo.market"
 )
 

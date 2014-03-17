@@ -2,7 +2,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models import Q
 from cvmo import settings
-from cvmo.context.models import ContextDefinition, Machines
+from cvmo.vm.models import Machines
+from cvmo.context.models import ContextDefinition
 from cvmo.cluster.models import ClusterDefinition
 from cvmo.core.utils.views import uncache_response
 from cvmo.core.utils.views import get_list_allowed_abstract

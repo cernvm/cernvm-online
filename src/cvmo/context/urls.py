@@ -50,25 +50,3 @@ urlpatterns += patterns(
         name="context_ajax_abstract_list")
 )
 
-
-# API interface. No interactive password prompt: in raw contexts decryption occurs on the client
-# url(r"^api/(?P<context_id>[-\w]+)/*$", "api_get", {"format": "raw", "askpass": False}, name="context_api_encoded"),
-# url(r"^api/(?P<context_id>[-\w]+)/plain/*$", "api_get", {"format": "plain", "askpass": False}, name="context_api_plain"),
-
-# url(r"^ajax/list/*$", "ajax_list", name="vm_ajax_listcontexts"),
-# )
-
-# urlpatterns += patterns("cvmo.context.views.machine",
-# url(r"^machine/pair/$", "pair_begin", name="vm_pair_begin"),
-# url(r"^machine/pair/(?P<context_id>[-\w]+)$", "pair_request", name="vm_pair_request"),
-# url(r"^machine/setup/(?P<claim_key>\w+)$", "pair_setup", name="vm_setup"),
-# url(r"^machine/delete/(?P<machine_uuid>[-\w]+)$", "delete", name="vm_delete"),
-# url(r"^ajax/machine/status/(?P<claim_key>\w+)$", "pair_status", name="vm_ajax_status"),
-# url(r"^api/fetch$", "context_fetch"),
-# url(r"^api/context$", "context_fetch")
-# )
-
-# urlpatterns += patterns("cvmo.context.views.actions",
-# url(r"^actions/edit$", "edit", name="actions_edit"),
-# url(r"^actions/save$", "save", name="actions_save")
-# )

@@ -283,7 +283,7 @@ jQuery(document).ready(function() {
             <td>{{ item.version }}</td>
             <td>{{ item.context.name }}</td>
             <td align="center">
-                <a href="{# url "vm_delete" machine_uuid=item.uuid #}" class="softbutton" title="Stop managing this virtual machine"><img border="0" align="absmiddle" src="{% static "base/img/vm_remove.png" %}" /> Unmanage</a>
+                <a href="{% url "vm_delete" machine_uuid=item.uuid %}" class="softbutton" title="Stop managing this virtual machine"><img border="0" align="absmiddle" src="{% static "base/img/vm_remove.png" %}" /> Unmanage</a>
             </td>
         </tr>
     {% empty %}
@@ -293,6 +293,6 @@ jQuery(document).ready(function() {
     {% endfor %}
 </table>
 <br />
-<p><a href="{# url "vm_pair_begin" #}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/vm_contextualize.png" %}" /> Pair an instance of CernVM</a></p>
+<p><a href="{% url "vm_pair_begin" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/vm_contextualize.png" %}" /> Pair an instance of CernVM</a></p>
 
 {% endblock %}

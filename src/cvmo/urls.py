@@ -5,15 +5,11 @@ from cvmo.settings import URL_PREFIX
 
 urlpatterns = patterns(
     "",
-    # User UI
     url(r"^%suser" % URL_PREFIX, include("cvmo.user.urls")),
-    # Dashboard UI
     url(r"^%sdashboard" % URL_PREFIX, include("cvmo.dashboard.urls")),
-    # Context UI
     url(r"^%scontext" % URL_PREFIX, include("cvmo.context.urls")),
-    # Market UI
+    url(r"^%svm" % URL_PREFIX, include("cvmo.vm.urls")),
     url(r"^%smarket" % URL_PREFIX, include("cvmo.market.urls")),
-    # Cluster UI
     url(r"^%scluster" % URL_PREFIX, include("cvmo.cluster.urls"))
 )
 
