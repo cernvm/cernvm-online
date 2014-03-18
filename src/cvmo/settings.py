@@ -124,6 +124,8 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     # Django messages
     "django.contrib.messages",
+    # South
+    "south",
     # Admin
     "django.contrib.admin",
     # CernVM-Online

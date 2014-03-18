@@ -23,6 +23,7 @@ if __name__ == "__main__":
             "Pillow>=2.0.0",
             "PyCrypto>=2.6",
             "django-cors-headers>=0.10",
-            "passlib>=1.6.0"
+            "passlib>=1.6.0",
+            "South>=0.8"
         ]
     )
