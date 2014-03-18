@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>{% block title %}Home{% endblock %} | CernVM Online</title>
-        <link rel="shortcut icon" href="/portal/sites/cernvm.cern.ch/files/sky_favicon_4.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="{% static "base/img/sky_favicon_4.ico" %}" type="image/x-icon" />
         <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/layout.css" %}" />
         <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/style.css" %}" />
         <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/custom.css" %}" />
@@ -109,7 +109,15 @@
                     <div id="block-block-4" class="block block-block block-even region-odd clearfix">
                         <div class="content">
                             {% block footer %}
-                                <p>&copy; Copyright CERN 2012 - 2014 | PH Department - SFT | CernVM Software appliance</p>
+                                <p>
+                                    CernVM Online version: <strong>v{{ cvmo_version }}</strong>
+                                    &copy; <a href="http://cern.ch/" target="_blank">CERN</a> 2012 - 2014
+                                </p>
+                                <p>
+                                    <a href="http://cernvm.cern.ch/" target="_blank">CernVM Software appliance</a>
+                                     | <a href="http://cern.ch/ph-dep" target="_blank">PH Department</a>
+                                     - <a href="http://sftweb.cern.ch/" target="_blank">SFT</a>
+                                </p>
                             {% endblock %}
                         </div>
                     </div>

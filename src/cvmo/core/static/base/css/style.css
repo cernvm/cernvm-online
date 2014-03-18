@@ -205,6 +205,17 @@ div.feed-icon {display: none;} /*hides the feed icon from the first page*/
 			#footer #footer-inner .content p{color:#FFF;}
 			#footer #footer-inner .block .content{padding:0; margin:0;}
 			#footer #footer-inner .block .content p{padding:5px; margin:0;}
+	#footer a,
+	#footer a:hover,
+	#footer a:visited,
+	#footer a:active {
+		color: #fff;
+	}
+	#footer a:hover,
+	#footer a:visited,
+	#footer a:active {
+		text-decoration: underline;
+	}
 
 	/* @end  */
 
