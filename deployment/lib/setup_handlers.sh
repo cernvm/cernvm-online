@@ -63,7 +63,9 @@ function install_cvmo_do
     ( cd "$BASE_DIR"/tmp/src && \
       managed_exec python setup.py sdist ) || return $?
     managed_exec pip install --install-option="--prefix=$BASE_DIR" \
-      --upgrade "$BASE_DIR"/tmp/src/dist/CernVM-Online-1.0.tar.gz || return $?
+      --upgrade "$BASE_DIR"/tmp/src/dist/CernVM-Online-1.2.0.tar.gz || return $?
+    # 1.0 --> 1.2.0, this is a temporary fix
+    # but will cause problems whenever version changes
     managed_exec rm -Rf "$BASE_DIR"/tmp || return $?
     managed_exec mkdir -p "$BASE_DIR"/logs
     return $?
@@ -100,7 +102,7 @@ function make_public_do
     export PATH="$PATH:$BASE_DIR/bin"
     export PYTHONPATH="$PYTHONPATH:$BASE_DIR/lib/python2.6/site-packages"
     export PYTHONPATH="$PYTHONPATH:$BASE_DIR/lib64/python2.6/site-packages"
-    managed_exec $BASE_DIR/bin/manage.py collectstatic --noinput
+    managed_exec $BASE_DIR/bin/cvmo-manage collectstatic --noinput
     return $?
 }
 function make_public_undo
