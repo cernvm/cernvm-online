@@ -5,12 +5,12 @@ from cvmo.settings import URL_PREFIX
 
 urlpatterns = patterns(
     "",
-    url(r"^%suser" % URL_PREFIX, include("cvmo.user.urls")),
-    url(r"^%sdashboard" % URL_PREFIX, include("cvmo.dashboard.urls")),
-    url(r"^%scontext" % URL_PREFIX, include("cvmo.context.urls")),
-    url(r"^%svm" % URL_PREFIX, include("cvmo.vm.urls")),
-    url(r"^%smarket" % URL_PREFIX, include("cvmo.market.urls")),
-    url(r"^%scluster" % URL_PREFIX, include("cvmo.cluster.urls"))
+    url(r"^%suser/" % URL_PREFIX, include("cvmo.user.urls")),
+    url(r"^%sdashboard/" % URL_PREFIX, include("cvmo.dashboard.urls")),
+    url(r"^%scontext/" % URL_PREFIX, include("cvmo.context.urls")),
+    url(r"^%svm/" % URL_PREFIX, include("cvmo.vm.urls")),
+    url(r"^%smarket/" % URL_PREFIX, include("cvmo.market.urls")),
+    url(r"^%scluster/" % URL_PREFIX, include("cvmo.cluster.urls"))
 )
 
 #
@@ -33,7 +33,7 @@ if settings.DEBUG is True:
 
 admin.autodiscover()
 urlpatterns += patterns(
-    "", url(r"^%sadmin" % URL_PREFIX, include(admin.site.urls))
+    "", url(r"^%sadmin/" % URL_PREFIX, include(admin.site.urls))
 )
 
 #
