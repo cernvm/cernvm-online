@@ -1,0 +1,30 @@
+{% extends "base/main_tw.html" %}
+{% load static %}
+{% load url from future %}
+
+{% block sidebar %}
+    <div class="block block-views block-odd region-odd clearfix">
+        <h3 class="title">Menu</h3>
+        <div class="content sidenav">
+            <ul>
+                <li><a href="{% url "dashboard" %}">Dashboard</a></li>
+                <li><a href="{% url "context_new" %}">Create Context</a></li>
+                <li><a href="{% url "vm_pair_begin" %}">Pair an instance</a></li>
+                <li><a href="{% url "market_list" %}">Marketplace</a></li>
+                <li><a href="{% url "cluster_new" %}">Create Cluster</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="block block-views block-odd region-odd clearfix">
+        <h3 class="title">Recent context definition</h3>
+        <div class="content sidenav">
+            <ul>
+                {% for item in last_context_definitions %}
+                    <li><a href="{% url "context_view" context_id=item.id %}"><img src="{% static "base/img/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
+                {% empty %}
+                    <li class="empty">No context definitions</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

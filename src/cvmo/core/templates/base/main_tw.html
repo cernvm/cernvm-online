@@ -14,6 +14,7 @@
 
         <!-- CernVM Online -->
         <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/cvmo-tw.css" %}" />
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans:400,300,600" rel="stylesheet" type="text/css" />
 
         <!-- Custom styling -->
         {% block styles %}{% endblock %}
@@ -25,96 +26,103 @@
         <![endif]-->
     </head>
     <body>
-        <div id="header">
-            <div class="container" style="width:960px!important">
-                <div class="row">
-                    <div class="col-xs-4">
-                        <div id="div_logo">
-                            <a href="{% url "dashboard" %}" title="">
-                                <img alt="CernVM Online" id="img_logo" src="{% static "base/img/online_logo.png" %}" />
-                            </a>
-                            <a href="http://cernvm.cern.ch/portal" title="home">
-                                <img alt="Home" id="img_home" src="{% static "base/img/logo-home.png" %}" />
-                            </a>
-                        </div>
+        <div class="container" id="header" style="width:960px!important">
+            <div class="row">
+                <div class="col-xs-4">
+                    <div id="h_logo">
+                        <a href="{% url "dashboard" %}" title="">
+                            <img alt="CernVM Online" id="hl_cvmo_logo" src="{% static "base/img/online_logo.png" %}" />
+                        </a>
+                        <a href="http://cernvm.cern.ch/portal" title="home">
+                            <img alt="Home" id="hl_home" src="{% static "base/img/logo-home.png" %}" />
+                        </a>
                     </div>
-                    <div class="col-xs-4"></div>
-                    <div class="col-xs-4" id="col_search">
-                        <!--
-                            <div class="login">
-                                {% if user.username %}
-                                    <font color="#FFFFFF"> Logged in as {{ user.username|default:"anonymous" }} |</font>
-                                    {% if user.password %}
-                                        <a class="profile-link" href="{% url "user_profile" %}">Profile</a>
-                                        <font color="#FFFFFF"> |</font>
-                                    {% endif %}
-                                        <a class="logout-link" href="{% url "user_logout" %}">Log out</a>
-                                    {% else %}
-                                    <a class="login-link" href="{% url "user_login" %}">Login</a>
+                </div>
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4" id="col_search">
+                    <!--
+                        <div class="login">
+                            {% if user.username %}
+                                <font color="#FFFFFF"> Logged in as {{ user.username|default:"anonymous" }} |</font>
+                                {% if user.password %}
+                                    <a class="profile-link" href="{% url "user_profile" %}">Profile</a>
+                                    <font color="#FFFFFF"> |</font>
                                 {% endif %}
-                            </div>
-                            <form action="https://cernvm.cern.ch/portal/?q=search" method="post">
-                                <input class="form-text" type="text" size="15" value="" name="keys" />
-                                <input class="form-submit" type="submit" value=""/>
-                            </form>
-                        -->
-                    </div>
+                                    <a class="logout-link" href="{% url "user_logout" %}">Log out</a>
+                                {% else %}
+                                <a class="login-link" href="{% url "user_login" %}">Login</a>
+                            {% endif %}
+                        </div>
+                        <form action="https://cernvm.cern.ch/portal/?q=search" method="post">
+                            <input class="form-text" type="text" size="15" value="" name="keys" />
+                            <input class="form-submit" type="submit" value=""/>
+                        </form>
+                    -->
                 </div>
             </div>
         </div>
         <div id="header_line"></div>
-        <div id="navbar">
-            <div class="container" style="width:960px!important">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <ul>
-                            <li class="leaf first">
-                                <a href="http://cernvm.cern.ch/portal/online" title="Home">About</a>
-                            </li>
-                            <li class="leaf first">
-                                <a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
-                            </li>
-                            <li class="leaf first">
-                                <a href="{% url "market_list" %}" title="Marketplace">Marketplace</a>
-                            </li>
-                            <li class="leaf first">
-                                <a href="http://cernvm.cern.ch/portal/online/documentation" title="Documentation">Documentation</a>
-                            </li>
-                            <li class="leaf first">
-                                <a href="http://cernvm.cern.ch/portal/online/downloads" title="Downloads">Downloads</a>
-                            </li>
-                            <li class="leaf first">
-                                <a href="http://cernvm.cern.ch/portal/online/publications" title="Publications">Publications</a>
-                            </li>
-                        </ul>
-                    </div>
+        <div id="navbar" class="container" style="width:960px!important">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ul>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online" title="Home">About</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="{% url "market_list" %}" title="Marketplace">Marketplace</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/documentation" title="Documentation">Documentation</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/downloads" title="Downloads">Downloads</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/publications" title="Publications">Publications</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
-        <div id="main">
-            <div class="container" style="width:960px!important">
-                <div clas="row">
-                    <div class="col-xs-12">
-                        {% if msg_error %}<div class="header-error">{{ msg_error }}</div>{% endif %}
-                        {% if msg_info %}<div class="header-message">{{ msg_info }}</div>{% endif %}
-                        {% if msg_warning %}<div class="header-warning">{{ msg_warning }}</div>{% endif %}
-                        {% if msg_confirm %}<div class="header-confirm">{{ msg_confirm }}</div>{% endif %}
-                    </div>
+        <div id="main" class="container" style="width:960px!important">
+            <div clas="row">
+                <div class="col-xs-3">{% block sidebar %}{% endblock %}</div>
+                <div class="col-xs-9">
+                    {% if msg_error %}<div class="header-error">{{ msg_error }}</div>{% endif %}
+                    {% if msg_info %}<div class="header-message">{{ msg_info }}</div>{% endif %}
+                    {% if msg_warning %}<div class="header-warning">{{ msg_warning }}</div>{% endif %}
+                    {% if msg_confirm %}<div class="header-confirm">{{ msg_confirm }}</div>{% endif %}
+
+                    {% if body_header %}
+                        {% block body_header %}{% endblock %}
+                        <div class="clearfix"></div>
+                    {% endif %}
+                    {% block body %}{% endblock %}
+                    <div class="clearfix"></div>
+                    {% if body_header %}
+                        {% block body_footer %}{% endblock %}
+                        <div class="clearfix"></div>
+                    {% endif %}
                 </div>
-                {% block bodyheader %}{% endblock %}
-                <div class="clearfix"></div>
-                {% block body %}{% endblock %}
-                <div class="clearfix"></div>
-                {% block bodyfooter %}{% endblock %}
-                <div class="clearfix"></div>
             </div>
         </div>
-        <div id="footer">
-            <div class="container" style="width:960px!important">
-                <div class="row">
-                    <div class="col-xs-12">
-                        &copy; Copyright CERN 2012 - 2014 | PH Department - SFT | CernVM Software appliance
-                    </div>
+
+        <div id="footer" class="container" style="width:960px!important">
+            <div class="row">
+                <div class="col-xs-12">
+                    <p>
+                        CernVM Online version: <strong>v{{ cvmo_version }}</strong>
+                        &copy; <a href="http://cern.ch/" target="_blank">CERN</a> 2012 - 2014
+                    </p>
+                    <p>
+                        <a href="http://cernvm.cern.ch/" target="_blank">CernVM Software appliance</a>
+                         | <a href="http://cern.ch/ph-dep" target="_blank">PH Department</a>
+                         - <a href="http://sftweb.cern.ch/" target="_blank">SFT</a>
+                    </p>
                 </div>
             </div>
         </div>

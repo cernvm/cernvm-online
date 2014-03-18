@@ -1,27 +1,28 @@
-#header div.container {
+/******************************************************************************
+ * Header section and header line
+ ******************************************************************************/
+div#header {
     background: url("../img/bg-header.jpg") no-repeat top center;
     height: 96px;
 }
-#header #div_logo {
+div#h_logo {
     background: url("../img/logo-bg.png") no-repeat left top;
     width: 219px;
     height: 64px;
     margin-top: 20px;
-    /*margin-left: -13px;*/
     margin-left: -18px;
 }
-#header #div_logo #img_logo {
+img#hl_cvmo_logo {
     margin-top: 6px;
     margin-left: 36px;
     float: left;
 }
-#header #div_logo #img_home {
+img#hl_home {
     float: left;
     margin-top: 15px;
     margin-left: 21px;
 }
-
-#header_line {
+div#header_line {
     width: 960px;
     margin: 0 auto;
     background: #f09d27;
@@ -30,7 +31,10 @@
     font-size: 0px;
 }
 
-#navbar div.container {
+/******************************************************************************
+ * Navigation bar
+ ******************************************************************************/
+div#navbar {
     background: #fff url("../img/bg-shade-light.png") repeat-x bottom left;
     border-bottom: solid 1px #ddd;
     border-bottom-left-radius: 20px;
@@ -40,11 +44,11 @@
     -webkit-border-bottom-left-radius: 0px;
     height: 30px;
 }
-#navbar div.container div.col-xs-12 {
+div#navbar div.col-xs-12 {
     margin-left: 0;
     padding-left: 0;
 }
-#navbar ul {
+div#navbar ul {
     line-height: 30px;
     text-align:left;
     list-style: none;
@@ -52,13 +56,8 @@
     padding: 0;
     z-index: 998;
     opacity: 0.9999;
-    /*
-        /* Fixes bug FF2 with Superfish menus
-        border: none;
-        position: relative;
-    */
 }
-#navbar ul li {
+div#navbar ul li {
     border-right: solid 1px #ddd;
     float: left;
     list-style: none;
@@ -68,12 +67,11 @@
     position: relative;
     z-index: 999;
 }
-#navbar ul li.last {
+div#navbar ul li.last {
     border-right: none;
 }
-#navbar ul a,
-#navbar ul a:visited {
-    /* background: #fff url('../img/bg-shade-light.png') repeat-x 0 100%; */
+div#navbar ul a,
+div#navbar ul a:visited {
     border: none;
     color: #000;
     display: block;
@@ -83,20 +81,101 @@
     overflow: hidden;
     padding: 0 14.4px;
     text-decoration: none;
-    /* text-shadow: #fff 1px 1px 1px; */
 }
-#navbar ul a:hover,
-#navbar ul a:visited:hover,
-#navbar .active .active-trail a.active:hover,
-#navbar .active .active-trail a:hover {
-    background: url('../img/bg-menu-arrow-cernvm.png') no-repeat top;
+div#navbar ul a:hover,
+div#navbar ul a:visited:hover,
+div#navbar .active .active-trail a.active:hover,
+div#navbar .active .active-trail a:hover {
+    background: url("../img/bg-menu-arrow-cernvm.png") no-repeat top;
     color: #000; text-shadow: none;
 }
 
-#footer{
-    margin-top:20px;
+/******************************************************************************
+ * Main section: Headers
+ ******************************************************************************/
+div#main h1,
+div#main h2,
+div#main h3,
+div#main h4,
+div#main h5,
+div#main h6
+div#main legend {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: lighter;
+    letter-spacing: normal;
+    line-height: 1.4em;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
-#footer div.container {
+div#main h1,
+div#main h2,
+div#main h3,
+div#main legend {
+    font-family: "Open Sans","Lato", Helvetica, Arial, sans-serif;
+}
+div#main h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    line-height: 140%;
+    margin: 0;
+    color: #4e422c;
+}
+div#main h2 {
+    font-size: 20px;
+    color: #cd891e;
+}
+div#main h2 a,
+div#main h2 a:visited,
+div#main h2 a:hover {
+    color: #cd891e;
+}
+div#main h3,
+div#main legend {
+    font-size: 18px;
+    color: #da9a3c;
+}
+div#main h4,
+div#main h5 {
+    font-family: Tahoma, Verdana, Arial;
+}
+div#main h4 {
+    font-size: 16px;
+}
+div#main h5 {
+    font-size: 12px;
+}
+div#main div.page-header {
+    /*border-color: #4e422c;*/
+    border: none;
+    margin-top: 15px;
+}
+div#main div.page-header h1 {
+    font-size: 30px;
+}
+div#main legend {
+    font-weight: lighter;
+    border-color: #da9a3c;
+}
+div#main div.form-group label.control-label {
+    font-weight: normal;
+    color: #4e422c;
+}
+div#main div.form-group.required label.control-label,
+div#main div.form-group label.control-label.required {
+    font-weight: bold;
+}
+
+/******************************************************************************
+ * Main section: Sidebar
+ ******************************************************************************/
+/* TODO */
+
+/******************************************************************************
+ * Footer section
+ ******************************************************************************/
+div#footer {
+    margin-top:20px;
     font-size: 12px;
     text-align: center;
     border-radius:10px;
@@ -106,8 +185,19 @@
     -moz-border-radius:10px;
     -webkit-border-radius:10px;
     -ms--border-radius:10px;
+    margin-bottom: 20px;
 }
-            #footer #footer-inner .content {border:none;}
-            #footer #footer-inner .content p{color:#FFF;}
-            #footer #footer-inner .block .content{padding:0; margin:0;}
-            #footer #footer-inner .block .content p{padding:5px; margin:0;}
+div#footer p {
+    margin: 2px 0;
+}
+#footer a,
+#footer a:hover,
+#footer a:visited,
+#footer a:active {
+    color: #fff;
+}
+#footer a:hover,
+#footer a:visited,
+#footer a:active {
+    text-decoration: underline;
+}
