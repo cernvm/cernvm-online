@@ -1,4 +1,35 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 
-def show_cluster_new(request):
-    return render_to_response("cluster/new.html", {})
+#
+# Views
+#
+
+
+def show_new(request):
+    return render(
+        request,
+        "cluster/new.html", {}
+    )
+
+
+def show_edit(request, cluster_id):
+    return render(
+        request,
+        "cluster/new.html", {}
+    )
+
+
+def show_deploy(request, cluster_id):
+    return render(request, "cluster/deploy.html", {})
+
+#
+# Actions
+#
+
+
+def save(request):
+    pass
+
+
+def delete(request, cluster_id):
+    pass

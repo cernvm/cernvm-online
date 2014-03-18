@@ -1,92 +1,226 @@
-{% extends "base/main_tw.html" %}
+{% extends "base/main_wsidebar_tw.html" %}
 {% load static %}
 {% load url from future %}
 {% block title %}New cluster definition{% endblock %}
 {% block body %}
-    <div class="page-header">
-        <h1>New cluster definition</h1>
+    <div class="inner-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-header">
+                    <h1>New cluster definition</h1>
+                </div>
+                <form class="form-horizontal" role="form" method="POST" target="{% url "cluster_save" %}">
+                    <div class="form-group required">
+                        <label for="cluster_name" class="col-xs-4 control-label">Cluster name</label>
+                        <div class="col-xs-6">
+                            <input type="text" class="form-control" id="cluster_name" name="cluster[name]">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cluster_decription" class="col-xs-4 control-label">Description</label>
+                        <div class="col-xs-6">
+                            <textarea type="text" class="form-control" id="cluster_decription" name="cluster[description]" rows="4" cols="100">
+                            </textarea>
+                        </div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="cluster_name" class="col-xs-4 control-label required">Encryption pass phrase</label>
+                        <div class="col-xs-6">
+                            <input type="text" class="form-control" id="cluster_passphrase" name="cluster[passphrase]">
+                        </div>
+                    </div> -->
+
+                    <fieldset id="ec2_api">
+                        <legend>EC2 API</legend>
+                        <div class="form-group required">
+                            <label for="ec2_api_url" class="col-xs-4 control-label">API URL</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_api_url" name="ec2[api_url]" placeholder="https://dummy.ec2.server/ec2/">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ec2_api_version" class="col-xs-4 control-label">API Version</label>
+                            <div class="col-xs-3">
+                                <input type="text" class="form-control" id="ec2_api_version" name="ec2[api_version]" placeholder="2013-02-01">
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="ec2_aws_access_key_id" class="col-xs-4 control-label">AWS Access key</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_aws_access_key_id" name="ec2[aws_access_key_id]">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="secure-data-icon">
+                                    <span class="glyphicon glyphicon-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group  required">
+                            <label for="ec2_aws_secret_access_key" class="col-xs-4 control-label">AWS secret key</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_aws_secret_access_key" name="ec2[aws_secret_access_key]">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="secure-data-icon">
+                                    <span class="glyphicon glyphicon-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="ec2_instantiation">
+                        <legend>EC2 VMs profile</legend>
+                        <div class="form-group required">
+                            <label for="ec2_image_id" class="col-xs-4 control-label">Scalable nodes' image</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_image_id" name="ec2[image_id]" placeholder="e.g.: ami-123456">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ec2_flavour" class="col-xs-4 control-label">Scalable nodes' flavor</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_flavour" name="ec2[flavour]" placeholder="e.g.: m1.medium">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ec2_key_name" class="col-xs-4 control-label">SSH key name</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_key_name" name="ec2[key_name]">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="quota">
+                        <legend>Quota configuration</legend>
+                        <div class="form-group">
+                            <label for="quota_min_vms" class="col-xs-4 control-label">Min. workers</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="2">
+                            </div>
+                            <label for="quota_max_vms" class="col-xs-4 control-label">Max. workers</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="elastiq">
+                        <legend>elastq configuration</legend>
+                        <div class="form-group">
+                            <label for="elastiq_n_jobs_per_vm" class="col-xs-4 control-label">Amt. of jobs per VM</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_n_jobs_per_vm" name="elastiq[n_jobs_per_vm]" value="4">
+                            </div>
+                            <label for="elastiq_estimated_vm_deploy_time_s" class="col-xs-4 control-label">Estimated VM deployment time (in sec.)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_estimated_vm_deploy_time_s" name="elastiq[estimated_vm_deploy_time_s]" value="600">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="elastiq_batch_plugin" class="col-xs-4 control-label">Batch system</label>
+                            <div class="col-xs-4">
+                                <select class="form-control" id="elastiq_batch_plugin" name="elastiq[batch_plugin]">
+                                    <option value="condor">HTCondor</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Fixed node context</legend>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        No context selected
+                                    </div>
+                                    <div class="panel-footer">
+                                        <input type="text" class="form-control" name="fixed_context_ac" value="" placeholder="Enter the name of the fixed node context...">
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="cluster[fixed_context_id]" id="cluster_fixed_context_id" value="">
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Scalable node context</legend>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        No context selected
+                                    </div>
+                                    <div class="panel-footer">
+                                        <input type="text" class="form-control" name="scalable_context_ac" value="" placeholder="Enter the name of the scalable node context...">
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="cluster[scalable_context_id]" id="cluster_scalable_context_id" value="">
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>
+                            Additional configuration file parameters
+                            <a class="btn" data-toggle="collapse" href="#advanced_panel">
+                                <span class="glyphicon glyphicon-collapse-down"></span>
+                            </a>
+                        </legend>
+                        <div class="collapse out" id="advanced_panel">
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="section">Section</th>
+                                                <th class="parameter">Parameter</th>
+                                                <th class="value">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="section">
+                                                    <select name="advanced[additional_params][0][section]" class="form-control">
+                                                        <option value="elastiq">elastiq</option>
+                                                        <option value="ec2">ec2</option>
+                                                        <option value="quota">quota</option>
+                                                        <option value="substitute">substitute</option>
+                                                    </select>
+                                                </td>
+                                                <td class="parameter">
+                                                    <input name="advanced[additional_params][0][parameter]" value="" class="form-control">
+                                                </td>
+                                                <td class="value">
+                                                    <input name="advanced[additional_params][0][value]" value="" class="form-control">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <td colspan="2"></td>
+                                            <td style="text-align:right">
+                                                <div class="btn btn-default">
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </div>
+                                        </tfoot>
+                                    </table>
+                                    <p class="help-block">Set elastiq configuration file parameters, that were not provided by the UI above. If parameter is set by the UI, this section overrides it's value.
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-group well">
+                        <button type="submit" class="btn btn-primary">Create cluster</button>
+                    </div>
+
+                    <input type="hidden" name="cluster[id]" id="cluster_id" value="">
+                </form>
+            </div>
+        </div>
     </div>
-    <form class="form-horizontal" role="form">
-        <div class="form-group">
-            <label for="cluster_name" class="col-xs-2 control-label required">Cluster name</label>
-            <div class="col-xs-5">
-                <input type="text" class="form-control" id="cluster_name" name="cluster_name">
-            </div>
-        </div>
-
-
-        <fieldset>
-            <legend>Amazon configuration</legend>
-            <div class="form-group">
-                <label for="cluster_name" class="col-xs-2 control-label required">AWS Access key</label>
-                <div class="col-xs-5">
-                    <input type="text" class="form-control" id="cluster_name" name="cluster_name">
-                </div>
-                <div class="col-xs-5">
-                    <div class="secure-data-icon">
-                        <span class="glyphicon glyphicon-lock"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="cluster_name" class="col-xs-2 control-label required">AWS secret key</label>
-                <div class="col-xs-5">
-                    <input type="text" class="form-control" id="cluster_name" name="cluster_name">
-                </div>
-                <div class="col-xs-5">
-                    <div class="secure-data-icon">
-                        <span class="glyphicon glyphicon-lock"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="cluster_name" class="col-xs-2 control-label required">Scalable nodes' flavor</label>
-                <div class="col-xs-5">
-                    <input type="text" class="form-control" id="cluster_name" name="cluster_name" placeholder="m1.medium">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="cluster_name" class="col-xs-2 control-label required">Scalable nodes' image</label>
-                <div class="col-xs-5">
-                    <input type="text" class="form-control" id="cluster_name" name="cluster_name" placeholder="ami-123456">
-                </div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>elastiq configuration</legend>
-            <div class="form-group">
-                <label for="cluster_name" class="col-xs-2 control-label">Min. workers</label>
-                <div class="col-xs-1">
-                    <input type="text" class="form-control" id="cluster_name" name="cluster_name" value="2">
-                </div>
-                <label for="cluster_name" class="col-xs-2 control-label">Max. workers</label>
-                <div class="col-xs-1">
-                    <input type="text" class="form-control" id="cluster_name" name="cluster_name" value="">
-                </div>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Fixed node context</legend>
-        </fieldset>
-
-        <fieldset>
-            <legend>Scalable node context</legend>
-        </fieldset>
-
-        <div class="form-group">
-            <div class="col-xs-offset-2 col-xs-10">
-                <button type="submit" class="btn btn-default">Create cluster</button>
-            </div>
-        </div>
-    </form>
 {% endblock %}
 {% block styles %}
     <style>
-        label.required:after {
-            content: " *";
-        }
         div.secure-data-icon {
             color: green;
             line-height: 34px;
@@ -99,8 +233,8 @@
             function()
             {
                 jQuery(".secure-data-icon span").tooltip({
-                    "title": "Your sensitive data are securely stored in our database.",
-                    "placement": "right"
+                    "title": "Your sensitive data will be stored in our database encrypted.",
+                    "placement": "top"
                 });
             }
         );
