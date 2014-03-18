@@ -11,16 +11,19 @@ from cvmo.core.utils.views import get_list_allowed_abstract
 
 def dashboard(request):
     context = {
-        "context_list": ContextDefinition.objects.filter(
+        "context_definition_list": ContextDefinition.objects.filter(
             Q(owner=request.user) & Q(inherited=False) & Q(abstract=False)
         ).order_by("-public", "name"),
+
         "full_abstract_list": get_list_allowed_abstract(request),
         "my_abstract_list": ContextDefinition.objects.filter(
             Q(owner=request.user) & Q(inherited=False) & Q(abstract=True)
         ).order_by("name"),
-        "cluster_list": ClusterDefinition.objects.filter(
+
+        "cluster_definition_list": ClusterDefinition.objects.filter(
             owner=request.user
-        ).order_by("-public", "name"),
+        ).order_by("name"),
+
         "machine_list": Machines.objects.filter(owner=request.user)
     }
     context["webapi_configurations"] = settings.WEBAPI_CONFIGURATIONS

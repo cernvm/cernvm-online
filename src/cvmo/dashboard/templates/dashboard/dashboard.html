@@ -1,298 +1,277 @@
-{% extends "base/class_context.html" %}
+{% extends "base/main_wsidebar_tw.html" %}
+{% load static %}
+{% load url from future %}
 {% block title %}Dashboard{% endblock %}
 
-{% block head %}
-    <script type="text/javascript"
-        src="https://cernvm.cern.ch/releases/webapi/js/cvmwebapi-latest.js">
-    </script>
-    <script type="text/javascript">
-        function makeRandomString(length)
-        {
-            var text = "";
-            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            for( var i=0; i < length; i++ )
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-            return text;
-        }
-        jQuery(
-            function()
-            {
-                jQuery("a.webapi-deploy-handle").click(
-                    function(e)
-                    {
-                        e.preventDefault();
-                        /* Parse the request */
-                        var request = {
-                            "contextId": jQuery(this).data("context-id"),
-                            "name": jQuery(this).data("name"),
-                            "memory": jQuery(this).data("memory"),
-                            "CPUs": jQuery(this).data("cpus"),
-                            "diskSize": jQuery(this).data("disk-size")
-                        };
-                        console.log(request);
+{% block body %}
+    <div class="inner-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                </div>
 
-                        /* Validate the request */
-                        // TODO
+                <h2>Your context definitions</h2>
+                <table class="table table-hover table-striped" id="context_definitions">
+                    <thead>
+                        <tr>
+                            <th class="icon">&nbsp;</th>
+                            <th class="name">Name</th>
+                            <th class="operations">Operations</th>
+                            <th class="webapi">WebAPI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in context_definition_list %}
+                            <tr>
+                                <td class="icon">
+                                    {% if item.public %}
+                                        <img alt="Public" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Definition visible in market listings"
+                                            src="{% if item.key %}{% static "base/img/cart_key.png" %}{% else %}{% static "base/img/cart.png" %}{% endif %}">
+                                    {% else %}
+                                        <img alt="Private" data-toggle="tooltip" data-placement="top"
+                                            title="Private definition"
+                                            src="{% if item.key %}{% static "base/img/user_key.png" %}{% else %}{% static "base/img/user.png" %}{% endif %}">
+                                    {% endif %}
+                                </td>
+                                <td class="name">{{item.name}}</td>
+                                <td class="operations">
+                                    <a href="{% if item.from_abstract %}{% url "context_abstract_contextualize" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}"
+                                        class="btn btn-xs btn-default">
+                                        <img src="{% static "base/img/brick_add.png" %}">
+                                         Clone
+                                    </a>
 
-                        /* Start the VM with the CernVM Web API */
-                        CVM.startCVMWebAPI(
-                            function(plugin)
-                            {
-                                var randomString = makeRandomString(5);
-                                var url = "https://cernvm-online.cern.ch/vmcp/sign.php?contextualization_key="
-                                    + encodeURIComponent(request["contextId"])
-                                    + "&name=" + encodeURIComponent(request["name"] + " " + randomString)
-                                    + "&cpus=" + encodeURIComponent(request["CPUs"])
-                                    + "&ram=" + encodeURIComponent(request["memory"])
-                                    + "&disk=" + encodeURIComponent(request["diskSize"]);
-                                plugin.requestSession(
-                                    url,
-                                    function(session)
-                                    {
-                                        session.start();
-                                    },
-                                    function(failure)
-                                    {
-                                        alert("Failed to create session: "
-                                              + failure);
-                                    }
-                                );
-                            },
-                            true // Let the plugin initialize the environment
-                        );
-                    }
-                );
-            }
-        );
-    </script>
+                                    {% if item.public %}
+                                        <a href="{% url "market_revoke" context_id=item.id %}"
+                                            class="btn btn-xs btn-default">
+                                            <img src="{% static "base/img/cart_delete.png" %}">
+                                             Withdraw
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url "market_publish" context_id=item.id %}"
+                                            class="btn btn-xs btn-default">
+                                            <img src="{% static "base/img/cart_add.png" %}">
+                                             Publish
+                                        </a>
+                                        <a href="{% url "context_delete" context_id=item.id %}"
+                                            class="btn btn-xs btn-danger">
+                                            <img src="{% static "base/img/brick_delete.png" %}">
+                                        </a>
+                                    {% endif %}
+
+                                    <div class="btn-group">
+                                        <button type="button"
+                                            class="btn btn-xs btn-default dropdown-toggle"
+                                            data-toggle="dropdown">
+                                            <img src="{% static "base/img/brick_go.png" %}">
+                                             <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            {% if item.from_abstract %}
+                                                <li><a href="{% url "context_clone" context_id=item.id %}">Clone with full options</a></li>
+                                            {% endif %}
+                                            <li><a href="{% url "context_view_plain" context_id=item.id %}">Get rendered context</b></a></li>
+                                            <li><a href="{% url "context_view_raw" context_id=item.id %}">Get raw user data</b></a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td class="webapi">
+                                    <div class="btn-group">
+                                        <button type="button"
+                                            class="btn btn-xs btn-info dropdown-toggle"
+                                            data-toggle="dropdown">
+                                            <img src="{% static "base/img/vm_add.png" %}">
+                                             Launch now
+                                             <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            {% for conf in webapi_configurations %}
+                                                <li>
+                                                    <a class="webapi-deploy-handle"
+                                                        data-context-id="{{item.id}}"
+                                                        data-name="{{item.name}} VM"
+                                                        data-cpus="{{conf.cpus}}"
+                                                        data-memory="{{conf.memory}}"
+                                                        data-disk-size="{{conf.disk_size}}" href="#">
+                                                        {{conf.label}}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" align="center">No context defined yet</tr>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">
+                                <a class="btn btn-sm btn-success" href="{% url "context_new" %}">
+                                    <img src="{% static "base/img/brick_add.png" %}">
+                                     Create new context
+                                </a>
+                                {% if full_abstract_list|length > 0 %}
+                                    <div class="btn-group">
+                                        <button type="button"
+                                            class="btn btn-sm btn-success dropdown-toggle"
+                                            data-toggle="dropdown">
+                                            <img src="{% static "base/img/brick_add.png" %}">
+                                             New context based on abstract
+                                             <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            {% for item in full_abstract_list %}
+                                                <li>
+                                                    <a href="{% url "context_abstract_contextualize" context_id=item.id %}">
+                                                        {{item.name}}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <h2>Your cluster definitions</h2>
+                <table class="table" id="cluster_definitions">
+                    <thead>
+                        <tr>
+                            <th class="name">Name</th>
+                            <th class="context">Contexts</th>
+                            <th class="operations">Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cluster_definition_list %}
+                            <tr>
+                                <td class="name" rowspan="2">{{item.name}}</td>
+                                <td class="context">
+                                    <strong>Master:</strong>
+                                    <a href="{% url "context_view" context_id=item.master_context.id %}">
+                                        {{item.master_context.name}}
+                                    </a>
+                                </td>
+                                <td class="operations">
+                                    <a href="#"
+                                        class="btn btn-xs btn-default">
+                                        <img src="{% static "base/img/brick_add.png" %}">
+                                         Clone
+                                    </a>
+                                    <a href="{% url "cluster_delete" cluster_id=item.id %}"
+                                        class="btn btn-xs btn-danger">
+                                        <img src="{% static "base/img/brick_delete.png" %}">
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="context">
+                                    <strong>Worker:</strong>
+                                    <a href="{% url "context_view" context_id=item.worker_context.id %}">
+                                        {{item.worker_context.name}}
+                                    </a>
+                                </td>
+                                <td class="operations">
+                                    <a href="{% url "cluster_deploy" cluster_id=item.id %}"
+                                        class="btn btn-xs btn-success">
+                                        <img src="{% static "base/img/vm_contextualize.png" %}">
+                                         Deploy cluster
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" align="center">No cluster definition created yet</tr>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <td colspan="5">
+                                <a href="{% url "cluster_new" %}"
+                                    class="btn btn-sm btn-success">
+                                    <img src="{% static "base/img/brick_add.png" %}">
+                                     Create new cluster
+                                </a>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <h2>Your virtual machines</h2>
+                <table class="table table-hover table-striped" id="vms">
+                    <thead>
+                        <tr>
+                            <th class="icon">&nbsp;</th>
+                            <th class="ip">Machine</th>
+                            <th class="cvm_version">CernVM</th>
+                            <th class="context">Context</th>
+                            <th class="operations">Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in machine_list %}
+                            <tr>
+                                <td class="icon">
+                                    {% if item.status == "C" %}
+                                        <img alt="VM Cloud" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="Instance contextualized on the cloud"
+                                            src="{% static "base/img/vm_cloud.png" %}">
+                                    {% elif item.status == "P" %}
+                                        <img alt="VM" data-toggle="tooltip"
+                                            data-placement="left"
+                                            title="Instance contextualized via pairing"
+                                            src="{% static "base/img/vm_user.png" %}">
+                                    {% else %}
+                                        <img alt="VM" src="{% static "base/img/vm.png" %}">
+                                    {% endif %}
+                                </td>
+                                <td class="ip">{{item.ip}} <small>({{item.uuid}})</small></td>
+                                <td class="cvm_cersion">{{item.version}}</td>
+                                <td class="context">{{item.context.name}}</td>
+                                <td  class="operations">
+                                    <a href="{% url "vm_delete" machine_uuid=item.uuid %}"
+                                        class="btn btn-xs btn-danger">
+                                        <img src="{% static "base/img/vm_remove.png" %}">
+                                         Unmanage
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" align="center">No instances paired yet</tr>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <td colspan="5">
+                                <a href="{% url "vm_pair_begin" %}"
+                                    class="btn btn-sm btn-success">
+                                    <img src="{% static "base/img/vm_contextualize.png" %}">
+                                     Pair an instance of CernVM
+                                </a>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
-{% block body %}
-{% load static %}{% load url from future %}
-<h1>Dashboard</h1>
-
-<h2>Your context definitions</h2>
-<table class="pad-5">
-    <tr>
-        <th width="5%">&nbsp;</th>
-        <th width="48%" style="">Name</th>
-        <th width="47%">Operations</th>
-    </tr>
-    {% for item in context_list %}
-        <tr>
-            <!-- Icon column -->
-            <td class="buttons-container">
-                {% if item.public %}
-                    <img alt="Public" title="Definition visible in market listings" src="{% if item.key %}{% static "base/img/cart_key.png" %}{% else %}{% static "base/img/cart.png" %}{% endif %}" />
-                {% else %}
-                    <img alt="Private" title="Private definition" src="{% if item.key %}{% static "base/img/user_key.png" %}{% else %}{% static "base/img/user.png" %}{% endif %}" />
-                {% endif %}
-            </td>
-
-            <!-- Name column -->
-            <td class="truncate-cell" title="{{ item.name|escape }}">{{ item.name|escape }}</td>
-
-            <!-- Operations column -->
-            <td class="buttons-container">
-                <!-- Clone. Default action: full clone for normal contexts, simple clone for simple contexts -->
-                <div class="btn">
-                    <a href="{% if item.from_abstract %}{% url "context_abstract_contextualize" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}"
-                        class="softbutton" title="Use this context as template">
-                        <img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}"/>
-                         Clone
-                    </a>
-                </div>
-                {% if item.public %}
-                    <!-- Un-publish button -->
-                    <div class="btn"><a href="{% url "market_revoke" context_id=item.id %}" class="softbutton" title="Remove this context definition from the marketpace"><img border="0" align="absmiddle" src="{% static "base/img/cart_delete.png" %}" /> Withdraw</a></div>
-                {% else %}
-                    <!-- Publish button -->
-                    <div class="btn"><a href="{% url "market_publish" context_id=item.id %}" class="softbutton" title="Publish this context to marketplace"><img border="0" align="absmiddle" src="{% static "base/img/cart_add.png" %}" /> Publish</a></div>
-                    <!-- Delete button -->
-                    <div class="btn"><a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "base/img/brick_delete.png" %}" /></a></div>
-                {% endif %}
-
-                <!-- Extra options -->
-                <div class="dropdownbutton btn">
-                    <span><img border="0" align="absmiddle" src="{% static "base/img/brick_go.png" %}" width="16" height="16"/></span>
-                    <ul>
-                        {% if item.from_abstract %}
-                            <li><a href="{% url "context_clone" context_id=item.id %}">Clone with full options</a></li>
-                        {% endif %}
-                        <li><a href="{% url "context_view_plain" context_id=item.id %}">Get rendered context</b></a></li>
-                        <li><a href="{% url "context_view_raw" context_id=item.id %}">Get raw user data</b></a></li>
-                    </ul>
-                </div>
-
-                <!-- Deploy now with WebAPI -->
-                <div class="dropdownbutton btn">
-                    <span>
-                        <img border="0" align="absmiddle"
-                            src="{% static "base/img/vm_add.png" %}"
-                            width="16" height="16"
-                            title="Create a VM using CernVM WebAPI plugin"/>
-                        Launch now
-                    </span>
-                    <ul>
-                        {% for conf in webapi_configurations %}
-                            <li>
-                                <a class="webapi-deploy-handle"
-                                    data-context-id="{{ item.id }}"
-                                    data-name="{{ item.name }} VM"
-                                    data-cpus="{{ conf.cpus }}"
-                                    data-memory="{{ conf.memory }}"
-                                    data-disk-size="{{ conf.disk_size }}" href="#">
-                                    {{ conf.label }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="3" align="center">No context defined yet</tr>
-        </tr>
-    {% endfor %}
-</table>
-<br />
-
-<!-- Button to create a new context -->
-{% if full_abstract_list|length > 0 %}
-{# Display dropdown only if we have at least one abstract context definition #}
-<div class="dropdownbutton" style="float:left;margin:5px 5px 15px;">
-  <span><img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}" /> Create new context...</span>
-  <ul>
-    <li><a href="{% url "context_new" %}"><b>New context</b></a></li>
-    {% for item in full_abstract_list %}
-    <li><a href="{% url "context_abstract_contextualize" context_id=item.id %}">{{ item.name }}</a></li>
-    {% endfor %}
-  </ul>
-</div><p style="float:left">&nbsp;</p>
-{% else %}
-{# No dropdown: we don't have any abstract context definitions #}
-<p>
-    <a href="{% url "context_new" %}" class="softbutton">
-        <img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}" />
-         Create new context
-    </a>
-</p>
-{% endif %}
-
-{% if enable_abstract_creation %}
-<h2>Your abstract context definitions</h2>
-<script language="JavaScript">
-// Event handler for each single checkbox
-absCheckboxCallback = function(e, id) {
-    jQuery(this).attr('disabled', true);  // disable to avoid bombing
-    chk = jQuery(this).attr('checked') ? true : false;
-    jQuery(this).attr('checked', !chk);  // reverse checking: restore when OK
-    id = jQuery(this).data('absctx_id');
-    obj = this;
-    jQuery.ajax({
-        type: 'GET',
-        url: '{% url "context_ajax_publish_context" %}?' +
-            'id=' + id + '&do=' + (chk ? 'publish' : 'unpublish')
-    }).done(function(resp) {
-        if (parseInt(resp) == 1) {
-            jQuery(obj)
-                .attr('checked', chk)
-                .removeAttr('disabled');
-        }
-    });
-}
-
-// When document is loaded, load checkbox statuses as well
-jQuery(document).ready(function() {
-    jQuery.ajax({
-        type: 'GET',
-        url: '{% url "context_ajax_abstract_list" %}'
-    }).always(function() {
-        jQuery(':checkbox[name^="absctx"]').attr('disabled', true);
-    }).done(function(resp) {
-        for (i=0; i<resp.length; i++) {
-            jQuery(':checkbox[name="absctx[' + resp[i].id + '][public]"]')
-                .attr('disabled', false)
-                .attr('checked', resp[i].public)
-                .data('absctx_id', resp[i].id)
-                .change(absCheckboxCallback);
-        }
-    });
-});
-
-
-</script>
-<table class="pad-5">
-    <tr>
-        <th width="72%">Name</th>
-        <th width="6%">Public</th>
-        <th width="22%">Operations</th>
-    </tr>
-    {% for item in my_abstract_list %}
-    <tr>
-
-        <!-- Name column -->
-        <td class="truncate-cell" title="{{ item.name|escape }}">{{ item.name|escape }}</td>
-
-        <!-- Public column (AJAX checkbox) -->
-        <td align="center"><input type="checkbox" disabled name="absctx[{{ item.id }}][public]"/></td>
-
-        <!-- Operations column -->
-        <td class="buttons-container">
-
-            <!-- Clone -->
-            <a href="{% url "context_abstract_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "base/img/brick_go.png" %}" /> Clone</a>
-
-            <!-- Delete (since it is a ContextDefinition, we can reuse the same action) -->
-            <a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "base/img/brick_delete.png" %}" /></a>
-
-        </td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="3" align="center">No abstract context defined yet</tr>
-    </tr>
-    {% endfor %}
-</table>
-<br />
-<p><a href="{% url "context_abstract_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}" /> Create new abstract context</a></p>
-{% endif %}
-
-<h2>Your virtual machines</h2>
-<table class="pad-5">
-    <tr>
-        <th width="20">&nbsp;</th>
-        <th>Machine</th>
-        <th width="50">CernVM</th>
-        <th width="170">Context</th>
-        <th width="100">Operations</th>
-    </tr>
-    {% for item in machine_list %}
-        <tr>
-            <td>
-                {% if item.status == "C" %}
-                    <img alt="VM Cloud" title="Instance contextualized on the cloud" src="{% static "base/img/vm_cloud.png" %}" />
-                {% elif item.status == "P" %}
-                    <img alt="VM" title="Instance contextualized via pairing" src="{% static "base/img/vm_user.png" %}" />
-                {% else %}
-                    <img alt="VM" src="{% static "base/img/vm.png" %}" />
-                {% endif %}
-            </td>
-            <td>{{ item.ip }} <small>({{ item.uuid }})</small></td>
-            <td>{{ item.version }}</td>
-            <td>{{ item.context.name }}</td>
-            <td align="center">
-                <a href="{% url "vm_delete" machine_uuid=item.uuid %}" class="softbutton" title="Stop managing this virtual machine"><img border="0" align="absmiddle" src="{% static "base/img/vm_remove.png" %}" /> Unmanage</a>
-            </td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="5" align="center">No instances paired yet</tr>
-        </tr>
-    {% endfor %}
-</table>
-<br />
-<p><a href="{% url "vm_pair_begin" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/vm_contextualize.png" %}" /> Pair an instance of CernVM</a></p>
-
+{% block styles %}
+    <link type="text/css" rel="stylesheet" media="all" href="{% static "dashboard/css/dashboard.css" %}">
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript"
+        src="http://cernvm.cern.ch/releases/webapi/js/cvmwebapi-latest.js">
+    </script>
+    <script type="text/javascript" src="{% static "dashboard/js/dashboard.js" %}"></script>
 {% endblock %}
