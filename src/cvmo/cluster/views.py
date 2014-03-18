@@ -1,11 +1,13 @@
-import pprint
+import re
 import json
 import base64
+import logging
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from querystring_parser import parser
 from .forms import ClusterForm, EC2Form, QuotaForm, ElastiqForm
+from .models import ClusterDefinition
 from ..context.models import ContextDefinition, ContextStorage
 
 #
@@ -60,15 +62,61 @@ def show_deploy(request, cluster_id):
 
 
 def save(request):
+    l = logging.getLogger("cvmo")
+
     # Validate request
     resp = _validate_for_save(request)
     if isinstance(resp, HttpResponse):
         return resp
 
     # Prepare context
-    eq_plg = _render_elastq_plugin(resp)
-    print eq_plg
-    return HttpResponse(eq_plg, content_type="text/normal")
+    (plg_name, plg_cont) = _render_elastq_plugin(resp)
+    master_ctx = ContextStorage.objects.get(
+        id=resp["cluster"]["master_context_id"]
+    )
+    new_ud = _append_plugin_in_ud(master_ctx.ec2_user_data, plg_name, plg_cont)
+    if not new_ud:
+        messages.error(
+            request,
+            "Failed to append `elastiq_setup` plugin in master context!"
+        )
+        l.log(
+            logging.ERROR,
+            "Failed to append `elastiq_setup` plugin in master context %s!"
+            % resp["cluster"]["master_context_id"]
+        )
+        return _show_cluster_def(request, resp)
+
+    # Store the context
+    context_id = ContextDefinition.generate_new_id()
+    cs = ContextStorage.create(
+        context_id, "Cluster '%s' head node" % resp["cluster"]["name"],
+        new_ud, master_ctx.root_ssh_key
+    )
+    cs.save()
+
+    # Create the cluster definition
+    cd = ClusterDefinition(
+        name=resp["cluster"]["name"],
+        description=resp["cluster"].get("description", None),
+        owner=request.user,
+        master_context=ContextDefinition.objects.get(
+            id=resp["cluster"]["master_context_id"]
+        ),
+        worker_context=ContextDefinition.objects.get(
+            id=resp["cluster"]["worker_context_id"]
+        ),
+        deployable_context=cs,
+        ec2=json.dumps(resp["ec2"]),
+        elastiq=json.dumps(resp["elastiq"]),
+        quota=json.dumps(resp["quota"])
+    )
+    cd.save()
+
+    messages.success(
+        request, "Cluster '%s' was successfully stored!" % cd.name
+    )
+    return redirect("dashboard")
 
 
 def delete(request, cluster_id):
@@ -78,16 +126,36 @@ def delete(request, cluster_id):
 # Helpers
 #
 
-def _extract_user_data(context_id):
-    pass
+
+def _append_plugin_in_ud(init_ud, plugin_name, plugin_cont):
+    """
+    Appends plugin with name `plugin_name` and contents `plugin_cont` in
+    user data provided in `init_ud`. Will modify appropriately the `plugins`
+    variable in `amiconfig` section.
+    """
+    new_ud = "%s\n[%s]\n%s\n" % (init_ud, plugin_name, plugin_cont)
+
+    g = re.search(r"\s*plugins\s*=\s*(.*)\s*$", init_ud, re.M)
+    if not g:
+        return False
+
+    plugins = g.group(1).split()
+    if plugin_name in plugins:
+        return new_ud
+
+    # adding plugin name
+    plugins.append(plugin_name)
+    new_ud = new_ud.replace(g.group(1), " ".join(plugins))
+
+    return new_ud
+
 
 def _render_elastq_plugin(resp):
     """
     Given the clean data from the cluster form it returns a string, the
     elastiq_setup amiconfig plugin settings.
     """
-    plg = "[elastiq_setup]\n"
-    plg += "elastiq_n_jobs_per_vm=%d\n" \
+    plg = "elastiq_n_jobs_per_vm=%d\n" \
         % resp["elastiq"].get("elastiq_n_jobs_per_vm", 4)
     plg += "elastiq_n_jobs_per_vm=%d\n" \
         % resp["elastiq"].get("elastiq_n_jobs_per_vm", 4)
@@ -121,10 +189,9 @@ def _render_elastq_plugin(resp):
         plg += "ec2_flavour=%s\n" % v
 
     wc = ContextStorage.objects.get(id=resp["cluster"]["worker_context_id"])
-    wc_data = base64.b64encode(wc.data)
-    plg += "ec2_user_data_b64=%s\n" % wc_data
+    plg += "ec2_user_data_b64=%s\n" % base64.b64encode(wc.ec2_user_data)
 
-    return plg
+    return ("elastiq_setup", plg)
 
 
 def _validate_for_save(request):
@@ -153,8 +220,12 @@ def _validate_for_save(request):
         if not c.public and c.owner != request.user:
             messages.error(
                 request,
-                "Context %s: is not public and does not belong to you" % (c.id)
+                "Context with id '%s' is not public and does not belong to\
+ you" % (c.id)
             )
+            return _show_cluster_def(request, data)
+        if c.is_encrypted:
+            messages.error(request, "Context '%s' is encrypted!" % (c.name))
             return _show_cluster_def(request, data)
 
     # elastiq section
