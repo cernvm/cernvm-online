@@ -148,7 +148,7 @@ div#main h5 {
 div#main div.page-header {
     /*border-color: #4e422c;*/
     border: none;
-    margin-top: 15px;
+    margin-top: 5px;
 }
 div#main div.page-header h1 {
     font-size: 30px;
@@ -164,6 +164,16 @@ div#main div.form-group label.control-label {
 div#main div.form-group.required label.control-label,
 div#main div.form-group label.control-label.required {
     font-weight: bold;
+}
+
+/******************************************************************************
+ * Main section: Massages
+ ******************************************************************************/
+div#main div#messages {
+    margin-top: 10px;
+}
+div#main div#messages div.alert {
+    margin-bottom: 5px;
 }
 
 /******************************************************************************

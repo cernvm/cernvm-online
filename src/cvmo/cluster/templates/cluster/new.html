@@ -1,7 +1,9 @@
 {% extends "base/main_wsidebar_tw.html" %}
 {% load static %}
 {% load url from future %}
+{% load formutils %}
 {% block title %}New cluster definition{% endblock %}
+
 {% block body %}
     <div class="inner-container">
         <div class="row">
@@ -9,18 +11,19 @@
                 <div class="page-header">
                     <h1>New cluster definition</h1>
                 </div>
-                <form class="form-horizontal" role="form" method="POST" target="{% url "cluster_save" %}">
+                <form class="form-horizontal" role="form" method="POST" action="{% url "cluster_save" %}">
+                    {% csrf_token %}
+
                     <div class="form-group required">
                         <label for="cluster_name" class="col-xs-4 control-label">Cluster name</label>
                         <div class="col-xs-6">
-                            <input type="text" class="form-control" id="cluster_name" name="cluster[name]">
+                            <input type="text" class="form-control" id="cluster_name" name="cluster[name]" value="{{cluster.name}}">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="cluster_decription" class="col-xs-4 control-label">Description</label>
                         <div class="col-xs-6">
-                            <textarea type="text" class="form-control" id="cluster_decription" name="cluster[description]" rows="4" cols="100">
-                            </textarea>
+                            <textarea type="text" class="form-control" id="cluster_decription" name="cluster[description]" rows="4" cols="100">{{cluster.description}}</textarea>
                         </div>
                     </div>
                     <!-- <div class="form-group">
@@ -35,19 +38,19 @@
                         <div class="form-group required">
                             <label for="ec2_api_url" class="col-xs-4 control-label">API URL</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_api_url" name="ec2[api_url]" placeholder="https://dummy.ec2.server/ec2/">
+                                <input type="text" class="form-control" id="ec2_api_url" name="ec2[api_url]" placeholder="https://dummy.ec2.server/ec2/" value="{{ec2.api_url}}">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="ec2_api_version" class="col-xs-4 control-label">API Version</label>
                             <div class="col-xs-3">
-                                <input type="text" class="form-control" id="ec2_api_version" name="ec2[api_version]" placeholder="2013-02-01">
+                                <input type="text" class="form-control" id="ec2_api_version" name="ec2[api_version]" placeholder="2013-02-01" value="{{ec2.api_version}}">
                             </div>
                         </div>
                         <div class="form-group required">
                             <label for="ec2_aws_access_key_id" class="col-xs-4 control-label">AWS Access key</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_aws_access_key_id" name="ec2[aws_access_key_id]">
+                                <input type="text" class="form-control" id="ec2_aws_access_key_id" name="ec2[aws_access_key_id]" value="{{ec2.aws_access_key_id}}">
                             </div>
                             <div class="col-xs-2">
                                 <div class="secure-data-icon">
@@ -58,7 +61,7 @@
                         <div class="form-group  required">
                             <label for="ec2_aws_secret_access_key" class="col-xs-4 control-label">AWS secret key</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_aws_secret_access_key" name="ec2[aws_secret_access_key]">
+                                <input type="text" class="form-control" id="ec2_aws_secret_access_key" name="ec2[aws_secret_access_key]" value="{{ec2.aws_secret_access_key}}">
                             </div>
                             <div class="col-xs-2">
                                 <div class="secure-data-icon">
@@ -73,19 +76,19 @@
                         <div class="form-group required">
                             <label for="ec2_image_id" class="col-xs-4 control-label">Worker nodes' image</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_image_id" name="ec2[image_id]" placeholder="e.g.: ami-123456">
+                                <input type="text" class="form-control" id="ec2_image_id" name="ec2[image_id]" placeholder="e.g.: ami-123456" value="{{ec2.image_id}}">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="ec2_flavour" class="col-xs-4 control-label">Worker nodes' flavor</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_flavour" name="ec2[flavour]" placeholder="e.g.: m1.medium">
+                                <input type="text" class="form-control" id="ec2_flavour" name="ec2[flavour]" placeholder="e.g.: m1.medium" value="{{ec2.flavour}}">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="ec2_key_name" class="col-xs-4 control-label">SSH key name</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_key_name" name="ec2[key_name]">
+                                <input type="text" class="form-control" id="ec2_key_name" name="ec2[key_name]" value="{{ec2.key_name}}">
                             </div>
                         </div>
                     </fieldset>
@@ -95,11 +98,11 @@
                         <div class="form-group">
                             <label for="quota_min_vms" class="col-xs-4 control-label">Min. workers</label>
                             <div class="col-xs-2">
-                                <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="2">
+                                <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="{{quota.min_vms|default:2}}">
                             </div>
                             <label for="quota_max_vms" class="col-xs-4 control-label">Max. workers</label>
                             <div class="col-xs-2">
-                                <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="">
+                                <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="{{quota.max_vms}}">
                             </div>
                         </div>
                     </fieldset>
@@ -109,53 +112,53 @@
                         <div class="form-group">
                             <label for="elastiq_n_jobs_per_vm" class="col-xs-4 control-label">Amt. of jobs per VM</label>
                             <div class="col-xs-2">
-                                <input type="text" class="form-control" id="elastiq_n_jobs_per_vm" name="elastiq[n_jobs_per_vm]" value="4">
+                                <input type="text" class="form-control" id="elastiq_n_jobs_per_vm" name="elastiq[n_jobs_per_vm]" value="{{elastiq.n_jobs_per_vm|default:4}}">
                             </div>
                             <label for="elastiq_estimated_vm_deploy_time_s" class="col-xs-4 control-label">Estimated VM deployment time (in sec.)</label>
                             <div class="col-xs-2">
-                                <input type="text" class="form-control" id="elastiq_estimated_vm_deploy_time_s" name="elastiq[estimated_vm_deploy_time_s]" value="600">
+                                <input type="text" class="form-control" id="elastiq_estimated_vm_deploy_time_s" name="elastiq[estimated_vm_deploy_time_s]" value="{{elastiq.estimated_vm_deploy_time_s|default:600}}">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="elastiq_batch_plugin" class="col-xs-4 control-label">Batch system</label>
                             <div class="col-xs-4">
                                 <select class="form-control" id="elastiq_batch_plugin" name="elastiq[batch_plugin]">
-                                    <option value="condor">HTCondor</option>
+                                    <option value="htcondor" {{elastiq.batch_plugin|sel:"htcondor"}}>HTCondor</option>
                                 </select>
                             </div>
                         </div>
                     </fieldset>
-                    <fieldset>
+                    <fieldset id="cluster_master_context">
                         <legend>Master node context</legend>
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <div class="panel panel-default">
-                                    <div class="panel-body">
+                                    <div class="panel-body context-info">
                                         No context selected
                                     </div>
                                     <div class="panel-footer">
-                                        <input type="text" class="form-control" name="master_context_ac" value="" placeholder="Enter the name of the master node context...">
+                                        <input type="text" class="form-control context-selector" name="master_context_ac" value="" placeholder="Enter the name of the master node context...">
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="cluster[master_context_id]" id="cluster_master_context_id" value="">
+                            <input type="hidden" name="cluster[master_context_id]" id="cluster_master_context_id" class="context-value">
                         </div>
                     </fieldset>
 
-                    <fieldset>
+                    <fieldset id="cluster_worker_context">
                         <legend>Worker nodes' context</legend>
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <div class="panel panel-default">
-                                    <div class="panel-body">
+                                    <div class="panel-body context-info">
                                         No context selected
                                     </div>
                                     <div class="panel-footer">
-                                        <input type="text" class="form-control" name="worker_context_ac" value="" placeholder="Enter the name of the worker node context...">
+                                        <input type="text" class="form-control context-selector" name="worker_context_ac" value="" placeholder="Enter the name of the worker node context...">
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="cluster[worker_context_id]" id="cluster_worker_context_id" value="">
+                            <input type="hidden" name="cluster[worker_context_id]" id="cluster_worker_context_id" class="context-value">
                         </div>
                     </fieldset>
 
@@ -213,21 +216,44 @@
                         <button type="submit" class="btn btn-primary">Create cluster</button>
                     </div>
 
-                    <input type="hidden" name="cluster[id]" id="cluster_id" value="">
+                    <input type="hidden" name="cluster[id]" id="cluster_id" value="{{cluster.id}}">
                 </form>
             </div>
         </div>
     </div>
 {% endblock %}
 {% block styles %}
+    <link type="text/css" rel="stylesheet" media="all" href="{% static "cluster/css/libs/typeahead.js-bootstrap.css" %}" />
     <style>
         div.secure-data-icon {
             color: green;
             line-height: 34px;
         }
+        .context-info dl.dl-horizontal {
+            margin: 0;
+        }
     </style>
 {% endblock %}
 {% block scripts %}
+    {% verbatim %}
+        <script type="text/html" id="cs_context_info">
+            <dl class="dl-horizontal">
+                <dt>Id</dt>
+                <dd>{{id}}</dd>
+                <dt>Name</dt>
+                <dd>{{name}}</dd>
+                <dt>Owner</dt>
+                <dd>{{owner}}</dd>
+                {{#description_not_empty}}
+                    <dt>Description</dt>
+                    <dd>{{description}}</dd>
+                {{/description_not_empty}}
+            </dl>
+        </script>
+    {% endverbatim %}
+    <script type="text/javascript" src="{% static "cluster/js/libs/typeahead.bundle.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "cluster/js/libs/handlebars-1.3.0.js" %}"></script>
+    <script type="text/javascript" src="{% static "cluster/js/jquery.context-sel.js" %}"></script>
     <script type="text/javascript">
         jQuery(
             function()
@@ -235,6 +261,24 @@
                 jQuery(".secure-data-icon span").tooltip({
                     "title": "Your sensitive data will be stored in our database encrypted.",
                     "placement": "top"
+                });
+                jQuery("#cluster_master_context").ContextSelector({
+                    remoteURL: "{% url "context_ajax_get_list" %}",
+                    infoTmpl: Handlebars.compile(jQuery("#cs_context_info").html()),
+                    {% if cluster.master_context_json %}
+                        {% autoescape off %}
+                            context: {{cluster.master_context_json}}
+                        {% endautoescape %}
+                    {% endif %}
+                });
+                jQuery("#cluster_worker_context").ContextSelector({
+                    remoteURL: "{% url "context_ajax_get_list" %}",
+                    infoTmpl: Handlebars.compile(jQuery("#cs_context_info").html()),
+                    {% if cluster.worker_context_json %}
+                        {% autoescape off %}
+                            context: {{cluster.worker_context_json}}
+                        {% endautoescape %}
+                    {% endif %}
                 });
             }
         );
