@@ -29,7 +29,8 @@ urlpatterns = patterns(
     url(r"^view/(?P<context_id>[-\w]+)/raw/*$", "api_get",
         {"format": "raw", "askpass": True}, name="context_view_raw"),
     url(r"^ajax/publish/*$", "ajax_publish_context",
-        name="context_ajax_publish_context")
+        name="context_ajax_publish_context"),
+    url(r"^ajax/list$", "ajax_get_list", name="context_ajax_get_list")
 )
 
 #

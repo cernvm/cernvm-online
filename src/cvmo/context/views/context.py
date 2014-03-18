@@ -378,12 +378,38 @@ def ajax_publish_context(request):
     # Check if context exists and it's mine
     id = request.GET['id']
     ctx = ContextDefinition.objects.filter(
-        Q(id=id) & Q(inherited=False) & Q(owner=request.user))
+        Q(id=id) & Q(inherited=False) & Q(owner=request.user)
+    )
     if not ctx.exists or ctx.update(public=publish) != 1:
         return render_error(request, 500, 'Update error')
 
     # Will return the string '1' in case of success, '0' in case of failure
     return uncache_response(HttpResponse('1', content_type="application/json"))
+
+
+def ajax_get_list(request):
+    query = request.GET.get("query", "").strip()
+    contexts = ContextDefinition.objects.filter(
+        Q(abstract=False)
+        & Q(Q(public=True) | Q(owner=request.user))
+        & Q(name__contains=query)
+    )
+
+    context_list = []
+    for c in contexts:
+        context_list.append({
+            "id": c.id,
+            "name": c.name,
+            "description": c.description,
+            "owner": c.owner.username
+        })
+
+    return uncache_response(
+        HttpResponse(
+            json.dumps(context_list),
+            content_type="application/json"
+        )
+    )
 
 
 #
