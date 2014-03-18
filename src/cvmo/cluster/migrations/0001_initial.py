@@ -11,83 +11,23 @@ class Migration(SchemaMigration):
         # Adding model 'ClusterDefinition'
         db.create_table(u'cluster_clusterdefinition', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uid', self.gf('django.db.models.fields.CharField')(unique=True, max_length=128, db_index=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=250)),
             ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('owner', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('key', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
-            ('public', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('master_context', self.gf('django.db.models.fields.related.ForeignKey')(related_name='master_context', to=orm['context.ContextDefinition'])),
+            ('worker_context', self.gf('django.db.models.fields.related.ForeignKey')(related_name='worker_context', to=orm['context.ContextDefinition'])),
+            ('deployable_context', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['context.ContextStorage'])),
+            ('ec2', self.gf('django.db.models.fields.TextField')()),
+            ('quota', self.gf('django.db.models.fields.TextField')()),
+            ('elastiq', self.gf('django.db.models.fields.TextField')()),
+            ('additional_params', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
         db.send_create_signal(u'cluster', ['ClusterDefinition'])
-
-        # Adding model 'ServiceOffering'
-        db.create_table(u'cluster_serviceoffering', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uid', self.gf('django.db.models.fields.CharField')(unique=True, max_length=16, db_index=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=250)),
-        ))
-        db.send_create_signal(u'cluster', ['ServiceOffering'])
-
-        # Adding model 'DiskOffering'
-        db.create_table(u'cluster_diskoffering', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uid', self.gf('django.db.models.fields.CharField')(unique=True, max_length=16, db_index=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=250)),
-        ))
-        db.send_create_signal(u'cluster', ['DiskOffering'])
-
-        # Adding model 'NetworkOffering'
-        db.create_table(u'cluster_networkoffering', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uid', self.gf('django.db.models.fields.CharField')(unique=True, max_length=16, db_index=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=250)),
-        ))
-        db.send_create_signal(u'cluster', ['NetworkOffering'])
-
-        # Adding model 'Template'
-        db.create_table(u'cluster_template', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uid', self.gf('django.db.models.fields.CharField')(unique=True, max_length=128, db_index=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=250)),
-        ))
-        db.send_create_signal(u'cluster', ['Template'])
-
-        # Adding model 'ServiceDefinition'
-        db.create_table(u'cluster_servicedefinition', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uid', self.gf('django.db.models.fields.CharField')(max_length=128, db_index=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=250)),
-            ('cluster', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['cluster.ClusterDefinition'])),
-            ('service_offering', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['cluster.ServiceOffering'])),
-            ('disk_offering', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['cluster.DiskOffering'], null=True, blank=True)),
-            ('network_offering', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['cluster.NetworkOffering'], null=True, blank=True)),
-            ('template', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['cluster.Template'])),
-            ('context', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['context.ContextDefinition'])),
-            ('service_type', self.gf('django.db.models.fields.CharField')(max_length=2)),
-            ('order', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('min_instances', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-        ))
-        db.send_create_signal(u'cluster', ['ServiceDefinition'])
 
 
     def backwards(self, orm):
         # Deleting model 'ClusterDefinition'
         db.delete_table(u'cluster_clusterdefinition')
-
-        # Deleting model 'ServiceOffering'
-        db.delete_table(u'cluster_serviceoffering')
-
-        # Deleting model 'DiskOffering'
-        db.delete_table(u'cluster_diskoffering')
-
-        # Deleting model 'NetworkOffering'
-        db.delete_table(u'cluster_networkoffering')
-
-        # Deleting model 'Template'
-        db.delete_table(u'cluster_template')
-
-        # Deleting model 'ServiceDefinition'
-        db.delete_table(u'cluster_servicedefinition')
 
 
     models = {
@@ -122,52 +62,17 @@ class Migration(SchemaMigration):
         },
         u'cluster.clusterdefinition': {
             'Meta': {'object_name': 'ClusterDefinition'},
+            'additional_params': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'deployable_context': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['context.ContextStorage']"}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'ec2': ('django.db.models.fields.TextField', [], {}),
+            'elastiq': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
+            'master_context': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'master_context'", 'to': u"orm['context.ContextDefinition']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '250'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
-            'public': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'uid': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128', 'db_index': 'True'})
-        },
-        u'cluster.diskoffering': {
-            'Meta': {'object_name': 'DiskOffering'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '250'}),
-            'uid': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '16', 'db_index': 'True'})
-        },
-        u'cluster.networkoffering': {
-            'Meta': {'object_name': 'NetworkOffering'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '250'}),
-            'uid': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '16', 'db_index': 'True'})
-        },
-        u'cluster.servicedefinition': {
-            'Meta': {'object_name': 'ServiceDefinition'},
-            'cluster': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['cluster.ClusterDefinition']"}),
-            'context': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['context.ContextDefinition']"}),
-            'disk_offering': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['cluster.DiskOffering']", 'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'min_instances': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '250'}),
-            'network_offering': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['cluster.NetworkOffering']", 'null': 'True', 'blank': 'True'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'service_offering': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['cluster.ServiceOffering']"}),
-            'service_type': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
-            'template': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['cluster.Template']"}),
-            'uid': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'})
-        },
-        u'cluster.serviceoffering': {
-            'Meta': {'object_name': 'ServiceOffering'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '250'}),
-            'uid': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '16', 'db_index': 'True'})
-        },
-        u'cluster.template': {
-            'Meta': {'object_name': 'Template'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '250'}),
-            'uid': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128', 'db_index': 'True'})
+            'quota': ('django.db.models.fields.TextField', [], {}),
+            'worker_context': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'worker_context'", 'to': u"orm['context.ContextDefinition']"})
         },
         u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
@@ -189,6 +94,11 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'public': ('django.db.models.fields.BooleanField', [], {})
+        },
+        u'context.contextstorage': {
+            'Meta': {'object_name': 'ContextStorage'},
+            'data': ('django.db.models.fields.TextField', [], {}),
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '64', 'primary_key': 'True'})
         }
     }
 

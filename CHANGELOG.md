@@ -18,3 +18,6 @@ The entries bellow are in reverse chronological order.
     JavaScript for the template and the interactivity of CernVM Online.
 * WebAPI integration is moved to `cvmo.vm` and drops need of `vmcp/sign.php`
     by implementing same functionality in the Django application.
+* Integrates the project with [South](http://south.aeracode.org/) for schema
+    management. Migration from v1.1.0 to v1.2.0 will required some manual
+    fidling, but any other schema update should be automatic.
