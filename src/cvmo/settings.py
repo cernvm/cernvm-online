@@ -121,8 +121,9 @@ INSTALLED_APPS = (
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.sites",
-    "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Django messages
+    "django.contrib.messages",
     # Admin
     "django.contrib.admin",
     # CernVM-Online
@@ -148,7 +149,7 @@ MIDDLEWARE_CLASSES = (
     # Shibboleth SSO
     "cvmo.core.middleware.shibsync.ShibbolethUserSync",
     # CORS fix
-    "corsheaders.middleware.CorsMiddleware"
+    "corsheaders.middleware.CorsMiddleware",
 )
 
 # Time and language
@@ -255,8 +256,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
+    # Messages
     "django.contrib.messages.context_processors.messages",
-    "cvmo.core.utils.views.global_context"
+    # CernVM Online
+    "cvmo.core.context_processors.version",
+    "cvmo.core.context_processors.custom_messages",
+    "cvmo.core.context_processors.flags",
+    "cvmo.core.context_processors.sidebar"
 )
 
 #

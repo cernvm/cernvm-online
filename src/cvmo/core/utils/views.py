@@ -2,60 +2,7 @@ from cvmo.context.models import ContextDefinition
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, loader
 from django.http import HttpResponse
-from django.conf import settings
 from django.db.models.query_utils import Q
-
-
-def global_context(request):
-    """
-    Custom handler to append additional
-    """
-
-    # Pop global messages from the session
-    msg_error = ""
-    if 'global__error' in request.session:
-        msg_error = request.session['global__error']
-        del request.session['global__error']
-    msg_warning = ""
-    if 'global__warning' in request.session:
-        msg_warning = request.session['global__warning']
-        del request.session['global__warning']
-    msg_confirm = ""
-    if 'global__confirm' in request.session:
-        msg_confirm = request.session['global__confirm']
-        del request.session['global__confirm']
-    msg_info = ""
-    if 'global__info' in request.session:
-        msg_info = request.session['global__info']
-        del request.session['global__info']
-
-    # Prepare custom context
-    ans = {
-        'msg_error': msg_error,
-        'msg_warning': msg_warning,
-        'msg_confirm': msg_confirm,
-        'msg_info': msg_info,
-        'enable_csc': settings.ENABLE_CSC,
-        'enable_abstract_creation': is_abstract_creation_enabled(request)
-    }
-
-    # Append some extra info if we are authenticated
-    if request.user.is_authenticated():
-        ans['ip_address'] = request.META['REMOTE_ADDR']
-        ans['last_context_definitions'] = ContextDefinition.objects.filter(
-            Q(Q(owner=request.user) | Q(public=True))
-            & Q(inherited=False)
-            & Q(abstract=False)
-        ).order_by('-id')[:5]
-        # ans['last_cluster_definitions'] = ClusterDefinition.objects.filter(
-        #     Q(owner=request.user) | Q(public=True)).order_by('-id')[:5]
-
-    # Delete memory
-    if 'global__memory' in request.session:
-        del request.session['global__memory']
-
-    # Return resulting context
-    return ans
 
 
 def set_memory(request, var='', data=''):
