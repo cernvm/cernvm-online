@@ -1,0 +1,78 @@
+{% if enable_abstract_creation %}
+<h2>Your abstract context definitions</h2>
+<script language="JavaScript">
+// Event handler for each single checkbox
+absCheckboxCallback = function(e, id) {
+    jQuery(this).attr('disabled', true);  // disable to avoid bombing
+    chk = jQuery(this).attr('checked') ? true : false;
+    jQuery(this).attr('checked', !chk);  // reverse checking: restore when OK
+    id = jQuery(this).data('absctx_id');
+    obj = this;
+    jQuery.ajax({
+        type: 'GET',
+        url: '{% url "context_ajax_publish_context" %}?' +
+            'id=' + id + '&do=' + (chk ? 'publish' : 'unpublish')
+    }).done(function(resp) {
+        if (parseInt(resp) == 1) {
+            jQuery(obj)
+                .attr('checked', chk)
+                .removeAttr('disabled');
+        }
+    });
+}
+
+// When document is loaded, load checkbox statuses as well
+jQuery(document).ready(function() {
+    jQuery.ajax({
+        type: 'GET',
+        url: '{% url "context_ajax_abstract_list" %}'
+    }).always(function() {
+        jQuery(':checkbox[name^="absctx"]').attr('disabled', true);
+    }).done(function(resp) {
+        for (i=0; i<resp.length; i++) {
+            jQuery(':checkbox[name="absctx[' + resp[i].id + '][public]"]')
+                .attr('disabled', false)
+                .attr('checked', resp[i].public)
+                .data('absctx_id', resp[i].id)
+                .change(absCheckboxCallback);
+        }
+    });
+});
+
+
+</script>
+<table class="pad-5">
+    <tr>
+        <th width="72%">Name</th>
+        <th width="6%">Public</th>
+        <th width="22%">Operations</th>
+    </tr>
+    {% for item in my_abstract_list %}
+    <tr>
+
+        <!-- Name column -->
+        <td class="truncate-cell" title="{{ item.name|escape }}">{{ item.name|escape }}</td>
+
+        <!-- Public column (AJAX checkbox) -->
+        <td align="center"><input type="checkbox" disabled name="absctx[{{ item.id }}][public]"/></td>
+
+        <!-- Operations column -->
+        <td class="buttons-container">
+
+            <!-- Clone -->
+            <a href="{% url "context_abstract_clone" context_id=item.id %}" class="softbutton" title="Use this context as template"><img border="0" align="absmiddle" src="{% static "base/img/brick_go.png" %}" /> Clone</a>
+
+            <!-- Delete (since it is a ContextDefinition, we can reuse the same action) -->
+            <a href="{% url "context_delete" context_id=item.id %}" class="softbutton" title="Delete this context definition"><img border="0" align="absmiddle" src="{% static "base/img/brick_delete.png" %}" /></a>
+
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3" align="center">No abstract context defined yet</tr>
+    </tr>
+    {% endfor %}
+</table>
+<br />
+<p><a href="{% url "context_abstract_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}" /> Create new abstract context</a></p>
+{% endif %}
