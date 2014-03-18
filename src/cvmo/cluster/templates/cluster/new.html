@@ -71,13 +71,13 @@
                     <fieldset id="ec2_instantiation">
                         <legend>EC2 VMs profile</legend>
                         <div class="form-group required">
-                            <label for="ec2_image_id" class="col-xs-4 control-label">Scalable nodes' image</label>
+                            <label for="ec2_image_id" class="col-xs-4 control-label">Worker nodes' image</label>
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" id="ec2_image_id" name="ec2[image_id]" placeholder="e.g.: ami-123456">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="ec2_flavour" class="col-xs-4 control-label">Scalable nodes' flavor</label>
+                            <label for="ec2_flavour" class="col-xs-4 control-label">Worker nodes' flavor</label>
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" id="ec2_flavour" name="ec2[flavour]" placeholder="e.g.: m1.medium">
                             </div>
@@ -126,7 +126,7 @@
                         </div>
                     </fieldset>
                     <fieldset>
-                        <legend>Fixed node context</legend>
+                        <legend>Master node context</legend>
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <div class="panel panel-default">
@@ -134,16 +134,16 @@
                                         No context selected
                                     </div>
                                     <div class="panel-footer">
-                                        <input type="text" class="form-control" name="fixed_context_ac" value="" placeholder="Enter the name of the fixed node context...">
+                                        <input type="text" class="form-control" name="master_context_ac" value="" placeholder="Enter the name of the master node context...">
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="cluster[fixed_context_id]" id="cluster_fixed_context_id" value="">
+                            <input type="hidden" name="cluster[master_context_id]" id="cluster_master_context_id" value="">
                         </div>
                     </fieldset>
 
                     <fieldset>
-                        <legend>Scalable node context</legend>
+                        <legend>Worker nodes' context</legend>
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <div class="panel panel-default">
@@ -151,11 +151,11 @@
                                         No context selected
                                     </div>
                                     <div class="panel-footer">
-                                        <input type="text" class="form-control" name="scalable_context_ac" value="" placeholder="Enter the name of the scalable node context...">
+                                        <input type="text" class="form-control" name="worker_context_ac" value="" placeholder="Enter the name of the worker node context...">
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" name="cluster[scalable_context_id]" id="cluster_scalable_context_id" value="">
+                            <input type="hidden" name="cluster[worker_context_id]" id="cluster_worker_context_id" value="">
                         </div>
                     </fieldset>
 
@@ -180,7 +180,7 @@
                                         <tbody>
                                             <tr>
                                                 <td class="section">
-                                                    <select name="advanced[additional_params][0][section]" class="form-control">
+                                                    <select name="additional_params[0][section]" class="form-control">
                                                         <option value="elastiq">elastiq</option>
                                                         <option value="ec2">ec2</option>
                                                         <option value="quota">quota</option>
@@ -188,10 +188,10 @@
                                                     </select>
                                                 </td>
                                                 <td class="parameter">
-                                                    <input name="advanced[additional_params][0][parameter]" value="" class="form-control">
+                                                    <input name="additional_params[0][parameter]" value="" class="form-control">
                                                 </td>
                                                 <td class="value">
-                                                    <input name="advanced[additional_params][0][value]" value="" class="form-control">
+                                                    <input name="additional_params[0][value]" value="" class="form-control">
                                                 </td>
                                             </tr>
                                         </tbody>
