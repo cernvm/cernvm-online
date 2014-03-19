@@ -61,8 +61,6 @@
     var methods = {
         init: function(options)
         {
-            console.log(this);
-
             // Apply defaults
             options = $.extend({
                 // Dimensions
@@ -95,11 +93,8 @@
 
         handleClick: function()
         {
-            console.log(this);
             var options = $(this).data("options");
-            console.log(options.remoteURL);
             if(options.modalElement) {
-                console.log("Again!");
                 $(options.modalElement).modal("show");
                 return;
             }
@@ -138,15 +133,17 @@
 
     $.fn.remoteModal = function(methodOrOptions)
     {
+        var argv = arguments;
         return this.each(
             function()
             {
                 if(methods[methodOrOptions]) {
                     return methods[methodOrOptions].apply(
-                        this, Array.prototype.slice.call(arguments, 1)
+                        this, Array.prototype.slice.call(argv, 1)
                     );
-                } else if (typeof methodOrOptions == "object" || !methodOrOptions) {
-                    return methods.init.apply(this, arguments);
+                } else if (typeof methodOrOptions == "object"
+                        || !methodOrOptions) {
+                    return methods.init.apply(this, argv);
                 } else {
                     $.error(
                         "Method " + methodOrOptions

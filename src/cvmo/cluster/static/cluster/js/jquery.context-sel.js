@@ -1,17 +1,46 @@
 (function($) {
+    var SUGGESTION_TEMPLATE = Handlebars.compile(
+        "{{owner}}: <strong>{{name}}</strong>"
+    );
+    var INFO_TEMPLATE = Handlebars.compile(
+        "{{owner}}: <strong>{{name}}</strong>"
+    ); // not a very nice idea to keep templates here like this!
+
+    /**
+     * --------------------
+     * Options:
+     * --------------------
+     *
+     * Remote URL
+     * --------------------
+     * remoteURL: The AJAX call endpoint. Should support `query` GET parameter.
+     *
+     * Templates
+     * --------------------
+     * suggestionTmpl: Handlebars template for suggestion
+     * infoTmpl: Handlebars template for INFO section
+     *
+     */
+
     var methods = {
         init: function(options)
         {
-            if(!options.infoTmpl) {
-                $.error("`infoTmpl` is a required option");
-                return false;
-            }
+            // Apply defaults
+            options = $.extend({
+                suggestionTmpl: SUGGESTION_TEMPLATE,
+                infoTmpl: INFO_TEMPLATE
+            }, options);
+
+            // Validate
             if(!options.remoteURL) {
                 $.error("`remoteURL` is a required option");
                 return false;
             }
+
+            // Store options
             $(this).data("options", options);
 
+            // Create the Bloodhound engine
             var contexts_engine = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace("name"),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -19,17 +48,18 @@
             });
             contexts_engine.initialize();
 
+            // Create the typeahead
             $(".context-selector", this).typeahead(null, {
                 name: "context_id",
                 valueKey: "id",
                 displayKey: "name",
                 source: contexts_engine.ttAdapter(),
                 templates: {
-                    suggestion: Handlebars.compile(
-                        "{{owner}}: <strong>{{name}}</strong>"
-                    )
+                    suggestion: options.suggestionTmpl
                 }
             });
+
+            // Setup the events
             var that = this;
             $(".context-selector", this).on(
                 "typeahead:selected",
@@ -44,6 +74,7 @@
                 }
             );
 
+            // Apply initial value
             if(options.context)
                 this.ContextSelector("select", options.context);
         },
@@ -57,9 +88,9 @@
             var options = $(this).data("options");
             if(context.description != "")
                 context.description_not_empty = true;
-            jQuery(".context-info", this).html(options.infoTmpl(context));
-            jQuery(".context-value", this).val(context.id);
-            jQuery(".context-selector", this).val(context.name);
+            $(".context-info", this).html(options.infoTmpl(context));
+            $(".context-value", this).val(context.id);
+            $(".context-selector", this).val(context.name);
         },
 
         reset: function()
@@ -74,26 +105,28 @@
 
         thSelected: function(event, context, value)
         {
-            this.ContextSelector("select", context);
+            $(this).ContextSelector("select", context);
         },
 
         thAutocompleted: function(event, context, value)
         {
-            this.ContextSelector("select", context);
+            $(this).ContextSelector("select", context);
         }
     };
 
     $.fn.ContextSelector = function(methodOrOptions)
     {
+        var argv = arguments;
         return this.each(
             function()
             {
                 if(methods[methodOrOptions]) {
                     return methods[methodOrOptions].apply(
-                        this, Array.prototype.slice.call(arguments, 1)
+                        this, Array.prototype.slice.call(argv, 1)
                     );
-                } else if (typeof methodOrOptions == "object" || !methodOrOptions) {
-                    return methods.init.apply(this, arguments);
+                } else if (typeof methodOrOptions == "object"
+                        || !methodOrOptions) {
+                    return methods.init.apply(this, argv);
                 } else {
                     $.error(
                         "Method " + methodOrOptions
