@@ -419,7 +419,8 @@ def ajax_get_list(request):
         context_list.append({
             "id": c.id,
             "name": c.name,
-            "description": c.description,
+            "description": _cap(c.description, 50),
+            "description_not_empty": (c.description != ""),
             "owner": c.owner.username
         })
 
@@ -534,3 +535,7 @@ def _name_increment_revision(name):
     else:
         name = name + " (copy)"
     return name
+
+
+def _cap(s, l):
+    return s if len(s) <= l else s[0:l - 3] + "..."

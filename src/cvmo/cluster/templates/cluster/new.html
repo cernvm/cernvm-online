@@ -231,6 +231,13 @@
         .context-info dl.dl-horizontal {
             margin: 0;
         }
+        .suggestion {
+            border-bottom: 1px solid #ccc;
+        }
+        .suggestion p.description {
+            margin: 0;
+            margin-bottom: 5px;
+        }
     </style>
 {% endblock %}
 {% block scripts %}
@@ -249,6 +256,16 @@
                 {{/description_not_empty}}
             </dl>
         </script>
+        <script type="text/html" id="cs_context_suggestion">
+            <div class="suggestion">
+                <h5>
+                    {{name}} <small>{{owner}}</small>
+                </h5>
+                {{#description_not_empty}}
+                    <p class="description">{{description}}</p>
+                {{/description_not_empty}}
+            </div>
+        </script>
     {% endverbatim %}
     <script type="text/javascript" src="{% static "cluster/js/libs/typeahead.bundle.min.js" %}"></script>
     <script type="text/javascript" src="{% static "cluster/js/libs/handlebars-1.3.0.js" %}"></script>
@@ -263,7 +280,12 @@
                 });
                 jQuery("#cluster_master_context").ContextSelector({
                     remoteURL: "{% url "context_ajax_get_list" %}",
-                    infoTmpl: Handlebars.compile(jQuery("#cs_context_info").html()),
+                    infoTmpl: Handlebars.compile(
+                        jQuery("#cs_context_info").html()
+                    ),
+                    suggestionTmpl: Handlebars.compile(
+                        jQuery("#cs_context_suggestion").html()
+                    ),
                     {% if cluster.master_context_json %}
                         {% autoescape off %}
                             context: {{cluster.master_context_json}}
@@ -272,7 +294,12 @@
                 });
                 jQuery("#cluster_worker_context").ContextSelector({
                     remoteURL: "{% url "context_ajax_get_list" %}",
-                    infoTmpl: Handlebars.compile(jQuery("#cs_context_info").html()),
+                    infoTmpl: Handlebars.compile(
+                        jQuery("#cs_context_info").html()
+                    ),
+                    suggestionTmpl: Handlebars.compile(
+                        jQuery("#cs_context_suggestion").html()
+                    ),
                     {% if cluster.worker_context_json %}
                         {% autoescape off %}
                             context: {{cluster.worker_context_json}}
