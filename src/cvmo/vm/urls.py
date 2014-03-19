@@ -9,6 +9,6 @@ urlpatterns = patterns(
     url(r"^delete/(?P<machine_uuid>[-\w]+)$", "delete", name="vm_delete"),
     url(r"^ajax/machine/status/(?P<claim_key>\w+)$", "pair_status",
         name="vm_ajax_status"),
-    # url(r"^api/fetch$", "context_fetch"),
-    # url(r"^api/context$", "context_fetch")
+    url(r"^api/fetch$", "context_fetch"),
+    url(r"^api/context$", "context_fetch")
 )
