@@ -25,6 +25,6 @@ if __name__ == "__main__":
             "django-cors-headers>=0.10",
             "passlib>=1.6.0",
             "South>=0.8",
-            "django-json-field-0.5.5.tar.gz>=0.5"
+            "django-json-field>=0.5"
         ]
     )
