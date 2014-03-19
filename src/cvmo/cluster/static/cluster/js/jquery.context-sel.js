@@ -76,7 +76,7 @@
 
             // Apply initial value
             if(options.context)
-                this.ContextSelector("select", options.context);
+                $(this).ContextSelector("select", options.context);
         },
 
         /*
@@ -117,7 +117,7 @@
     $.fn.ContextSelector = function(methodOrOptions)
     {
         var argv = arguments;
-        return this.each(
+        return $(this).each(
             function()
             {
                 if(methods[methodOrOptions]) {

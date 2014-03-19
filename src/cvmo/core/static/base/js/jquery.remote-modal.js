@@ -134,7 +134,7 @@
     $.fn.remoteModal = function(methodOrOptions)
     {
         var argv = arguments;
-        return this.each(
+        return $(this).each(
             function()
             {
                 if(methods[methodOrOptions]) {
