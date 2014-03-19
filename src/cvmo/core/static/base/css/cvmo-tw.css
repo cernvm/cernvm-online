@@ -183,7 +183,64 @@ div#main div#messages div.alert {
 /******************************************************************************
  * Main section: Sidebar
  ******************************************************************************/
-/* TODO */
+div#sidebar {
+    padding-left: 0;
+    margin-left: -15px;
+}
+div#sidebar div.block {
+    border: 1px solid #e7e7e7;
+    background: #f7f7f7;
+    margin: 5px 0 15px 0;
+    padding-bottom: 10px;
+    border-top-left-radius: 0px;
+    -webkit-border-top-left-radius: 0px;
+    -moz-border-radius-topleft: 0px;
+    border-top-right-radius: 20px;
+    -webkit-border-top-right-radius: 20px;
+    -moz-border-radius-topright: 20px;
+    border-bottom-right-radius: 20px;
+    -webkit-border-bottom-right-radius: 20px;
+    -moz-border-radius-bottomright: 20px;
+    border-bottom-left-radius: 20px;
+    -webkit-border-bottom-left-radius: 20px;
+    -moz-border-radius-bottomleft: 20px;
+}
+div#sidebar div.block h3.title {
+    background: #eeeeee url("../img/menu-border.gif") repeat-y left top;
+    color: #000;
+    display: block;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-align: left;
+    font-size: 1.1em;
+    margin: 0;
+    border: none;
+    border-bottom: 0;
+    line-height:16px;
+    text-shadow: none;
+    padding: 0.25em 1.5em;
+}
+div#sidebar div.block div.sidenav ul,
+div#sidebar div.block div.sidenav li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+div#sidebar div.block div.sidenav li a {
+    padding: 2px 8px 2px 8px;
+    color: black;
+    font-size: 12px;
+    height: 24px;
+    white-space: nowrap;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+div#sidebar div.block div.sidenav li a:hover {
+    background-color: #efefef;
+    text-decoration: none;
+}
 
 /******************************************************************************
  * Main section: Error pages
