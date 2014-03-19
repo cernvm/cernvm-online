@@ -27,26 +27,28 @@
                     <a href="{% url "dashboard" %}" title="" id="logo-inner"><img class="online" alt="CernVM Online Logo" src="{% static "base/img/online_logo.png" %}" /></a>
                     <a href="http://cernvm.cern.ch/portal" title="home"><img class="logo-home" alt="Home" src="{% static "base/img/logo-home.png" %}" /></a>
                     <div class="header-fl-right">
-                        <div class="login">
-                            {% if user.username %}
-                                <font color="#FFFFFF"> Logged in as {{ user.username|default:"anonymous" }} |</font>
-                                {% if user.password %}
-                                    <a class="profile-link" href="{% url "user_profile" %}">Profile</a>
-                                    <font color="#FFFFFF"> |</font>
+                        <!--
+                            <div class="login">
+                                {% if user.username %}
+                                    <font color="#FFFFFF"> Logged in as {{ user.username|default:"anonymous" }} |</font>
+                                    {% if user.password %}
+                                        <a class="profile-link" href="{% url "user_profile" %}">Profile</a>
+                                        <font color="#FFFFFF"> |</font>
+                                    {% endif %}
+                                    <a class="logout-link" href="{% url "user_logout" %}">Log out</a>
+                                {% else %}
+                                    <a class="login-link" href="{% url "user_login" %}">Login</a>
                                 {% endif %}
-                                <a class="logout-link" href="{% url "user_logout" %}">Log out</a>
-                            {% else %}
-                                <a class="login-link" href="{% url "user_login" %}">Login</a>
-                            {% endif %}
-                        </div>
-                        <div style="clear:both;margin:0;padding:0;"></div>
-                        <div id="search">
-                            <form action="https://cernvm.cern.ch/portal/?q=search" method="post">
-                                <div class="form">
-                                    <input class="form-text" type="text" size="15" value="" name="keys" /> <input class="form-submit" type="submit" value=""/>
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                            <div style="clear:both;margin:0;padding:0;"></div>
+                            <div id="search">
+                                <form action="https://cernvm.cern.ch/portal/?q=search" method="post">
+                                    <div class="form">
+                                        <input class="form-text" type="text" size="15" value="" name="keys" /> <input class="form-submit" type="submit" value=""/>
+                                    </div>
+                                </form>
+                            </div>
+                        -->
                     </div>
                 </div>
             </div>

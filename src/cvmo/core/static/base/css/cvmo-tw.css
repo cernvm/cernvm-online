@@ -186,6 +186,7 @@ div#main div#messages div.alert {
 div#sidebar {
     padding-left: 0;
     margin-left: -15px;
+    padding-top: 5px;
 }
 div#sidebar div.block {
     border: 1px solid #e7e7e7;
@@ -212,13 +213,16 @@ div#sidebar div.block h3.title {
     font-weight: 600;
     letter-spacing: normal;
     text-align: left;
-    font-size: 1.1em;
+    font-size: 12px;
     margin: 0;
     border: none;
     border-bottom: 0;
-    line-height:16px;
+    line-height: 16px;
     text-shadow: none;
     padding: 0.25em 1.5em;
+    border-top-right-radius: 20px;
+    -webkit-border-top-right-radius: 20px;
+    -moz-border-radius-topright: 20px;
 }
 div#sidebar div.block div.sidenav ul,
 div#sidebar div.block div.sidenav li {
@@ -229,8 +233,8 @@ div#sidebar div.block div.sidenav li {
 div#sidebar div.block div.sidenav li a {
     padding: 2px 8px 2px 8px;
     color: black;
-    font-size: 12px;
-    height: 24px;
+    font-size: 13px;
+    height: 28px;
     white-space: nowrap;
     vertical-align: top;
     overflow: hidden;
