@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from json_field import JSONField
 from cvmo.context.models import ContextDefinition, ContextStorage
 
 
@@ -20,7 +21,9 @@ class ClusterDefinition(models.Model):
     deployable_context = models.ForeignKey(ContextStorage)
 
     # Settings
-    ec2 = models.TextField(null=False, blank=False)
-    quota = models.TextField(null=False, blank=False)
-    elastiq = models.TextField(null=False, blank=False)
-    additional_params = models.TextField(null=True, blank=True)
+    ec2 = JSONField(null=False, blank=False)
+    quota = JSONField(null=False, blank=False)
+    elastiq = JSONField(null=False, blank=False)
+    additional_params = JSONField(null=False, blank=False,
+                                  default={})
+

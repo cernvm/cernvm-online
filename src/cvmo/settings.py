@@ -124,6 +124,8 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     # Django messages
     "django.contrib.messages",
+    # JSON field
+    "json_field",
     # South
     "south",
     # Admin
