@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime, timedelta
 from django.core.exceptions import SuspiciousOperation
@@ -6,6 +7,7 @@ from django.utils.timezone import utc
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from cvmo.context.models import ContextDefinition, ContextStorage
+from cvmo.cluster.models import ClusterDefinition
 from cvmo.vm.models import ClaimRequests, Machines
 from cvmo.core.utils.views import render_confirm, uncache_response
 from cvmo.core.utils.context import gen_pin, get_uuid_salt
@@ -131,7 +133,7 @@ def pair_status(request, claim_key):
     # Send the response
     return uncache_response(
         HttpResponse(
-            "{\"status\":" + status + "}", content_type="application/json"
+            json.dumps({"status": status}), content_type="application/json"
         )
     )
 
@@ -171,144 +173,127 @@ def context_fetch(request):
 
     # Check if we are using PIN or CONTEXT_ID
     if ("pin" in request.GET):
-
-        #
-        # Use Pin-Based pairing mechanism
-        #
-
-        # Prepare missing parameters
-        pin = request.GET["pin"]
-
-        # Get our current timestamp and calculate validity time
-        ts = datetime.utcnow().replace(tzinfo=utc)
-        ts_expire = ts - REQUEST_TIMEOUT
-
-        # Lookup the pin
-        try:
-            claim_request = ClaimRequests.objects.get(
-                pin=pin, status="U", alloc_date__gte=ts_expire
-            )
-
-            # If the request is encrypted, make sure the user knows how to
-            # decrypt it
-            if (claim_request.context.key != ""):
-                if (claim_request.context.key != checksum):
-                    return uncache_response(
-                        HttpResponse(
-                            "invalid-checksum", content_type="text/plain"
-                        )
-                    )
-
-            # Request is now claimed
-            claim_request.status = "C"
-
-            # Get or create the VM
-            claimed_vm = None
-            try:
-                claimed_vm = Machines.objects.get(uuid=uuid)
-
-                # Update the IP address
-                claimed_vm.ip = ip
-
-                # If the owner is different than expected, someone tries to
-                # hijack...
-                if (claimed_vm.owner != claim_request.requestby):
-                    claim_request.status = "E"
-                    claim_request.save()
-                    return uncache_response(
-                        HttpResponse(
-                            "not-authorized", content_type="text/plain"
-                        )
-                    )
-
-            except:
-                claimed_vm = Machines(
-                    uuid=uuid, ip=ip, version=ver,
-                    owner=claim_request.requestby
-                )
-
-            # Store the VM
-            claim_request.machine = claimed_vm
-
-            # Machine is registered via pairing API
-            claimed_vm.status = "P"
-
-            # Update claim request
-            claim_request.save()
-
-            # Fetch the context definition
-            claim_context = claim_request.context
-            context_data = ContextStorage.objects.get(id=claim_context.id)
-
-            # Update claimed VM info
-            claimed_vm.context = claim_request.context
-            claimed_vm.save()
-
-            # Return successful pairing
-            return uncache_response(
-                HttpResponse(context_data.data, content_type="text/plain")
-            )
-
-        except:
-            # Something went wrong. Stop
-            return uncache_response(
-                HttpResponse("not-found", content_type="text/plain")
-            )
-
+        return _context_fetch_pin(request.GET["pin"], checksum, uuid, ip, ver)
     elif ("context_id" in request.GET):
+        return _context_fetch_context_id(request.GET["context_id"], checksum,
+                                         uuid, ip, ver)
 
-        #
-        # Use ContextID-based contextualization mechanism
-        #
 
-        # Prepare missing parameters
-        context_id = request.GET["context_id"]
+def _context_fetch_pin(pin, checksum, uuid, ip, ver):
+    # Get our current timestamp and calculate validity time
+    ts = datetime.utcnow().replace(tzinfo=utc)
+    ts_expire = ts - REQUEST_TIMEOUT
 
-        # Lookup the context ID
+    # Lookup the pin
+    try:
+        claim_request = ClaimRequests.objects.get(
+            pin=pin, status="U", alloc_date__gte=ts_expire
+        )
+        # If the request is encrypted, make sure the user knows how to
+        # decrypt it
+        if (claim_request.context.key != ""):
+            if (claim_request.context.key != checksum):
+                return uncache_response(
+                    HttpResponse(
+                        "invalid-checksum", content_type="text/plain"
+                    )
+                )
+        # Request is now claimed
+        claim_request.status = "C"
+
+        # Get or create the VM
+        claimed_vm = None
         try:
-
-            # Fetch context definition
-            context = ContextDefinition.objects.get(id=context_id)
-
-            # If the context is encrypted, make sure the user knows how to
-            # decrypt it
-            if (context.key != ""):
-                if (context.key != checksum):
-                    return uncache_response(
-                        HttpResponse(
-                            "invalid-checksum", content_type="text/plain"
-                        )
+            claimed_vm = Machines.objects.get(uuid=uuid)
+            # Update the IP address
+            claimed_vm.ip = ip
+            # If the owner is different than expected, someone tries to
+            # hijack...
+            if (claimed_vm.owner != claim_request.requestby):
+                claim_request.status = "E"
+                claim_request.save()
+                return uncache_response(
+                    HttpResponse(
+                        "not-authorized", content_type="text/plain"
                     )
-
-            # Register/update VM registration only if the VM is private
-            if not context.public:
-
-                # Get or create the VM
-                claimed_vm = None
-                try:
-                    claimed_vm = Machines.objects.get(uuid=uuid)
-                    claimed_vm.ip = ip
-                    claimed_vm.ver = ver
-                    claimed_vm.owner = context.owner
-
-                except:
-                    claimed_vm = Machines(
-                        uuid=uuid, ip=ip, version=ver, owner=context.owner
-                    )
-
-                # Machine is registered via cloud API
-                claimed_vm.status = "C"
-
-                # Assign context
-                claimed_vm.context = context
-                claimed_vm.save()
-
-            # Return the context definition
-            context_data = ContextStorage.objects.get(id=context_id)
-            return HttpResponse(context_data.data, content_type="text/plain")
-
+                )
         except:
-            return HttpResponse("not-found", content_type="text/plain")
+            claimed_vm = Machines(
+                uuid=uuid, ip=ip, version=ver,
+                owner=claim_request.requestby
+            )
+
+        # Store the VM
+        claim_request.machine = claimed_vm
+        # Machine is registered via pairing API
+        claimed_vm.status = "P"
+        # Update claim request
+        claim_request.save()
+
+        # Fetch the context definition
+        claim_context = claim_request.context
+        context_data = ContextStorage.objects.get(id=claim_context.id)
+
+        # Update claimed VM info
+        claimed_vm.context = claim_request.context
+        claimed_vm.save()
+
+        # Return successful pairing
+        return uncache_response(
+            HttpResponse(context_data.data, content_type="text/plain")
+        )
+    except:
+        # Something went wrong. Stop
+        return uncache_response(
+            HttpResponse("not-found", content_type="text/plain")
+        )
+
+
+def _context_fetch_context_id(context_id, checksum, uuid, ip, ver):
+    context = None
+    cluster = None
+
+    try:
+        context = ContextDefinition.objects.get(id=context_id)
+        owner = context.owner
+
+        # If the context is encrypted, make sure the user knows how to
+        # decrypt it
+        if (context and context.key != ""):
+            if (context.key != checksum):
+                return uncache_response(
+                    HttpResponse("invalid-checksum", content_type="text/plain")
+                )
+    except ContextDefinition.DoesNotExist:
+        cluster = ClusterDefinition.objects.get(
+            deployable_context_id=context_id
+        )
+        owner = cluster.owner
+    except ClusterDefinition.DoesNotExist:
+        return HttpResponse("not-found", content_type="text/plain")
+
+    # Register/update VM registration only if the VM is private
+    if (context and not context.public) or cluster:
+        try:
+            claimed_vm = Machines.objects.get(uuid=uuid)
+            claimed_vm.ip = ip
+            claimed_vm.ver = ver
+            claimed_vm.owner = owner
+        except Machines.DoesNotExist:
+            claimed_vm = Machines(
+                uuid=uuid, ip=ip, version=ver, owner=owner
+            )
+        if context:
+            claimed_vm.status = "C"  # Machine is registered via cloud API
+            claimed_vm.context = context
+        if cluster:
+            claimed_vm.status = "E"  # Machine is registered via cloud API
+            claimed_vm.context = cluster.master_context
+        claimed_vm.save()
+
+    # Return the context definition
+    context_data = ContextStorage.objects.get(id=context_id)
+    return HttpResponse(context_data.data, content_type="text/plain")
 
 
 #

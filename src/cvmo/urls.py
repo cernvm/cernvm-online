@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 from cvmo.settings import URL_PREFIX
 
 urlpatterns = patterns(
@@ -10,7 +11,13 @@ urlpatterns = patterns(
     url(r"^%scontext/" % URL_PREFIX, include("cvmo.context.urls")),
     url(r"^%svm/" % URL_PREFIX, include("cvmo.vm.urls")),
     url(r"^%smarket/" % URL_PREFIX, include("cvmo.market.urls")),
-    url(r"^%scluster/" % URL_PREFIX, include("cvmo.cluster.urls"))
+    url(r"^%scluster/" % URL_PREFIX, include("cvmo.cluster.urls")),
+    # Index
+    url(
+        r"^%s[/]?$" % URL_PREFIX,
+        RedirectView.as_view(url="dashboard/", permanent=True),
+        name="index"
+    )
 )
 
 #
@@ -37,12 +44,12 @@ urlpatterns += patterns(
 )
 
 #
-# Core UI
+# api/fetch --> machine/api/fetch
+#   temporary fix to keep compatibility
 #
-
 urlpatterns += patterns(
     "",
-    url(r"^%s" % URL_PREFIX, include("cvmo.core.urls")),
+    url(r"^%sapi/fetch$" % URL_PREFIX, "cvmo.vm.views.context_fetch")
 )
 
 #
