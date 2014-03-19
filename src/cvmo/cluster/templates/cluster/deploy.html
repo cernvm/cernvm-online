@@ -1,0 +1,73 @@
+{% extends "base/main_modal_tw.html" %}
+{% load static %}
+{% load url from future %}
+{% load formutils %}
+{% block title %}Deploy cluster{% endblock %}
+
+{% block body %}
+    <div class="inner-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#cmd" data-toggle="tab">
+                            Using euca2ools from command-line
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#ud_field" data-toggle="tab">
+                            Using user-data field
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="cmd">
+                        <div class="panel">
+                            <div class="panel-body">
+                                <pre>euca-run-instances -t {{cluster.ec2.flavour}} -k '{{cluster.ec2.key_name}}' -d "$(echo {{dc_user_data_b64}}|base64 --decode)" {{cluster.ec2.image_id}}</pre>
+                                <p class="help-block">Paste this in the command line</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="ud_field">
+                        <div class="panel">
+                            <div class="panel-body">
+                                <pre>{{dc_user_data}}</pre>
+                                <p class="help-block">Paste this in the 'user-data' field</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript">
+        function selectText(element) {
+            if (document.body.createTextRange) {
+                var range = document.body.createTextRange();
+                range.moveToElementText(element);
+                range.select();
+            } else if (window.getSelection) {
+                var selection = window.getSelection();
+                var range = document.createRange();
+                range.selectNodeContents(element);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+
+        jQuery(
+            function()
+            {
+                jQuery("pre").click(
+                    function(e)
+                    {
+                        selectText(this);
+                    }
+                );
+            }
+        );
+    </script>
+{% endblock %}

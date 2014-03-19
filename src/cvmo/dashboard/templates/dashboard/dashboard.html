@@ -36,7 +36,11 @@
                                             src="{% if item.key %}{% static "base/img/user_key.png" %}{% else %}{% static "base/img/user.png" %}{% endif %}">
                                     {% endif %}
                                 </td>
-                                <td class="name">{{item.name}}</td>
+                                <td class="name">
+                                    <a href="{% url "context_view" context_id=item.id %}">
+                                        {{item.name}}
+                                    </a>
+                                </td>
                                 <td class="operations">
                                     <a href="{% if item.from_abstract %}{% url "context_abstract_contextualize" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}"
                                         class="btn btn-xs btn-default">
@@ -181,8 +185,9 @@
                                     </a>
                                 </td>
                                 <td class="operations">
-                                    <a href="{% url "cluster_deploy" cluster_id=item.id %}"
-                                        class="btn btn-xs btn-success">
+                                    <a href="#" data-rm-remote="{% url "cluster_deploy" cluster_id=item.id %}"
+                                        class="btn btn-xs btn-info" data-toggle="remote-modal"
+                                        data-rm-title="Deploy cluster">
                                         <img src="{% static "base/img/vm_contextualize.png" %}">
                                          Deploy cluster
                                     </a>
@@ -222,12 +227,18 @@
                                 <td class="icon">
                                     {% if item.status == "C" %}
                                         <img alt="VM Cloud" data-toggle="tooltip"
-                                            data-placement="left"
+                                            data-placement="top"
                                             title="Instance contextualized on the cloud"
+                                            src="{% static "base/img/vm_contextualize.png" %}">
+                                    {% elif item.status == "E" %}
+                                        <img alt="Cluster master node"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Elastiq cluster master node"
                                             src="{% static "base/img/vm_cloud.png" %}">
                                     {% elif item.status == "P" %}
                                         <img alt="VM" data-toggle="tooltip"
-                                            data-placement="left"
+                                            data-placement="top"
                                             title="Instance contextualized via pairing"
                                             src="{% static "base/img/vm_user.png" %}">
                                     {% else %}
@@ -253,11 +264,11 @@
                     </tbody>
                     <tfoot>
                         <td colspan="5">
-                                <a href="{% url "vm_pair_begin" %}"
-                                    class="btn btn-sm btn-success">
-                                    <img src="{% static "base/img/vm_contextualize.png" %}">
-                                     Pair an instance of CernVM
-                                </a>
+                            <a href="{% url "vm_pair_begin" %}"
+                                class="btn btn-sm btn-success">
+                                <img src="{% static "base/img/vm_contextualize.png" %}">
+                                 Pair an instance of CernVM
+                            </a>
                         </tr>
                     </tfoot>
                 </table>
@@ -270,8 +281,10 @@
     <link type="text/css" rel="stylesheet" media="all" href="{% static "dashboard/css/dashboard.css" %}">
 {% endblock %}
 {% block scripts %}
+    <script type="text/javascript" src="{% static "cluster/js/libs/handlebars-1.3.0.js" %}"></script>
     <script type="text/javascript"
         src="http://cernvm.cern.ch/releases/webapi/js/cvmwebapi-latest.js">
     </script>
     <script type="text/javascript" src="{% static "dashboard/js/dashboard.js" %}"></script>
+    <script type="text/javascript" src="{% static "base/js/jquery.remote-modal.js" %}"></script>
 {% endblock %}

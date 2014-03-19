@@ -2,7 +2,7 @@ import re
 import json
 import base64
 import logging
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from querystring_parser import parser
@@ -54,7 +54,27 @@ def show_edit(request, cluster_id):
 
 
 def show_deploy(request, cluster_id):
-    return render(request, "cluster/deploy.html", {})
+    context = {}
+
+    try:
+        cluster = ClusterDefinition.objects.get(
+            id=cluster_id,
+            owner=request.user
+        )
+    except ClusterDefinition.DoesNotExist:
+        raise Http404(
+            "Cluster with id `%s` does not exist or it is not yours."
+            % cluster_id
+        )
+    context["cluster"] = cluster
+
+    ami_ctx = _render_head_context(
+        cluster.deployable_context
+    )
+    context["dc_user_data"] = ami_ctx
+    context["dc_user_data_b64"] = base64.b64encode(ami_ctx)
+
+    return render(request, "cluster/deploy.html", context)
 
 #
 # Actions
@@ -107,9 +127,9 @@ def save(request):
             id=resp["cluster"]["worker_context_id"]
         ),
         deployable_context=cs,
-        ec2=json.dumps(resp["ec2"]),
-        elastiq=json.dumps(resp["elastiq"]),
-        quota=json.dumps(resp["quota"])
+        ec2=resp["ec2"],
+        elastiq=resp["elastiq"],
+        quota=resp["quota"]
     )
     cd.save()
 
@@ -120,12 +140,53 @@ def save(request):
 
 
 def delete(request, cluster_id):
-    pass
+    try:
+        cluster = ClusterDefinition.objects.get(
+            id=cluster_id,
+            owner=request.user
+        )
+    except ClusterDefinition.DoesNotExist:
+        raise Http404(
+            "Cluster with id `%s` does not exist or it is not yours."
+            % cluster_id
+        )
+
+    # Delete context
+    cluster.deployable_context.delete()
+    name = cluster.name
+    cluster.delete()
+
+    messages.success(
+        request, "Cluster '%s' was successfully deleted!" % name
+    )
+    return redirect("dashboard")
 
 #
 # Helpers
 #
 
+def _render_head_context(cs_instance):
+    ud = cs_instance.ec2_user_data
+
+    # Get the part between [ucernvm-begin] and [ucernvm-end]
+    r = re.compile(r"^\s*\[ucernvm-begin\]\s*$", re.M)
+    g = r.search(ud)
+    s = ud[g.end():].strip()
+    r = re.compile(r"^\s*\[ucernvm-end\]\s*$", re.M)
+    g = r.search(s)
+    ucvm_ctx = s[:g.start()].strip()
+
+    # Prepare context
+    ctx = """[amiconfig]
+plugins=cernvm
+[cernvm]
+contextualization_key=%s
+[ucernvm-begin]
+%s
+[ucernvm-end]
+""" % (cs_instance.id, ucvm_ctx)
+
+    return ctx
 
 def _append_plugin_in_ud(init_ud, plugin_name, plugin_cont):
     """
@@ -135,17 +196,19 @@ def _append_plugin_in_ud(init_ud, plugin_name, plugin_cont):
     """
     new_ud = "%s\n[%s]\n%s\n" % (init_ud, plugin_name, plugin_cont)
 
-    g = re.search(r"\s*plugins\s*=\s*(.*)\s*$", init_ud, re.M)
+    g = re.search(r"\s*(plugins\s*=\s*)(.*)\s*$", init_ud, re.M)
     if not g:
         return False
 
-    plugins = g.group(1).split()
+    plugins = g.group(2).split()
     if plugin_name in plugins:
         return new_ud
 
     # adding plugin name
     plugins.append(plugin_name)
-    new_ud = new_ud.replace(g.group(1), " ".join(plugins))
+    new_ud = new_ud.replace(
+        g.group(1) + g.group(2),
+        g.group(1) + " ".join(plugins))
 
     return new_ud
 

@@ -13,6 +13,9 @@ jQuery(
         /* Tooltips */
         jQuery("*[data-toggle=\"tooltip\"").tooltip();
 
+        /* Remote modals */
+        jQuery("*[data-toggle=\"remote-modal\"").remoteModal();
+
         /* WebAPI */
         jQuery("a.webapi-deploy-handle").click(
             function(e)

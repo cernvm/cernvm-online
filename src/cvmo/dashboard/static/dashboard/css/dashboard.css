@@ -29,7 +29,7 @@ table#context_definitions tfoot td li {
 }
 
 /******************************************************************************
- * Virtual machines
+ * Cluster definitions
  ******************************************************************************/
 table#cluster_definitions th.name,
 table#cluster_definitions td.name {
@@ -58,7 +58,6 @@ table#vms td.icon {
 }
 table#vms th.ip,
 table#vms td.ip {
-    width: 80px;
 }
 table#vms th.cvm_version,
 table#vms td.cvm_version {
@@ -66,6 +65,7 @@ table#vms td.cvm_version {
 }
 table#vms th.context,
 table#vms td.context {
+    width: 200px;
 }
 table#vms th.operations,
 table#vms td.operations {
