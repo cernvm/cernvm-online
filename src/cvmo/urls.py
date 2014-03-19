@@ -45,11 +45,16 @@ urlpatterns += patterns(
 
 #
 # api/fetch --> machine/api/fetch
+# api/context --> machine/api/context
 #   temporary fix to keep compatibility
 #
 urlpatterns += patterns(
     "",
     url(r"^%sapi/fetch$" % URL_PREFIX, "cvmo.vm.views.context_fetch")
+)
+urlpatterns += patterns(
+    "",
+    url(r"^%sapi/context$" % URL_PREFIX, "cvmo.vm.views.context_fetch")
 )
 
 #
