@@ -85,17 +85,22 @@
 
     $.fn.ContextSelector = function(methodOrOptions)
     {
-        if(methods[methodOrOptions]) {
-            return methods[methodOrOptions].apply(
-                this, Array.prototype.slice.call(arguments, 1)
-            );
-        } else if (typeof methodOrOptions == "object" || !methodOrOptions) {
-            return methods.init.apply(this, arguments);
-        } else {
-            $.error(
-                "Method " + methodOrOptions
-                + " does not exist in jQuery.ContextSelector"
-            );
-        }
+        return this.each(
+            function()
+            {
+                if(methods[methodOrOptions]) {
+                    return methods[methodOrOptions].apply(
+                        this, Array.prototype.slice.call(arguments, 1)
+                    );
+                } else if (typeof methodOrOptions == "object" || !methodOrOptions) {
+                    return methods.init.apply(this, arguments);
+                } else {
+                    $.error(
+                        "Method " + methodOrOptions
+                        + " does not exist in jQuery.ContextSelector"
+                    );
+                }
+            }
+        );
     }
 })(jQuery);
