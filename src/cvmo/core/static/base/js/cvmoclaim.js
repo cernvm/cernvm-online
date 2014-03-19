@@ -1,26 +1,46 @@
 
-CVMO.setupClaim = function(poll_url, url) {
-    var timer=0;
+CVMO.setupClaim = function(pollURL, url) {
+    var timer;
+
     // Check the status of an instance that pends pairing
-    var checkStatus = function() {
-        var jsonRequest = new Request.JSON({url: poll_url+'?rand='+Math.round(Math.random()*100000000), onSuccess: function(status){
-            window.console.log(status);
-            if (status.status == 'claimed') {
-                window.location=url;
-                clearInterval(expired);
-            } else if (status.status == 'pending') {
-                $('pinframe').set('html','<span class="gray">Pending</span>');
-            } else if (status.status == 'timeout') {
-                $('pinframe').set('html','<span class="red">Expired</span>');
-                clearInterval(expired);
-            } else if (status.status == 'error') {
-                $('pinframe').set('html','<span class="red">Error</span>');
-                clearInterval(expired);
+    var checkStatus = function()
+    {
+        jQuery.ajax(
+            {
+                url: pollURL + "?rand=" + Math.round(Math.random() * 100000000),
+                dataType: "json",
+                success: function(data, textStatus, jqXHR)
+                {
+                    if (data.status == "claimed") {
+                        window.location=url;
+                        clearInterval(timer);
+                    } else if (data.status == "pending") {
+                        jQuery("#pinframe").html(
+                            "<span class=\"gray\">Pending</span>"
+                        );
+                    } else if (data.status == "timeout") {
+                        jQuery("#pinframe").html(
+                            "<span class=\"red\">Expired</span>"
+                        );
+                        clearInterval(timer);
+                    } else if (data.status == "error") {
+                        jQuery("#pinframe").html(
+                            "<span class=\"red\">Error</span>"
+                        );
+                        clearInterval(timer);
+                    }
+                },
+                error: function(jqXHR, errorThrown)
+                {
+                    jQuery("#pinframe").html(
+                        "<span class=\"red\">Error: " + errorThrown + "</span>"
+                    );
+                    clearInterval(timer);
+                }
             }
-        }}).get();
+        );
     }
-    
+
     // Setup timer
-    timer = setInterval(checkStatus,5000);
-    
+    timer = setInterval(checkStatus, 5000);
 };
