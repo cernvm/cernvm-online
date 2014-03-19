@@ -98,11 +98,11 @@ def save(request):
     if not new_ud:
         messages.error(
             request,
-            "Failed to append `elastiq_setup` plugin in master context!"
+            "Failed to append `elastiq-setup` plugin in master context!"
         )
         l.log(
             logging.ERROR,
-            "Failed to append `elastiq_setup` plugin in master context %s!"
+            "Failed to append `elastiq-setup` plugin in master context %s!"
             % resp["cluster"]["master_context_id"]
         )
         return _show_cluster_def(request, resp)
@@ -216,7 +216,7 @@ def _append_plugin_in_ud(init_ud, plugin_name, plugin_cont):
 def _render_elastq_plugin(resp):
     """
     Given the clean data from the cluster form it returns a string, the
-    elastiq_setup amiconfig plugin settings.
+    elastiq-setup amiconfig plugin settings.
     """
     plg = "elastiq_n_jobs_per_vm=%d\n" \
         % resp["elastiq"].get("elastiq_n_jobs_per_vm", 4)
@@ -254,7 +254,7 @@ def _render_elastq_plugin(resp):
     wc = ContextStorage.objects.get(id=resp["cluster"]["worker_context_id"])
     plg += "ec2_user_data_b64=%s\n" % base64.b64encode(wc.ec2_user_data)
 
-    return ("elastiq_setup", plg)
+    return ("elastiq-setup", plg)
 
 
 def _validate_for_save(request):
