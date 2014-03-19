@@ -4,12 +4,12 @@
 
 {% block title %}Page not found{% endblock %}
 
-{% block content %}
+{% block main %}
     <div class="jumbotron">
         <div class="container">
             <h1>Ooops!</h1>
             <p>The page you were looking for does not exist...</p>
-            <p><a class="btn btn-primary btn-lg" href="{% url "core_home" %}">Go home</a></p>
+            <p><a class="btn btn-primary btn-lg" href="{% url "dashboard" %}">Go home</a></p>
         </div>
     </div>
 {% endblock %}
