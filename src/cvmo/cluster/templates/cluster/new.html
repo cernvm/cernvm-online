@@ -162,55 +162,57 @@
                         </div>
                     </fieldset>
 
-                    <fieldset>
-                        <legend>
-                            Additional configuration file parameters
-                            <a class="btn" data-toggle="collapse" href="#advanced_panel">
-                                <span class="glyphicon glyphicon-collapse-down"></span>
-                            </a>
-                        </legend>
-                        <div class="collapse out" id="advanced_panel">
-                            <div class="form-group">
-                                <div class="col-xs-12">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="section">Section</th>
-                                                <th class="parameter">Parameter</th>
-                                                <th class="value">Value</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="section">
-                                                    <select name="additional_params[0][section]" class="form-control">
-                                                        <option value="elastiq">elastiq</option>
-                                                        <option value="ec2">ec2</option>
-                                                        <option value="quota">quota</option>
-                                                        <option value="substitute">substitute</option>
-                                                    </select>
-                                                </td>
-                                                <td class="parameter">
-                                                    <input name="additional_params[0][parameter]" value="" class="form-control">
-                                                </td>
-                                                <td class="value">
-                                                    <input name="additional_params[0][value]" value="" class="form-control">
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                        <tfoot>
-                                            <td colspan="2"></td>
-                                            <td style="text-align:right">
-                                                <div class="btn btn-default">
-                                                    <span class="glyphicon glyphicon-plus"></span>
-                                                </div>
-                                        </tfoot>
-                                    </table>
-                                    <p class="help-block">Set elastiq configuration file parameters, that were not provided by the UI above. If parameter is set by the UI, this section overrides it's value.
+                    <!--
+                        <fieldset>
+                            <legend>
+                                Additional configuration file parameters
+                                <a class="btn" data-toggle="collapse" href="#advanced_panel">
+                                    <span class="glyphicon glyphicon-collapse-down"></span>
+                                </a>
+                            </legend>
+                            <div class="collapse out" id="advanced_panel">
+                                <div class="form-group">
+                                    <div class="col-xs-12">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="section">Section</th>
+                                                    <th class="parameter">Parameter</th>
+                                                    <th class="value">Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="section">
+                                                        <select name="additional_params[0][section]" class="form-control">
+                                                            <option value="elastiq">elastiq</option>
+                                                            <option value="ec2">ec2</option>
+                                                            <option value="quota">quota</option>
+                                                            <option value="substitute">substitute</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="parameter">
+                                                        <input name="additional_params[0][parameter]" value="" class="form-control">
+                                                    </td>
+                                                    <td class="value">
+                                                        <input name="additional_params[0][value]" value="" class="form-control">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <td colspan="2"></td>
+                                                <td style="text-align:right">
+                                                    <div class="btn btn-default">
+                                                        <span class="glyphicon glyphicon-plus"></span>
+                                                    </div>
+                                            </tfoot>
+                                        </table>
+                                        <p class="help-block">Set elastiq configuration file parameters, that were not provided by the UI above. If parameter is set by the UI, this section overrides it's value.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </fieldset>
+                        </fieldset>
+                    -->
 
                     <div class="form-group well">
                         <button type="submit" class="btn btn-primary">Create cluster</button>
