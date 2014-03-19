@@ -72,14 +72,14 @@
                     </fieldset>
 
                     <fieldset id="ec2_instantiation">
-                        <legend>EC2 VMs profile</legend>
+                        <legend>Virtual machines profile</legend>
                         <div class="form-group required">
                             <label for="ec2_image_id" class="col-xs-4 control-label">Worker nodes' image</label>
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" id="ec2_image_id" name="ec2[image_id]" placeholder="e.g.: ami-123456" value="{{ec2.image_id}}">
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group required">
                             <label for="ec2_flavour" class="col-xs-4 control-label">Worker nodes' flavor</label>
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" id="ec2_flavour" name="ec2[flavour]" placeholder="e.g.: m1.medium" value="{{ec2.flavour}}">
@@ -91,24 +91,6 @@
                                 <input type="text" class="form-control" id="ec2_key_name" name="ec2[key_name]" value="{{ec2.key_name}}">
                             </div>
                         </div>
-                    </fieldset>
-
-                    <fieldset id="quota">
-                        <legend>Quota configuration</legend>
-                        <div class="form-group">
-                            <label for="quota_min_vms" class="col-xs-4 control-label">Min. workers</label>
-                            <div class="col-xs-2">
-                                <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="{{quota.min_vms|default:2}}">
-                            </div>
-                            <label for="quota_max_vms" class="col-xs-4 control-label">Max. workers</label>
-                            <div class="col-xs-2">
-                                <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="{{quota.max_vms}}">
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <fieldset id="elastiq">
-                        <legend>elastq configuration</legend>
                         <div class="form-group">
                             <label for="elastiq_n_jobs_per_vm" class="col-xs-4 control-label">Amt. of jobs per VM</label>
                             <div class="col-xs-2">
@@ -128,6 +110,21 @@
                             </div>
                         </div>
                     </fieldset>
+
+                    <fieldset id="quota">
+                        <legend>Quota configuration</legend>
+                        <div class="form-group">
+                            <label for="quota_min_vms" class="col-xs-4 control-label">Min. workers</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="{{quota.min_vms|default:2}}">
+                            </div>
+                            <label for="quota_max_vms" class="col-xs-4 control-label">Max. workers</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="{{quota.max_vms}}">
+                            </div>
+                        </div>
+                    </fieldset>
+
                     <fieldset id="cluster_master_context">
                         <legend>Master node context</legend>
                         <div class="form-group">

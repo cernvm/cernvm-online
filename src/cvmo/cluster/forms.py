@@ -56,7 +56,7 @@ class EC2Form(BootstrapForm):
     aws_access_key_id = forms.CharField(label="AWS access key")
     aws_secret_access_key = forms.CharField(label="AWS secret key")
     image_id = forms.CharField(label="Worker nodes' image")
-    flavour = forms.CharField(required=False, label="Worker nodes' flavor")
+    flavour = forms.CharField(label="Worker nodes' flavor")
     key_name = forms.CharField(required=False, label="SSH key name")
 
 
