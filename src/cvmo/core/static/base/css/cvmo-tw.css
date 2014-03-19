@@ -222,3 +222,10 @@ div#footer p {
 #footer a:active {
     text-decoration: underline;
 }
+
+/******************************************************************************
+ * jQuery.remoteModal
+ ******************************************************************************/
+div.remote-modal iframe {
+    margin: 0 auto;
+}
