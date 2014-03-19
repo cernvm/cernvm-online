@@ -26,11 +26,3 @@ def handle_error_500(request):
     }
     return render(request, "base/error/500.html", context, status=500)
 
-
-#
-# Welcome view
-#
-
-
-def show_welcome(request):
-    return render(request, "core/welcome.html")
