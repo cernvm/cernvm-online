@@ -220,39 +220,73 @@ def _render_elastq_plugin(resp):
     Given the clean data from the cluster form it returns a string, the
     elastiq-setup amiconfig plugin settings.
     """
-    plg = "elastiq_n_jobs_per_vm=%d\n" \
-        % resp["elastiq"].get("elastiq_n_jobs_per_vm", 4)
-    plg += "elastiq_n_jobs_per_vm=%d\n" \
-        % resp["elastiq"].get("elastiq_n_jobs_per_vm", 4)
-    plg += "elastiq_estimated_vm_deploy_time_s=%d\n" \
-        % resp["elastiq"].get("estimated_vm_deploy_time_s", 600)
-    plg += "elastiq_batch_plugin=%s\n" \
-        % resp["elastiq"].get("batch_plugin", "htcondor")
+    plg = ""
 
+    # Elastiq: Jobs per VM
+    v = resp["elastiq"].get("n_jobs_per_vm", None)
+    if v:
+        plg += "elastiq_n_jobs_per_vm=%d\n" % v
+
+    # Elastiq: VM deployment time
+    v = resp["elastiq"].get("estimated_vm_deploy_time_s", None)
+    if v:
+        plg += "elastiq_estimated_vm_deploy_time_s=%d\n" % v
+
+    # Elastiq: Queue / VM checking times
+    v = resp["elastiq"].get("check_queue_every_s", None)
+    if v:
+        plg += "elastiq_check_queue_every_s=%d\n" % v
+    v = resp["elastiq"].get("check_vms_every_s", None)
+    if v:
+        plg += "elastiq_check_vms_every_s=%d\n" % v
+
+    # Elastiq: Idle time before killing
+    v = resp["elastiq"].get("idle_for_time_s", None)
+    if v:
+        plg += "elastiq_idle_for_time_s=%d\n" % v
+
+    # Elastiq: Minimum time a job is waiting
+    v = resp["elastiq"].get("waiting_jobs_time_s", None)
+    if v:
+        plg += "elastiq_waiting_jobs_time_s=%d\n" % v
+
+    # Elastiq: Batch sysrem
+    v = resp["elastiq"].get("batch_plugin", None)
+    if v:
+        plg += "elastiq_batch_plugin=%s\n" % v
+
+    # Quota
     plg += "quota_min_vms=%d\n" \
         % resp["quota"].get("min_vms", 2)
     v = resp["quota"].get("max_vms", None)
     if v:
         plg += "quota_max_vms=%d\n" % v
 
+    # EC2: API
     plg += "ec2_api_url=%s\n" \
         % resp["ec2"]["api_url"]
+    v = resp["ec2"].get("api_version", None)
+    if v:
+        plg += "ec2_api_version=%s\n" % v
+
+    # EC2: Access key
     plg += "ec2_aws_access_key_id=%s\n" \
         % resp["ec2"]["aws_access_key_id"]
     plg += "ec2_aws_secret_access_key=%s\n" \
         % resp["ec2"]["aws_secret_access_key"]
+
+    # EC2: Image
     plg += "ec2_image_id=%s\n" \
         % resp["ec2"]["image_id"]
-    v = resp["ec2"].get("api_version", None)
-    if v:
-        plg += "ec2_api_version=%s\n" % v
+    # EC2: Flavor
+    plg += "ec2_flavour=%s\n" % resp["ec2"]["flavour"]
+
+    # EC2: Key-pair
     v = resp["ec2"].get("key_name", None)
     if v:
         plg += "ec2_key_name=%s\n" % v
-    v = resp["ec2"].get("flavour", None)
-    if v:
-        plg += "ec2_flavour=%s\n" % v
 
+    # User - data
     wc = ContextStorage.objects.get(id=resp["cluster"]["worker_context_id"])
     plg += "ec2_user_data_b64=%s\n" % base64.b64encode(wc.ec2_user_data)
 

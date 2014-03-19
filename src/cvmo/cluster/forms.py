@@ -77,4 +77,12 @@ class ElastiqForm(BootstrapForm):
         required=False, min_value=1,
         label="Estimated VM deployment time"
     )
+    check_queue_every_s = forms.IntegerField(required=False, min_value=1,
+                                             label="Queue checking interval")
+    check_vms_every_s = forms.IntegerField(required=False, min_value=1,
+                                           label="VM checking interval")
+    waiting_jobs_time_s = forms.IntegerField(required=False, min_value=1,
+                                             label="Min. job wait time")
+    idle_for_time_s = forms.IntegerField(required=False, min_value=1,
+                                         label="Idle time bef. kill")
     batch_plugin = forms.ChoiceField(choices=BATCH_PLUGINS)

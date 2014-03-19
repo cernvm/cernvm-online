@@ -91,6 +91,29 @@
                                 <input type="text" class="form-control" id="ec2_key_name" name="ec2[key_name]" value="{{ec2.key_name}}">
                             </div>
                         </div>
+
+                    <fieldset id="elastiq">
+                        <legend>elastiq parameters</legend>
+                        <div class="form-group">
+                            <label for="elastiq_check_queue_every_s" class="col-xs-4 control-label">Queue checking interval (in sec.)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_check_queue_every_s" name="elastiq[check_queue_every_s]" value="{{elastiq.check_queue_every_s|default:15}}">
+                            </div>
+                            <label for="elastiq_check_vms_every_s" class="col-xs-4 control-label">VM checking interval (in sec.)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_check_vms_every_s" name="elastiq[check_vms_every_s]" value="{{elastiq.check_vms_every_s|default:45}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="elastiq_waiting_jobs_time_s" class="col-xs-4 control-label">Min. job wait time (in sec.)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_waiting_jobs_time_s" name="elastiq[waiting_jobs_time_s]" value="{{elastiq.waiting_jobs_time_s|default:100}}">
+                            </div>
+                            <label for="elastiq_idle_for_time_s" class="col-xs-4 control-label">Idle time bef. kill (in sec.)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_idle_for_time_s" name="elastiq[idle_for_time_s]" value="{{elastiq.idle_for_time_s|default:3600}}">
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label for="elastiq_n_jobs_per_vm" class="col-xs-4 control-label">Amt. of jobs per VM</label>
                             <div class="col-xs-2">
