@@ -165,6 +165,7 @@ def delete(request, cluster_id):
 # Helpers
 #
 
+
 def _render_head_context(cs_instance):
     ud = cs_instance.ec2_user_data
 
@@ -187,6 +188,7 @@ contextualization_key=%s
 """ % (cs_instance.id, ucvm_ctx)
 
     return ctx
+
 
 def _append_plugin_in_ud(init_ud, plugin_name, plugin_cont):
     """
@@ -331,15 +333,21 @@ def _show_cluster_def(request, data={}):
             if cid:
                 try:
                     c = ContextDefinition.objects.get(id=cid)
-                    data["cluster"]["%s_json" % context_code] = json.dumps({
-                        "id": c.id,
-                        "name": c.name,
-                        "description": c.description,
-                        "owner": c.owner.username
-                    })
+                    if c.owner == request.user or c.public:
+                        data["cluster"]["%s_json" % context_code] = json.dumps(
+                            {
+                                "id": c.id,
+                                "name": c.name,
+                                "description": c.description,
+                                "owner": c.owner.username
+                            }
+                        )
+                    else:
+                        del data["cluster"]["%s_id" % context_code]
+                        data["cluster"]["%s_json" % context_code] = "{}"
                 except ContextDefinition.DoesNotExist:
                     del data["cluster"]["%s_id" % context_code]
-                    data["cluster"]["%s_json" % context_code] = json.dumps({})
+                    data["cluster"]["%s_json" % context_code] = "{}"
 
     return render(
         request,
