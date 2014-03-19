@@ -1,8 +1,7 @@
 import ConfigParser
 import crypt
 from ConfigParser import NoOptionError
-from django.template.context import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.conf import settings
 from cvmo.core.utils.views import msg_error, uncache_response
@@ -15,7 +14,7 @@ def csc_login(request):
         return redirect("dashboard")
 
     return uncache_response(
-        render_to_response("user/login_csc.html", {}, RequestContext(request))
+        render(request, "user/login_csc.html")
     )
 
 

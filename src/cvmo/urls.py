@@ -44,3 +44,11 @@ urlpatterns += patterns(
     "",
     url(r"^%s" % URL_PREFIX, include("cvmo.core.urls")),
 )
+
+#
+# Error handlers
+#
+
+handler400 = "cvmo.core.views.handle_error_400"
+handler404 = "cvmo.core.views.handle_error_404"
+handler500 = "cvmo.core.views.handle_error_500"

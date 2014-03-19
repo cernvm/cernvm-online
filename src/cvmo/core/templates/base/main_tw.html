@@ -1,6 +1,5 @@
 {% load static %}
 {% load url from future %}
-{% load bootstrap %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -91,33 +90,7 @@
             </div>
         </div>
         <div id="main" class="container" style="width:960px!important">
-            <div clas="row">
-                <div class="col-xs-3">{% block sidebar %}{% endblock %}</div>
-                <div class="col-xs-9">
-                    <div id="messages">
-                        {% if msg_error %}<div class="alert alert-error">{{ msg_error }}</div>{% endif %}
-                        {% if msg_info %}<div class="alert alert-info">{{ msg_info }}</div>{% endif %}
-                        {% if msg_warning %}<div class="alert alert-warning">{{ msg_warning }}</div>{% endif %}
-                        {% if msg_confirm %}<div class="alert alert-success">{{ msg_confirm }}</div>{% endif %}
-                        {% for message in messages %}
-                            <div class="alert {{message.tags|mttb}}">
-                                {{message}}
-                            </div>
-                        {% endfor %}
-                    </div>
-
-                    {% if body_header %}
-                        {% block body_header %}{% endblock %}
-                        <div class="clearfix"></div>
-                    {% endif %}
-                    {% block body %}{% endblock %}
-                    <div class="clearfix"></div>
-                    {% if body_header %}
-                        {% block body_footer %}{% endblock %}
-                        <div class="clearfix"></div>
-                    {% endif %}
-                </div>
-            </div>
+            <div clas="row">{% block main %}{% endblock %}</div>
         </div>
 
         <div id="footer" class="container" style="width:960px!important">

@@ -4,7 +4,6 @@ from cvmo import settings
 from cvmo.context.models import ContextDefinition
 from cvmo.core.utils.views import is_abstract_creation_enabled
 
-
 def version(request):
     """
     Adds the version number in the template.

@@ -2,8 +2,7 @@ import re
 import smtplib
 import logging
 import urllib
-from django.template.context import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -47,8 +46,8 @@ def login(request):
     _push_to_context("redirect_msg_warning", "msg_warning", context, request)
     _push_to_context("redirect_msg_confirm", "msg_confirm", context, request)
 
-    return render_to_response(
-        "user/login.html", context, RequestContext(request)
+    return render(
+        request, "user/login.html", context
     )
 
 
@@ -102,8 +101,8 @@ def register(request):
     # Add Google Recaptcha Key
     context["recaptcha_public_key"] = settings.GOOGLE_RECAPTCHA["public_key"]
 
-    return render_to_response(
-        "user/register.html", context, RequestContext(request)
+    return render(
+        request, "user/register.html", context
     )
 
 
@@ -232,8 +231,8 @@ def profile_edit(request):
 
     context["profile_edit"] = True
 
-    return render_to_response(
-        "user/profile.html", context, RequestContext(request)
+    return render(
+        request, "user/profile.html", context
     )
 
 
@@ -351,9 +350,8 @@ def bulk_add(request):
 
     # Display bulk add screen
     mem_data = get_memory(request, "data", "")
-    return render_to_response(
-        "user/users_bulkadd.html", {"data": mem_data},
-        RequestContext(request)
+    return render(
+        request, "user/users_bulkadd.html", {"data": mem_data}
     )
 
 

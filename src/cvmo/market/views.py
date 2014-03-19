@@ -1,16 +1,16 @@
-from django.http import HttpResponse
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+import json
+import logging
+from PIL import Image
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from django.core.exceptions import SuspiciousOperation
 from cvmo.market.models import MarketplaceGroup, MarketplaceContextVotes, \
     MarketplaceContextEntry
 from cvmo.context.models import ContextDefinition
-from cvmo.core.utils.views import render_error, render_confirm, \
-    uncache_response, msg_info, set_memory, msg_error, msg_confirm, \
-    redirect_memory, get_memory
-from PIL import Image
-import json
+from cvmo.core.utils.views import render_confirm, uncache_response, msg_info, \
+    set_memory, msg_error, msg_confirm, redirect_memory, get_memory
 
 
 def list(request):
@@ -18,27 +18,34 @@ def list(request):
 
     groups = MarketplaceGroup.objects.all()
 
-    return render_to_response('market/marketplace_list.html', {
-        'templates': templates,
-        'groups': groups
-    }, RequestContext(request))
+    return render(
+        request,
+        "market/marketplace_list.html",
+        {
+            "templates": templates,
+            "groups": groups
+        }
+    )
 
 
 def vote_ajax(request):
+    l = logging.getLogger("cvmo")
 
     # Validate request
-    if not 'id' in request.GET:
-        return render_error(request, 400)
-    if not 'vote' in request.GET:
-        return render_error(request, 400)
+    if not "id" in request.GET:
+        l.log(logging.ERROR, "`id` is required")
+        raise SuspiciousOperation("`id` is required")
+    if not "vote" in request.GET:
+        l.log(logging.ERROR, "`vote` is required")
+        raise SuspiciousOperation("`vote` is required")
 
     # Handle vote
-    fID = request.GET['id']
-    fVote = request.GET['vote']
+    fID = request.GET["id"]
+    fVote = request.GET["vote"]
 
     # Check vote
     rank = 0
-    if fVote == 'up':
+    if fVote == "up":
         rank = 1
     else:
         rank = 0
@@ -46,14 +53,15 @@ def vote_ajax(request):
     # Fetch / create per-user, per-entry record
     try:
         o = MarketplaceContextVotes.objects.get(
-            user=request.user, entry__id=fID)
+            user=request.user, entry__id=fID
+        )
     except:
         o = MarketplaceContextVotes()
         o.user = request.user
         try:
             o.entry = MarketplaceContextEntry.objects.get(id=fID)
         except:
-            return render_error(request, 404)
+            raise Http404()
 
     # Update vote
     o.vote = rank
@@ -65,26 +73,30 @@ def vote_ajax(request):
     # Return the current entry
     return uncache_response(
         HttpResponse(
-            json.dumps({'id': fID, 'rank': rank}),
+            json.dumps({"id": fID, "rank": rank}),
             content_type="text/plain"
         )
     )
 
 
 def list_ajax(request):
+    l = logging.getLogger("cvmo")
 
     # Validate request
-    if not 'group' in request.GET:
-        return render_error(request, 400)
-    if not 'query' in request.GET:
-        return render_error(request, 400)
-    if not 'offset' in request.GET:
-        return render_error(request, 400)
+    if not "group" in request.GET:
+        l.log(logging.ERROR, "`group` is required")
+        raise SuspiciousOperation("`group` is required")
+    if not "query" in request.GET:
+        l.log(logging.ERROR, "`query` is required")
+        raise SuspiciousOperation("`query` is required")
+    if not "offset" in request.GET:
+        l.log(logging.ERROR, "`offset` is required")
+        raise SuspiciousOperation("`offset` is required")
 
     # Fetch some helpful variables from the request
-    fGroup = request.GET['group']
-    fQuery = request.GET['query']
-    fOffset = int(request.GET['offset'])
+    fGroup = request.GET["group"]
+    fQuery = request.GET["query"]
+    fOffset = int(request.GET["offset"])
 
     # Extract tags from the string and build the more
     # complex query
@@ -127,22 +139,22 @@ def list_ajax(request):
     items_per_batch = 20
     items = []
     db_items = MarketplaceContextEntry.objects.filter(
-        *args).order_by('-rank')[fOffset:]
+        *args).order_by("-rank")[fOffset:]
     num_items = len(db_items)
     cur_item = 0
 
     for i in db_items:
         items.append({
-            'id': i.id,
-            'label': i.context.name,
-            'icon': i.icon.url,
-            'details': i.details,
-            'description': i.context.description,
-            'uid': i.context.id,
-            'owner': i.context.owner.username,
-            'tags': i.tags[1:-1].split("|"),
-            'rank': i.rank,
-            'encrypted': not not i.context.key
+            "id": i.id,
+            "label": i.context.name,
+            "icon": i.icon.url,
+            "details": i.details,
+            "description": i.context.description,
+            "uid": i.context.id,
+            "owner": i.context.owner.username,
+            "tags": i.tags[1:-1].split("|"),
+            "rank": i.rank,
+            "encrypted": not not i.context.key
         })
         cur_item += 1
         if cur_item >= items_per_batch:
@@ -155,9 +167,9 @@ def list_ajax(request):
 
     # Build response
     data = {
-        'offset': fOffset + items_per_batch,
-        'more': has_more,
-        'items': items
+        "offset": fOffset + items_per_batch,
+        "more": has_more,
+        "items": items
     }
 
     # Return filtered responses
@@ -189,25 +201,25 @@ def publish(request, context_id):
     # Check if this entry is already there
     if MarketplaceContextEntry.objects.filter(context=context).exists():
         msg_info(request, "This context already exists in the marketplace!")
-        return redirect('dashboard')
+        return redirect("dashboard")
 
     # Render values
     return uncache_response(
-        render_to_response(
-            'market/marketplace_publish_ctx.html',
+        render(
+            request,
+            "market/marketplace_publish_ctx.html",
             {
-                'groups': MarketplaceGroup.objects.all(),
-                'context': context,
-                'icons': get_icons(request.user),
+                "groups": MarketplaceGroup.objects.all(),
+                "context": context,
+                "icons": get_icons(request.user),
 
                 # For redirection with memory
-                'values': {
-                    'group': get_memory(request, 'group'),
-                    'instructions': get_memory(request, 'instructions'),
-                    'tags': get_memory(request, 'tags')
+                "values": {
+                    "group": get_memory(request, "group"),
+                    "instructions": get_memory(request, "instructions"),
+                    "tags": get_memory(request, "tags")
                 }
-            },
-            RequestContext(request)
+            }
         )
     )
 
@@ -215,16 +227,16 @@ def publish(request, context_id):
 def publish_action(request):
 
     # Fetch entries
-    fContext = request.POST['context']
-    fInstructions = request.POST['instructions']
-    fTags = request.POST['tags']
-    fGroup = request.POST['group']
+    fContext = request.POST["context"]
+    fInstructions = request.POST["instructions"]
+    fTags = request.POST["tags"]
+    fGroup = request.POST["group"]
 
     # Validate entries
     if not fInstructions:
         msg_error(request, "Please enter some instructions!")
         return redirect_memory(
-            reverse("market_publish", kwargs={'context_id': fContext}),
+            reverse("market_publish", kwargs={"context_id": fContext}),
             request
         )
 
@@ -236,7 +248,7 @@ def publish_action(request):
         if t != "":
             if tagString != "":
                 tagString += "|"
-            tagString += t.replace(' ', "_").lower()
+            tagString += t.replace(" ", "_").lower()
     tagString = "|" + tagString + "|"
 
     # Prepare entry
@@ -247,36 +259,36 @@ def publish_action(request):
     e.group = MarketplaceGroup.objects.get(id=fGroup)
 
     # Upload image
-    if 'icon' in request.FILES:
-        icon = request.FILES['icon']
+    if "icon" in request.FILES:
+        icon = request.FILES["icon"]
         n = icon.name.lower()
         if not (n.endswith(".jpg") or n.endswith(".jpeg")
                 or n.endswith(".png") or n.endswith(".gif")
                 or n.endswith(".bmp")):
             msg_error(request, "The uploaded icon file is not an image!")
             return redirect_memory(
-                reverse("market_publish", kwargs={'context_id': fContext}),
+                reverse("market_publish", kwargs={"context_id": fContext}),
                 request
             )
 
-        e.icon = request.FILES['icon']
+        e.icon = request.FILES["icon"]
 
     # Or if we already have a previous icon, reuse that
-    elif 'prev_icon' in request.POST:
-        req_icon = request.POST['prev_icon']
+    elif "prev_icon" in request.POST:
+        req_icon = request.POST["prev_icon"]
         if user_owns_icon(req_icon, request.user):
             e.icon = req_icon
         else:
             msg_error(request, "You do not have permission to use this icon!")
             return redirect_memory(
-                reverse("market_publish", kwargs={'context_id': fContext}),
+                reverse("market_publish", kwargs={"context_id": fContext}),
                 request
             )
 
     else:
         msg_error(request, "No icon was selected!")
         return redirect_memory(
-            reverse("market_publish", kwargs={'context_id': fContext}),
+            reverse("market_publish", kwargs={"context_id": fContext}),
             request
         )
 
@@ -288,7 +300,7 @@ def publish_action(request):
     e.context.save()
 
     # Now rescale the uploaded icon within 64x64 pixels
-    if 'icon' in request.FILES:
+    if "icon" in request.FILES:
         if ((e.icon.width > 84) or (e.icon.height > 84)):
             im = Image.open(e.icon.path)
             im.thumbnail((84, 84), Image.ANTIALIAS)
@@ -296,7 +308,7 @@ def publish_action(request):
 
     # Go to dashboard
     msg_confirm(request, "Context published successfully!")
-    return redirect('dashboard')
+    return redirect("dashboard")
 
 
 def revoke(request, context_id):
@@ -316,7 +328,7 @@ def revoke(request, context_id):
         return redirect("dashboard")
 
     # Is it confirmed?
-    if ('confirm' in request.GET) and (request.GET['confirm'] == 'yes'):
+    if ("confirm" in request.GET) and (request.GET["confirm"] == "yes"):
 
         # Delete icon if we have the last reference
         if get_icon_usage(entry.icon) == 1:
@@ -334,16 +346,16 @@ def revoke(request, context_id):
 
         # Go to dashboard
         msg_confirm(request, "Context removed successfully!")
-        return redirect('dashboard')
+        return redirect("dashboard")
 
     else:
         # Show the confirmation screen
         return render_confirm(
-            request, 'Revoke context',
-            'Are you sure you want to remove this entry from the marketplace?',
-            reverse('market_revoke', kwargs={'context_id': context_id})
-            + '?confirm=yes',
-            reverse('dashboard')
+            request, "Revoke context",
+            "Are you sure you want to remove this entry from the marketplace?",
+            reverse("market_revoke", kwargs={"context_id": context_id})
+            + "?confirm=yes",
+            reverse("dashboard")
         )
 
 
@@ -363,7 +375,7 @@ def get_icons(user):
     # Process contexts
     defs = MarketplaceContextEntry.objects.filter(context__owner=user)
     for e in defs:
-        ans.append({'url': e.icon.url, 'name': e.icon.name})
+        ans.append({"url": e.icon.url, "name": e.icon.name})
 
     # Return collected icons
     return ans

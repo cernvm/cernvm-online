@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.db.models import Q
 from cvmo import settings
 from cvmo.vm.models import Machines
@@ -33,10 +32,9 @@ def dashboard(request):
     push_to_context("redirect_msg_confirm", "msg_confirm", context, request)
 
     return uncache_response(
-        render_to_response(
-            "dashboard/dashboard.html", context, RequestContext(request)
-        )
+        render(request, "dashboard/dashboard.html", context)
     )
+
 
 def push_to_context(sessionName, contextName, context, request):
     if sessionName in request.session:

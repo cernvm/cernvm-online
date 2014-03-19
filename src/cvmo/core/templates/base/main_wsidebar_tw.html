@@ -1,30 +1,57 @@
 {% extends "base/main_tw.html" %}
 {% load static %}
+{% load bootstrap %}
 {% load url from future %}
 
-{% block sidebar %}
-    <div class="block block-views block-odd region-odd clearfix">
-        <h3 class="title">Menu</h3>
-        <div class="content sidenav">
-            <ul>
-                <li><a href="{% url "dashboard" %}">Dashboard</a></li>
-                <li><a href="{% url "context_new" %}">Create Context</a></li>
-                <li><a href="{% url "vm_pair_begin" %}">Pair an instance</a></li>
-                <li><a href="{% url "market_list" %}">Marketplace</a></li>
-                <li><a href="{% url "cluster_new" %}">Create Cluster</a></li>
-            </ul>
+{% block main %}
+    <div class="col-xs-3">
+        <div class="block block-views block-odd region-odd clearfix">
+            <h3 class="title">Menu</h3>
+            <div class="content sidenav">
+                <ul>
+                    <li><a href="{% url "dashboard" %}">Dashboard</a></li>
+                    <li><a href="{% url "context_new" %}">Create Context</a></li>
+                    <li><a href="{% url "vm_pair_begin" %}">Pair an instance</a></li>
+                    <li><a href="{% url "market_list" %}">Marketplace</a></li>
+                    <li><a href="{% url "cluster_new" %}">Create Cluster</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="block block-views block-odd region-odd clearfix">
+            <h3 class="title">Recent context definition</h3>
+            <div class="content sidenav">
+                <ul>
+                    {% for item in last_context_definitions %}
+                        <li><a href="{% url "context_view" context_id=item.id %}"><img src="{% static "base/img/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
+                    {% empty %}
+                        <li class="empty">No context definitions</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-    <div class="block block-views block-odd region-odd clearfix">
-        <h3 class="title">Recent context definition</h3>
-        <div class="content sidenav">
-            <ul>
-                {% for item in last_context_definitions %}
-                    <li><a href="{% url "context_view" context_id=item.id %}"><img src="{% static "base/img/brick.png" %}" align="absmiddle" /> {{ item.name }}</a></li>
-                {% empty %}
-                    <li class="empty">No context definitions</li>
-                {% endfor %}
-            </ul>
+    <div class="col-xs-9">
+        <div id="messages">
+            {% if msg_error %}<div class="alert alert-error">{{ msg_error }}</div>{% endif %}
+            {% if msg_info %}<div class="alert alert-info">{{ msg_info }}</div>{% endif %}
+            {% if msg_warning %}<div class="alert alert-warning">{{ msg_warning }}</div>{% endif %}
+            {% if msg_confirm %}<div class="alert alert-success">{{ msg_confirm }}</div>{% endif %}
+            {% for message in messages %}
+                <div class="alert {{message.tags|mttb}}">
+                    {{message}}
+                </div>
+            {% endfor %}
         </div>
+
+        {% if body_header %}
+            {% block body_header %}{% endblock %}
+            <div class="clearfix"></div>
+        {% endif %}
+        {% block body %}{% endblock %}
+        <div class="clearfix"></div>
+        {% if body_header %}
+            {% block body_footer %}{% endblock %}
+            <div class="clearfix"></div>
+        {% endif %}
     </div>
 {% endblock %}

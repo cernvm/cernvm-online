@@ -104,9 +104,11 @@ div#main legend {
     font-variant: normal;
     font-weight: lighter;
     letter-spacing: normal;
-    line-height: 1.4em;
-    margin-bottom: 5px;
-    margin-top: 5px;
+    /*
+        line-height: 1.4em;
+        margin-bottom: 5px;
+        margin-top: 5px;
+    */
 }
 div#main h1,
 div#main h2,
@@ -115,14 +117,16 @@ div#main legend {
     font-family: "Open Sans","Lato", Helvetica, Arial, sans-serif;
 }
 div#main h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    line-height: 140%;
-    margin: 0;
+    /*
+        font-size: 24px;
+        margin-bottom: 20px;
+        line-height: 140%;
+        margin: 0;
+    */
     color: #4e422c;
 }
 div#main h2 {
-    font-size: 20px;
+    /*font-size: 20px;*/
     color: #cd891e;
 }
 div#main h2 a,
@@ -132,7 +136,7 @@ div#main h2 a:hover {
 }
 div#main h3,
 div#main legend {
-    font-size: 18px;
+    /*font-size: 18px;*/
     color: #da9a3c;
 }
 div#main h4,
@@ -140,10 +144,10 @@ div#main h5 {
     font-family: Tahoma, Verdana, Arial;
 }
 div#main h4 {
-    font-size: 16px;
+    /*font-size: 16px;*/
 }
 div#main h5 {
-    font-size: 12px;
+    /*font-size: 12px;*/
 }
 div#main div.page-header {
     /*border-color: #4e422c;*/
@@ -151,7 +155,7 @@ div#main div.page-header {
     margin-top: 5px;
 }
 div#main div.page-header h1 {
-    font-size: 30px;
+    /*font-size: 30px;*/
 }
 div#main legend {
     font-weight: lighter;
@@ -180,6 +184,13 @@ div#main div#messages div.alert {
  * Main section: Sidebar
  ******************************************************************************/
 /* TODO */
+
+/******************************************************************************
+ * Main section: Error pages
+ ******************************************************************************/
+div.jumbotron#error {
+    margin: 0;
+}
 
 /******************************************************************************
  * Footer section
