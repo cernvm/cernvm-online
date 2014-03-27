@@ -11,10 +11,10 @@ jQuery(
     function()
     {
         /* Tooltips */
-        jQuery("*[data-toggle=\"tooltip\"").tooltip();
+        jQuery("*[data-toggle=\"tooltip\"]").tooltip();
 
         /* Remote modals */
-        jQuery("*[data-toggle=\"remote-modal\"").remoteModal();
+        jQuery("*[data-toggle=\"remote-modal\"]").remoteModal();
 
         /* WebAPI */
         jQuery("a.webapi-deploy-handle").click(
