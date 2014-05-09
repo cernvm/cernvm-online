@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="page-header">
-                    <h1>Define a new Virtual Cluster</h1>
+                    <h1>Define a Virtual Cluster</h1>
                 </div>
                 <form class="form-horizontal" role="form" method="POST" action="{% url "cluster_save" %}">
                     {% csrf_token %}
@@ -68,7 +68,7 @@
                             </div>
                         </div>
                         <div class="form-group required">
-                            <label for="ec2_aws_access_key_id" class="col-xs-4 control-label">AWS Access key</label>
+                            <label for="ec2_aws_access_key_id" class="col-xs-4 control-label">Access Key</label>
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" id="ec2_aws_access_key_id" name="ec2[aws_access_key_id]" value="{{ec2.aws_access_key_id}}">
                             </div>
@@ -79,7 +79,7 @@
                             </div>
                         </div>
                         <div class="form-group required">
-                            <label for="ec2_aws_secret_access_key" class="col-xs-4 control-label">AWS secret key</label>
+                            <label for="ec2_aws_secret_access_key" class="col-xs-4 control-label">Secret Key</label>
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" id="ec2_aws_secret_access_key" name="ec2[aws_secret_access_key]" value="{{ec2.aws_secret_access_key}}">
                             </div>
@@ -181,11 +181,11 @@
                         <div class="form-group">
                             <label for="quota_min_vms" class="col-xs-4 control-label">Minimum number of workers</label>
                             <div class="col-xs-2">
-                                <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="{{quota.min_vms|default:2}}">
+                                <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="{{quota.min_vms|default:0}}">
                             </div>
                             <label for="quota_max_vms" class="col-xs-4 control-label">Maximum number of workers</label>
                             <div class="col-xs-2">
-                                <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="{{quota.max_vms}}">
+                                <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="{{quota.max_vms|default:2}}">
                             </div>
                         </div>
                     </fieldset>
