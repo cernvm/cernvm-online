@@ -167,8 +167,9 @@
                         <div class="form-group">
                             <label for="elastiq_batch_plugin" class="col-xs-4 control-label">Workload management system</label>
                             <div class="col-xs-4">
-                                <select class="form-control" id="elastiq_batch_plugin" name="elastiq[batch_plugin]">
+                                <select class="form-control selectpicker" id="elastiq_batch_plugin" name="elastiq[batch_plugin]">
                                     <option value="htcondor" {{elastiq.batch_plugin|sel:"htcondor"}}>HTCondor</option>
+<!--                                     <option value="workqueue" {{elastiq.batch_plugin|sel:"workqueue"}}>WorkQueue</option> -->
                                 </select>
                             </div>
                         </div>

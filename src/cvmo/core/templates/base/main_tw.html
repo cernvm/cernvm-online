@@ -13,6 +13,10 @@
         <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-3.1.1.min.css" %}">
         <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-theme-3.1.1.min.css" %}">
 
+        <!-- Bootstrap-select -->
+        <!-- https://github.com/silviomoreto/bootstrap-select -->
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-select.min.css" %}">        
+
         <!-- CernVM Online -->
         <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/cvmo-tw.css" %}">
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans:400,300,600" rel="stylesheet" type="text/css">
@@ -113,10 +117,16 @@
         <script type="text/javascript" src="{% static "base/js/libs/jquery-1.11.0.min.js" %}"></script>
         <script type="text/javascript" src="{% static "base/js/libs/bootstrap-3.1.1.min.js" %}"></script>
 
-        <!-- CernVM Combobox -->
+        <!-- Bootstrap-select script -->
+        <!-- https://github.com/silviomoreto/bootstrap-select -->
+        <script type="text/javascript" src="{% static "base/js/libs/bootstrap-select.min.js" %}"></script>
+
+        <!-- CernVM Combobox and Bootstrap-select -->
         <script type="text/javascript">
 
         $(document).ready( function() {
+
+          $('select.selectpicker').selectpicker();
 
           $('.input-group.cvm-combobox').each( function() {
 
