@@ -60,10 +60,14 @@ function main
         execute_step $step
         if [ $? -ne 0 ]; then
             echo_failure
-            echo
-            echo "=== BEGIN LOG ==="
-            cat $LAST_LOG_FILE
-            echo "=== END LOG ==="
+            if [ ! -e "$LAST_LOG_FILE" ] ; then
+                echo "No logfile produced."
+            else
+                echo
+                echo "=== BEGIN LOG ==="
+                cat $LAST_LOG_FILE
+                echo "=== END LOG ==="
+            fi
             echo "All logs: $LOG_FILE"
 
             # Backtrace?

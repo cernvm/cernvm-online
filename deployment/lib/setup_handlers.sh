@@ -165,3 +165,23 @@ function run_apache_undo
     managed_exec service httpd stop # ignore error here
 }
 ################################################################################
+
+################################################################################
+function rsync_to_dest_do
+{
+    # This function is used for very quick sync to the destination directory.
+    # Absolutely not meant for production: just for quick development!
+
+    local Dest="${BASE_DIR}/lib/python2.6/site-packages/cvmo"
+    local Source="${SCRIPT_PATH}/../src/cvmo"
+    Source=$( cd "$Source" ; pwd )
+
+    managed_exec rsync -av --delete --exclude '**/.git' \
+        "$Source"/ "$Dest"/
+
+}
+function rsync_to_dest_undo {
+    # Noop.
+    false
+}
+################################################################################
