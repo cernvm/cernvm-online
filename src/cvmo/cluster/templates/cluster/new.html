@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="page-header">
-                    <h1>New cluster definition</h1>
+                    <h1>Define a new Virtual Cluster</h1>
                 </div>
                 <form class="form-horizontal" role="form" method="POST" action="{% url "cluster_save" %}">
                     {% csrf_token %}
@@ -55,8 +55,8 @@
                             </div>
                             <!-- Icon with tooltip -->
                             <div class="col-xs-2">
-                                <div id="ec2_api_url_tooltip" class="tooltip-container">
-                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                <div class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign">HTTP or HTTPS URL used to access your cloud's EC2 API: you can type your own or select one from a list of known clouds.</span>
                                 </div>
                             </div>
                         </div>
@@ -74,78 +74,96 @@
                             </div>
                             <div class="col-xs-2">
                                 <div class="secure-data-icon tooltip-container">
-                                    <span class="glyphicon glyphicon-lock"></span>
+                                    <span class="glyphicon glyphicon-lock">Your sensitive data will be stored  encrypted in our database.</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group  required">
+                        <div class="form-group required">
                             <label for="ec2_aws_secret_access_key" class="col-xs-4 control-label">AWS secret key</label>
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" id="ec2_aws_secret_access_key" name="ec2[aws_secret_access_key]" value="{{ec2.aws_secret_access_key}}">
                             </div>
                             <div class="col-xs-2">
                                 <div class="secure-data-icon tooltip-container">
-                                    <span class="glyphicon glyphicon-lock"></span>
+                                    <span class="glyphicon glyphicon-lock">Your sensitive data will be stored  encrypted in our database.</span>
                                 </div>
                             </div>
                         </div>
                     </fieldset>
 
                     <fieldset id="ec2_instantiation">
-                        <legend>Virtual machines profile</legend>
+                        <legend>Configuration of the CernVM Virtual Machines</legend>
                         <div class="form-group required">
-                            <label for="ec2_image_id" class="col-xs-4 control-label">Worker nodes' image</label>
+                            <label for="ec2_image_id" class="col-xs-4 control-label">CernVM image ID</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_image_id" name="ec2[image_id]" placeholder="e.g.: ami-123456" value="{{ec2.image_id}}">
+                                <input type="text" class="form-control" id="ec2_image_id" name="ec2[image_id]" placeholder="ami-01234567" value="{{ec2.image_id}}">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign">Unique ID of the CernVM image on your cloud.</span>
+                                </div>
                             </div>
                         </div>
+
                         <div class="form-group required">
-                            <label for="ec2_flavour" class="col-xs-4 control-label">Worker nodes' flavor</label>
+                            <label for="ec2_flavour" class="col-xs-4 control-label">Flavour</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_flavour" name="ec2[flavour]" placeholder="e.g.: m1.medium" value="{{ec2.flavour}}">
+                                <input type="text" class="form-control" id="ec2_flavour" name="ec2[flavour]" placeholder="m1.large" value="{{ec2.flavour}}">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign">Flavours represent the assigned resources (CPU, RAM, disk): their definition might differ from cloud to cloud.</span>
+                                </div>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="ec2_key_name" class="col-xs-4 control-label">SSH key name</label>
                             <div class="col-xs-6">
                                 <input type="text" class="form-control" id="ec2_key_name" name="ec2[key_name]" value="{{ec2.key_name}}">
                             </div>
+                            <div class="col-xs-2">
+                                <div class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign">If you have registered a SSH public key in your cloud, type its name here: you will be able to connect as root via SSH without password using the corresponding private key.</span>
+                                </div>
+                            </div>
                         </div>
 
                     <fieldset id="elastiq">
-                        <legend>elastiq parameters</legend>
+                        <legend>Automatic elasticity configuration</legend>
+                        <div class="alert alert-info">The CernVM Virtual Cluster will shrink and expand automatically based on the running jobs.</div>
                         <div class="form-group">
-                            <label for="elastiq_check_queue_every_s" class="col-xs-4 control-label">Queue checking interval (in sec.)</label>
+                            <label for="elastiq_check_queue_every_s" class="col-xs-4 control-label">Check queue every (seconds)</label>
                             <div class="col-xs-2">
                                 <input type="text" class="form-control" id="elastiq_check_queue_every_s" name="elastiq[check_queue_every_s]" value="{{elastiq.check_queue_every_s|default:15}}">
                             </div>
-                            <label for="elastiq_check_vms_every_s" class="col-xs-4 control-label">VM checking interval (in sec.)</label>
+                            <label for="elastiq_check_vms_every_s" class="col-xs-4 control-label">Check VMs every (seconds)</label>
                             <div class="col-xs-2">
                                 <input type="text" class="form-control" id="elastiq_check_vms_every_s" name="elastiq[check_vms_every_s]" value="{{elastiq.check_vms_every_s|default:45}}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="elastiq_waiting_jobs_time_s" class="col-xs-4 control-label">Min. job wait time (in sec.)</label>
+                            <label for="elastiq_waiting_jobs_time_s" class="col-xs-4 control-label">Min job waiting time (seconds)</label>
                             <div class="col-xs-2">
                                 <input type="text" class="form-control" id="elastiq_waiting_jobs_time_s" name="elastiq[waiting_jobs_time_s]" value="{{elastiq.waiting_jobs_time_s|default:100}}">
                             </div>
-                            <label for="elastiq_idle_for_time_s" class="col-xs-4 control-label">Idle time bef. kill (in sec.)</label>
+                            <label for="elastiq_idle_for_time_s" class="col-xs-4 control-label">Kill inactive VMs after (seconds)</label>
                             <div class="col-xs-2">
                                 <input type="text" class="form-control" id="elastiq_idle_for_time_s" name="elastiq[idle_for_time_s]" value="{{elastiq.idle_for_time_s|default:3600}}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="elastiq_n_jobs_per_vm" class="col-xs-4 control-label">Amt. of jobs per VM</label>
+                            <label for="elastiq_n_jobs_per_vm" class="col-xs-4 control-label">Number of jobs per VM</label>
                             <div class="col-xs-2">
                                 <input type="text" class="form-control" id="elastiq_n_jobs_per_vm" name="elastiq[n_jobs_per_vm]" value="{{elastiq.n_jobs_per_vm|default:4}}">
                             </div>
-                            <label for="elastiq_estimated_vm_deploy_time_s" class="col-xs-4 control-label">Estimated VM deployment time (in sec.)</label>
+                            <label for="elastiq_estimated_vm_deploy_time_s" class="col-xs-4 control-label">VM deployment time (seconds)</label>
                             <div class="col-xs-2">
                                 <input type="text" class="form-control" id="elastiq_estimated_vm_deploy_time_s" name="elastiq[estimated_vm_deploy_time_s]" value="{{elastiq.estimated_vm_deploy_time_s|default:600}}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="elastiq_batch_plugin" class="col-xs-4 control-label">Batch system</label>
+                            <label for="elastiq_batch_plugin" class="col-xs-4 control-label">Workload management system</label>
                             <div class="col-xs-4">
                                 <select class="form-control" id="elastiq_batch_plugin" name="elastiq[batch_plugin]">
                                     <option value="htcondor" {{elastiq.batch_plugin|sel:"htcondor"}}>HTCondor</option>
@@ -155,13 +173,13 @@
                     </fieldset>
 
                     <fieldset id="quota">
-                        <legend>Quota configuration</legend>
+                        <legend>Cluster size limits</legend>
                         <div class="form-group">
-                            <label for="quota_min_vms" class="col-xs-4 control-label">Min. workers</label>
+                            <label for="quota_min_vms" class="col-xs-4 control-label">Minimum number of workers</label>
                             <div class="col-xs-2">
                                 <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="{{quota.min_vms|default:2}}">
                             </div>
-                            <label for="quota_max_vms" class="col-xs-4 control-label">Max. workers</label>
+                            <label for="quota_max_vms" class="col-xs-4 control-label">Maximum number of workers</label>
                             <div class="col-xs-2">
                                 <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="{{quota.max_vms}}">
                             </div>
@@ -319,14 +337,15 @@
         jQuery(
             function()
             {
-                jQuery("#ec2_api_url_tooltip span").tooltip({
-                    "title": "HTTP or HTTPS URL used to access your cloud's EC2 API: you can type your own or select one from a list of known clouds.",
-                    "placement": "top"
+                // Create tooltips automatically
+                jQuery('.tooltip-container > span').each(function () {
+                    $(this).tooltip({
+                        title: $(this).text(),
+                        placement: 'top'
+                    });
+                    $(this).text('');
                 });
-                jQuery(".secure-data-icon span").tooltip({
-                    "title": "Your sensitive data will be stored in our database encrypted.",
-                    "placement": "top"
-                });
+
                 jQuery("#cluster_master_context").ContextSelector({
                     remoteURL: "{% url "context_ajax_get_list" %}",
                     infoTmpl: Handlebars.compile(
