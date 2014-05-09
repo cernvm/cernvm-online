@@ -26,7 +26,7 @@ declare -a STEPS=( make_dirs export_source \
                    make_public install_apache \
                    run_apache )
 declare -a QUICK_STEPS=( install_cvmo configure_cvmo make_public run_apache )
-declare -a QUICKER_STEPS=( rsync_to_dest )
+declare -a QUICKER_STEPS=( rsync_to_dest configure_cvmo make_public )
 declare -a STEPS_BACKTRACE=()
 
 # Parse command-line arguments
