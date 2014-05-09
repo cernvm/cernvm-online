@@ -110,7 +110,7 @@ def save(request):
     # Store the context
     context_id = ContextDefinition.generate_new_id()
     cs = ContextStorage.create(
-        context_id, "Cluster '%s' head node" % resp["cluster"]["name"],
+        context_id, "Cluster %s head node" % resp["cluster"]["name"],
         new_ud, master_ctx.root_ssh_key
     )
     cs.save()
