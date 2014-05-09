@@ -131,7 +131,9 @@
 
                     <fieldset id="elastiq">
                         <legend>Automatic elasticity configuration</legend>
+
                         <div class="alert alert-info">The CernVM Virtual Cluster will shrink and expand automatically based on the running jobs.</div>
+
                         <div class="form-group">
                             <label for="elastiq_check_queue_every_s" class="col-xs-4 control-label">Check queue every (seconds)</label>
                             <div class="col-xs-2">
@@ -174,6 +176,7 @@
 
                     <fieldset id="quota">
                         <legend>Cluster size limits</legend>
+
                         <div class="form-group">
                             <label for="quota_min_vms" class="col-xs-4 control-label">Minimum number of workers</label>
                             <div class="col-xs-2">
@@ -187,7 +190,7 @@
                     </fieldset>
 
                     <fieldset id="cluster_master_context">
-                        <legend>Master node context</legend>
+                        <legend>Context for the Head Node</legend>
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <div class="panel panel-default">
@@ -204,7 +207,7 @@
                     </fieldset>
 
                     <fieldset id="cluster_worker_context">
-                        <legend>Worker nodes' context</legend>
+                        <legend>Context for the Worker Nodes</legend>
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <div class="panel panel-default">
@@ -273,7 +276,7 @@
                     -->
 
                     <div class="form-group well">
-                        <button type="submit" class="btn btn-primary">Create cluster</button>
+                        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-save"></span> Save this Cluster Definition</button>
                     </div>
 
                     <input type="hidden" name="cluster[id]" id="cluster_id" value="{{cluster.id}}">
