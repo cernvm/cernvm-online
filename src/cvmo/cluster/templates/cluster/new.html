@@ -34,13 +34,33 @@
                     </div> -->
 
                     <fieldset id="ec2_api">
-                        <legend>EC2 API</legend>
+                        <legend>EC2 credentials for your cloud</legend>
+
                         <div class="form-group required">
-                            <label for="ec2_api_url" class="col-xs-4 control-label">API URL</label>
+                            <label for="ec2_api_url" class="col-xs-4 control-label">Access URL</label>
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" id="ec2_api_url" name="ec2[api_url]" placeholder="https://dummy.ec2.server/ec2/" value="{{ec2.api_url}}">
+                                <!-- the cvm-combobox class activates the combobox behavior -->
+                                <div class="input-group cvm-combobox">
+                                    <input type="text" name="ec2[api_url]" id="ec2_api_url" class="form-control" placeholder="https://dummy.ec2.server/ec2/" value="{{ec2.api_url}}">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                          <li class="dropdown-header">Known clouds</li>
+                                          <!-- <li class="divider"></li> -->
+                                          <li><a href="#" data-combo-value="http://openstack.cern.ch:8773/services/Cloud">CERN OpenStack</a></li>
+                                          <li><a href="#" data-combo-value="https://one-master.to.infn.it/ec2api/">INFN Torino OpenNebula</a></li>
+                                        </ul>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Icon with tooltip -->
+                            <div class="col-xs-2">
+                                <div id="ec2_api_url_tooltip" class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </div>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="ec2_api_version" class="col-xs-4 control-label">API Version</label>
                             <div class="col-xs-3">
@@ -53,7 +73,7 @@
                                 <input type="text" class="form-control" id="ec2_aws_access_key_id" name="ec2[aws_access_key_id]" value="{{ec2.aws_access_key_id}}">
                             </div>
                             <div class="col-xs-2">
-                                <div class="secure-data-icon">
+                                <div class="secure-data-icon tooltip-container">
                                     <span class="glyphicon glyphicon-lock"></span>
                                 </div>
                             </div>
@@ -64,7 +84,7 @@
                                 <input type="text" class="form-control" id="ec2_aws_secret_access_key" name="ec2[aws_secret_access_key]" value="{{ec2.aws_secret_access_key}}">
                             </div>
                             <div class="col-xs-2">
-                                <div class="secure-data-icon">
+                                <div class="secure-data-icon tooltip-container">
                                     <span class="glyphicon glyphicon-lock"></span>
                                 </div>
                             </div>
@@ -247,9 +267,11 @@
 {% block styles %}
     <link type="text/css" rel="stylesheet" media="all" href="{% static "cluster/css/libs/typeahead.js-bootstrap.css" %}" />
     <style>
+        div.tooltip-container {
+            line-height: 34px;
+        }
         div.secure-data-icon {
             color: green;
-            line-height: 34px;
         }
         .context-info dl.dl-horizontal {
             margin: 0;
@@ -297,6 +319,10 @@
         jQuery(
             function()
             {
+                jQuery("#ec2_api_url_tooltip span").tooltip({
+                    "title": "HTTP or HTTPS URL used to access your cloud's EC2 API: you can type your own or select one from a list of known clouds.",
+                    "placement": "top"
+                });
                 jQuery(".secure-data-icon span").tooltip({
                     "title": "Your sensitive data will be stored in our database encrypted.",
                     "placement": "top"

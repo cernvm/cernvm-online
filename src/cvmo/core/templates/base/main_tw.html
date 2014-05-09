@@ -113,6 +113,37 @@
         <script type="text/javascript" src="{% static "base/js/libs/jquery-1.11.0.min.js" %}"></script>
         <script type="text/javascript" src="{% static "base/js/libs/bootstrap-3.1.1.min.js" %}"></script>
 
+        <!-- CernVM Combobox -->
+        <script type="text/javascript">
+
+        $(document).ready( function() {
+
+          $('.input-group.cvm-combobox').each( function() {
+
+            input_text = $(this).find('input[type=text]').first();
+            list_vals = $(this).find('ul.dropdown-menu').first();
+
+            if ((list_vals.length != 0) && (input_text.length != 0)) {
+
+              list_vals.find('li > a').each( function() {
+
+                $(this).click( function(evt) {
+                  v = $(this).attr('data-combo-value');
+                  if (v === undefined) v = $(this).text();
+                  $(input_text).val( v );
+                  evt.preventDefault();  // prevent following href
+                });
+
+              });
+
+            }
+
+          });
+
+        });
+
+        </script>
+
         <!-- CernVM Online -->
         <script type="text/javascript" src="{% static "base/js/cvmo-tw.js" %}"></script>
 

@@ -9,6 +9,7 @@ from querystring_parser import parser
 from .forms import ClusterForm, EC2Form, QuotaForm, ElastiqForm
 from .models import ClusterDefinition
 from ..context.models import ContextDefinition, ContextStorage
+from cvmo.core.utils.views import uncache_response
 
 #
 # Views
@@ -82,6 +83,11 @@ def show_deploy(request, cluster_id):
 
 
 def save(request):
+
+    # For debug
+    # post_dict = parser.parse( unicode(request.POST.urlencode()).encode("utf-8") )
+    # return uncache_response(HttpResponse(json.dumps(post_dict, indent=2), content_type="text/plain"))
+
     l = logging.getLogger("cvmo")
 
     # Validate request
