@@ -407,12 +407,17 @@ def ajax_publish_context(request):
 
 
 def ajax_get_list(request):
+
+    """This function returns a JSON-formatted list of contexts matching a
+    certain query string. Match is performed on the context name and it is
+    case-insensitive. Each of the input words of the query string must be
+    contained in the context name."""
+
     query = request.GET.get("query", "").strip()
-    contexts = ContextDefinition.objects.filter(
-        Q(abstract=False)
-        & Q(Q(public=True) | Q(owner=request.user))
-        & Q(name__contains=query)
-    )
+    qfilter = Q(abstract=False) & Q( Q(public=True) | Q(owner=request.user) )
+    for w in query.split():  # todo: use a generator! split() returns an array
+        qfilter = qfilter & Q( name__icontains=w )
+    contexts = ContextDefinition.objects.filter( qfilter );
 
     context_list = []
     for c in contexts:
@@ -426,6 +431,7 @@ def ajax_get_list(request):
 
     return uncache_response(
         HttpResponse(
+            #json.dumps(context_list, indent=2),  # for debug
             json.dumps(context_list),
             content_type="application/json"
         )
