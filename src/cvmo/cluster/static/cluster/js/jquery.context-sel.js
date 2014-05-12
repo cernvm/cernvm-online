@@ -74,9 +74,13 @@
                 }
             );
 
+            // Hide the password field by default and disable it (won't be sent with form)
+            $(this).find(".context-selector-password").hide().find('input').val('').prop('disabled', true);
+
             // Apply initial value
-            if(options.context)
+            if (options.context) {
                 $(this).ContextSelector("select", options.context);
+            }
         },
 
         /*
@@ -91,6 +95,14 @@
             $(".context-info", this).html(options.infoTmpl(context));
             $(".context-value", this).val(context.id);
             $(".context-selector", this).val(context.name);
+
+            if ( context.is_encrypted ) {
+                // TODO: fill with password from Cluster Context definition (when cloning)
+                $(this).find('.context-selector-password').show().find('input').val('password').prop('disabled', false);
+            }
+            else {
+                $(this).find('.context-selector-password').hide().find('input').val('').prop('disabled', true);
+            }
         },
 
         reset: function()

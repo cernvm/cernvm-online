@@ -417,7 +417,7 @@ def ajax_get_list(request):
     qfilter = Q(abstract=False) & Q( Q(public=True) | Q(owner=request.user) )
     for w in query.split():  # todo: use a generator! split() returns an array
         qfilter = qfilter & Q( name__icontains=w )
-    contexts = ContextDefinition.objects.filter( qfilter );
+    contexts = ContextDefinition.objects.filter( qfilter )
 
     context_list = []
     for c in contexts:
@@ -426,13 +426,14 @@ def ajax_get_list(request):
             "name": c.name,
             "description": _cap(c.description, 50),
             "description_not_empty": (c.description != ""),
-            "owner": c.owner.username
+            "owner": c.owner.username,
+            "is_encrypted": c.is_encrypted
         })
 
     return uncache_response(
         HttpResponse(
-            #json.dumps(context_list, indent=2),  # for debug
-            json.dumps(context_list),
+            json.dumps(context_list, indent=2),  # for debug
+            # json.dumps(context_list),
             content_type="application/json"
         )
     )

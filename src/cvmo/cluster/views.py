@@ -329,15 +329,15 @@ def _validate_for_save(request):
  you" % (c.id)
             )
             return _show_cluster_def(request, data)
-        if c.is_encrypted:
-            messages.error(request, "Context '%s' is encrypted!" % (c.name))
-            return _show_cluster_def(request, data)
+        #if c.is_encrypted:
+        #    messages.error(request, "Context '%s' is encrypted!" % (c.name))
+        #    return _show_cluster_def(request, data)
 
     # elastiq section
     elastiq_f = ElastiqForm(data.get("elastiq", {}))
     if not elastiq_f.is_valid():
         for label, msg in elastiq_f.errors_list:
-            messages.error(request, "Elastq %s: %s" % (label, msg))
+            messages.error(request, "elastiq %s: %s" % (label, msg))
         return _show_cluster_def(request, data)
     clean_data["elastiq"] = elastiq_f.clean()
 
