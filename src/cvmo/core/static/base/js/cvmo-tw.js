@@ -9,15 +9,88 @@
 
 (function($) {
 
+  //
   // Safe scope where we are sure that $ is jQuery
+  //
 
-  // Days required to crack a MD5 password with 1000 cores (on a 2014 computer):
-  // those limits are used to calculate the "strength"
+  // Limits. 'score' represents the upper limit (-1 is 'infinite')
   var crack_limits = [
-    { days:   400, verdict: 'weak',        pct:  25, cl: 'danger'  },
-    { days: 20000, verdict: 'medium',      pct:  50, cl: 'warning' },
-    // { days: 20000, verdict: 'strong',      pct:  75, cl: 'info'    },
-    { days: 30000, verdict: 'very strong', pct: 100, cl: 'success' }
+    { score: 26, verdict: 'weak',        pct:  25, cl: 'danger' },
+    { score: 40, verdict: 'medium',      pct:  50, cl: 'warning' },
+    { score: 50, verdict: 'strong',      pct:  75, cl: 'info'    },
+    { score: -1, verdict: 'very strong', pct: 100, cl: 'success' }
+  ];
+
+  // Rules. See: http://jsfiddle.net/jquery4u/mmXV5/
+  var rules = [
+
+    // Email
+    {
+      score: -100,
+      re: new RegExp(/^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i)
+    },
+
+    // Length
+    {
+      func: function(w) {
+        return Math.pow( w.length, 1.4 );
+      }
+    },
+
+    // Lowercase
+    {
+      score: 1,
+      re: new RegExp(/[a-z]/)
+    },
+
+    // Uppercase
+    {
+      score: 3,
+      re: new RegExp(/[A-Z]/)
+    },
+
+    // At least one number
+    {
+      score: 3,
+      re: new RegExp(/\d/)
+    },
+
+    // At least three numbers
+    {
+      score: 5,
+      re: new RegExp(/[0-9]{3}/)
+    },
+
+    // At least one special character
+    {
+      score: 3,
+      re: new RegExp(/[^a-zA-Z0-9]/)
+    },
+
+    // At least two special characters
+    {
+      score: 5,
+      re: new RegExp(/[^a-zA-Z0-9]{3}/)
+    },
+
+    // Upper/lower combo
+    {
+      score: 2,
+      re: new RegExp(/([a-z].*[A-Z])|([A-Z].*[a-z])/)
+    },
+
+    // Letter/number combo
+    {
+      score: 2,
+      re: new RegExp(/([a-zA-Z].*[0-9])|([0-9].*[a-zA-Z])/)
+    },
+
+    // Letter/number/char combo
+    {
+      score: 2,
+      re: new RegExp(/([a-zA-Z0-9].*[^a-zA-Z0-9])|([^a-zA-Z0-9].*[a-zA-Z0-9])/)
+    }
+
   ];
 
   var methods = {
@@ -48,9 +121,10 @@
 
       var score = $(this).password_strength_meter('measure_strength');
 
-      // Find the verdict range
+      // Find the verdict range. Assumes crack_limits is already ordered
+      // by scores.
       for (i=0; i<crack_limits.length; i++) {
-        if ( score <= crack_limits[i].days ) {
+        if ( score <= crack_limits[i].score ) {
           break;
         }
       }
@@ -66,6 +140,11 @@
     // Set progress bar class, value and label
     set_progressbar: function(params, score) {
 
+      if ( $(this).find('span').text() == params.verdict ) {
+        // Nothing to do: don't waste time redrawing
+        return;
+      }
+
       // Remove all classes first
       for (i=0; i<crack_limits.length; i++) {
         $(this).removeClass( 'progress-bar-'+crack_limits[i].cl );
@@ -78,51 +157,38 @@
       $(this).css('width', params.pct+'%');
 
       // Text
-      $(this).find('span').text(params.verdict + "**" + Math.floor(score));
+      $(this).find('span').text(params.verdict);
 
     },
 
-    // Measures the password strength.
-    // Code from: http://jsfiddle.net/fh9FP/12/
+    // Measures the password strength
     measure_strength: function() {
 
       password = $( '#'+$(this).data('password-id') ).val();
 
-      // init character classes
-      var numEx = /\d/;
-      var lcEx = /[a-z]/;
-      var ucEx = /[A-Z]/;
-      var syEx = /\W/;
-      var meterMult = 1;
-      var character_set_size = 0;
-      
-      // loop over each char of the password and check it per regexes above.
-      // weight numbers, upper case and lowercase at .75, 1 and .25 respectively.
-      if (numEx.test(password)) {
-        character_set_size += 10;
-      }
-      if (ucEx.test(password)) {
-        character_set_size += 26;
-      }
-      if (lcEx.test(password)) {
-        character_set_size += 26;
-      }
-      if (syEx.test(password)) {
-        character_set_size += 32;
-      }
+      score = 0;
 
-      // Strenght represents the number of possibilities
-      var strength = Math.pow(character_set_size, password.length);
+      $.each( rules, function(idx, val) {
 
-      // Rate to crack a MD5 pwd (hashes/second) --> it's the fastest
-      // all numbers from slowest computer here http://hashcat.net/oclhashcat-plus/
-      var rateMd5 = 1333000000; 
-      // var rateSHA1 = 433000000;
-      // var rateMd5crypt = 855000;
-      // var rateBcrypt = 604;
+        if ( typeof val.func === 'function' ) {
 
-      // Score: number of days required to crack the MD5 password with 10000 cores
-      var score = strength / rateMd5 / (10000 * 86400);
+          // Arbitrary function: we call it and add the return value to the score
+          score += val.func(password);
+
+        }
+        else if (( val.re !== undefined ) && ( val.score !== undefined )) {
+
+          // Regular expression: if it matches we add the specified score
+          if ( val.re.test(password) ) {
+            score += val.score;
+          }
+
+        }
+        else {
+          $.error( 'Cannot execute validation rule' );
+        }
+
+      });
 
       return score;
 
