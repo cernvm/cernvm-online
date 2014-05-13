@@ -26,12 +26,19 @@
                             <textarea type="text" class="form-control" id="cluster_decription" name="cluster[description]" rows="4" cols="100">{{cluster.description}}</textarea>
                         </div>
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="cluster_name" class="col-xs-4 control-label required">Encryption pass phrase</label>
+                    <div class="form-group">
+                        <label for="cluster_passphrase" class="col-xs-4 control-label required"><!--<span class="glyphicon glyphicon-lock"></span>-->Encryption password</label>
                         <div class="col-xs-6">
-                            <input type="text" class="form-control" id="cluster_passphrase" name="cluster[passphrase]">
+                            <div style="margin-bottom:10px">
+                                <input type="text" class="form-control" id="cluster_passphrase" name="cluster[passphrase]">
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 50%" data-password-id="cluster_passphrase" id="cluster_passphrase_strength">
+                                    <span>(placeholder)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div> -->
+                    </div>
 
                     <fieldset id="ec2_api">
                         <legend>EC2 credentials for your cloud</legend>
@@ -394,6 +401,9 @@
                     jQuery(this).text('');
                 });
 
+                // Password strength meter
+                jQuery('#cluster_passphrase_strength').password_strength_meter();
+
                 jQuery("#cluster_master_context").ContextSelector({
                     remoteURL: "{% url "context_ajax_get_list" %}",
                     infoTmpl: Handlebars.compile(
@@ -427,7 +437,7 @@
                 jQuery('.context-selector-password button').on('click', function() {
 
                     inp = jQuery(this).parent().parent().find('input');
-                    src_name = jQuery(inp).attr('data-copy-src');
+                    src_name = jQuery(inp).data('copy-src');
                     jQuery(inp).val( jQuery('#'+src_name).val() );
 
                 });
