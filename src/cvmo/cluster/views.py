@@ -98,8 +98,18 @@ def save(request):
     if isinstance(resp, HttpResponse):
         return resp
 
+    # For debug: output validated form
+    # return uncache_response(HttpResponse(json.dumps(resp, indent=2), content_type="text/plain"))
+
     #
-    # Preparing the full Master Context
+    # Preparing the full Master Context.
+    #
+    # This is a full new context available in ContextStorage, but with no corresponding
+    # ContextDefinition. This context is the original Master Context plus some sections
+    # appended.
+    #
+    # Note that the full Master Context is generated unencrypted, unless an appropriate
+    # Cluster Password is provided, even if the original Master Context was secure.
     #
 
     try:
@@ -108,7 +118,8 @@ def save(request):
         messages.error(request, 'Wrong Worker Context password supplied!')
         return _show_cluster_def(request, resp)
 
-    #return uncache_response(HttpResponse(json.dumps({'plg_name':plg_name, 'plg_cont':plg_cont}, indent=2), content_type="text/plain"))
+    # For debug: output generated extra section (with worker user-data embedded)
+    # return uncache_response(HttpResponse(json.dumps({'plg_name':plg_name, 'plg_cont':plg_cont}, indent=2), content_type="text/plain"))
 
     master_ctx = ContextStorage.objects.get( id=resp["cluster"]["master_context_id"] )
 
@@ -163,8 +174,25 @@ def save(request):
             data[k] = resp[k]
         else:
             data[k] = {}
-    data_json_str = json.dumps(data)
+
+    # Let's store some cluster variables here as well
+    if 'passphrase' in resp['cluster']:
+        passphrase = resp['cluster']['passphrase']
+    else:
+        # Never None
+        passphrase = ''
+    data['passphrase'] = passphrase
+
+    data_json_str = json.dumps(data, indent=2)
     #return uncache_response( HttpResponse( data_json_str, content_type='text/plain' ) )
+
+    # Encrypt the Cluster Definition with the given passphrase
+    # if passphrase != '':
+    #     encrypted = True
+    #     # TODO
+    # else:
+    #     encrypted = False
+    encrypted = False
 
     cd = ClusterDefinition(
         name=resp["cluster"]["name"],
@@ -177,7 +205,8 @@ def save(request):
             id=resp["cluster"]["worker_context_id"]
         ),
         deployable_context=cs,
-        data=data_json_str
+        data=data_json_str,
+        encrypted=encrypted
     )
     cd.save()
 

@@ -47,6 +47,7 @@ class ClusterForm(BootstrapForm):
         label="Worker context"
     )
     worker_context_pwd = forms.CharField(required=False)
+    passphrase = forms.CharField(required=False)
 
 
 class EC2Form(BootstrapForm):
