@@ -170,9 +170,11 @@ EC2_USER_DATA=%s""" % (uuid, name, base64.b64encode(ec2_user_data))
             return False
 
         g = re.match(r"^ENCRYPTED:(.*)$", self.data)
-        self.data = base64.b64encode(
-            crypt.decrypt(g.group(1), key)
-        )
+        if g:
+            # Warning: it does not check for password correctness!!!
+            self.data = crypt.decrypt( base64.b64decode(str(g.group(1))), key )
+        else:
+            raise FormatError('Malformed encrypted data!')
 
         return True
 
