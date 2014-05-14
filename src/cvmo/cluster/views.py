@@ -110,9 +110,26 @@ def save(request):
 
     #return uncache_response(HttpResponse(json.dumps({'plg_name':plg_name, 'plg_cont':plg_cont}, indent=2), content_type="text/plain"))
 
-    master_ctx = ContextStorage.objects.get(
-        id=resp["cluster"]["master_context_id"]
-    )
+    master_ctx = ContextStorage.objects.get( id=resp["cluster"]["master_context_id"] )
+
+    if master_ctx.is_encrypted:
+
+        try:
+
+            mpwd = resp['cluster']['master_context_pwd']
+            mdef = ContextDefinition.objects.get( id=resp['cluster']['master_context_id'] )
+
+            # Verify password before decrypting
+            if salt_context_key(mdef.id, mpwd) == mdef.key:
+                master_ctx.decrypt(mpwd)
+            else:
+                raise Exception()
+
+        except Exception:
+
+            messages.error(request, 'Wrong Head Context password supplied!')
+            return _show_cluster_def(request, resp)
+
     new_ud = _append_plugin_in_ud(master_ctx.ec2_user_data, plg_name, plg_cont)
     if not new_ud:
         messages.error(
@@ -327,7 +344,7 @@ def _render_elastiq_plugin(resp):
 
         # Verify password before decrypting
         if salt_context_key(wcdef.id, wpwd) == wcdef.key:
-            wc.decrypt(wpwd, wcdef.key)
+            wc.decrypt(wpwd)
         else:
             raise DecryptionError('Wrong password supplied')
 
