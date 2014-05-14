@@ -121,7 +121,21 @@ def save(request):
     )
     cs.save()
 
-    # Create the cluster definition
+    #
+    # Create the Cluster Definition
+    #
+
+    # First create a string representing the input data
+    # TODO: this is where we are encrypting!
+    data = {}
+    for k in [ 'ec2', 'quota', 'elastiq' ]:
+        if k in resp:
+            data[k] = resp[k]
+        else:
+            data[k] = {}
+    data_json_str = json.dumps(data)
+    #return uncache_response( HttpResponse( data_json_str, content_type='text/plain' ) )
+
     cd = ClusterDefinition(
         name=resp["cluster"]["name"],
         description=resp["cluster"].get("description", None),
@@ -133,9 +147,7 @@ def save(request):
             id=resp["cluster"]["worker_context_id"]
         ),
         deployable_context=cs,
-        ec2=resp["ec2"],
-        elastiq=resp["elastiq"],
-        quota=resp["quota"]
+        data=data_json_str
     )
     cd.save()
 
