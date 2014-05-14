@@ -325,6 +325,7 @@
 
                     <div class="form-group well">
                         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-save"></span> Save this Cluster Definition</button>
+                        <button type="button" class="btn btn-warning" id="btn_prefill"><span class="glyphicon glyphicon-pencil"></span> Prefill with dummy data</button>
                     </div>
 
                     <input type="hidden" name="cluster[id]" id="cluster_id" value="{{cluster.id}}">
@@ -399,6 +400,34 @@
                         placement: 'top'
                     });
                     jQuery(this).text('');
+                });
+
+                // Prefill with dummy data (for debug)
+                jQuery('#btn_prefill').on('click', function() {
+
+                    var fill_data = {
+
+                        'cluster_name': 'Dummy Cluster',
+                        'cluster_description': 'This is a Dummy Cluster.',
+                        'cluster_passphrase': 'pass_word',
+                        'ec2_api_url': 'http://this.is.so.dummy:8443/ec2/',
+                        'ec2_aws_access_key_id': 'my_access_id',
+                        'ec2_aws_secret_access_key': 'my_secret_key',
+                        'ec2_image_id': 'ami-01010101',
+                        'ec2_flavour': 'm1.dummy'
+
+                    };
+
+                    jQuery.each(fill_data, function(k, v) {
+                        jQuery('#'+k).val(v).trigger('input');
+                    });
+
+                    // ContextSelector is trickier
+                    jQuery('#cluster_master_context input.context-selector').val('Dummy Head').trigger('input');
+                    // jQuery('#cluster_master_context .context-selector-password input').val('asd');
+                    jQuery('#cluster_worker_context input.context-selector').val('Dummy Worker').trigger('input');
+                    // jQuery('#cluster_worker_context .context-selector-password input').val('asd');
+
                 });
 
                 // Password strength meter

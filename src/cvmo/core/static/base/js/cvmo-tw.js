@@ -108,7 +108,7 @@
       password_sel = '#' + password_sel;
 
       var that = this;
-      $(password_sel).on('keyup', function() {
+      $(password_sel).on('input', function() {
         $(that).password_strength_meter('recompute_score');
       });
 
