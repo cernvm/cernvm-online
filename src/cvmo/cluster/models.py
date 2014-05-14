@@ -6,6 +6,8 @@ from cvmo.context.models import ContextDefinition, ContextStorage
 
 class ClusterDefinition(models.Model):
 
+    id = models.CharField(max_length=64, primary_key=True)
+
     name = models.CharField(max_length=250)
     description = models.TextField(null=True, blank=True)
 
@@ -24,6 +26,7 @@ class ClusterDefinition(models.Model):
     # Settings
     data = models.TextField(null=False, blank=False, default='{}')
     encrypted = models.BooleanField(default=False)
+    checksum = models.CharField(max_length=40, default=0)
     #ec2 = JSONField(null=False, blank=False)
     #quota = JSONField(null=False, blank=False)
     #elastiq = JSONField(null=False, blank=False)
