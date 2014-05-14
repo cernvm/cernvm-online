@@ -2,6 +2,7 @@ import re
 import json
 import base64
 import logging
+import hashlib
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -11,7 +12,7 @@ from .models import ClusterDefinition
 from ..context.models import ContextDefinition, ContextStorage
 from cvmo.core.utils.views import uncache_response
 from cvmo.core.utils.context import salt_context_key
-from cvmo.core.utils.crypt import DecryptionError
+import cvmo.core.utils.crypt as cvmo_crypt
 
 
 #
@@ -187,11 +188,22 @@ def save(request):
     #return uncache_response( HttpResponse( data_json_str, content_type='text/plain' ) )
 
     # Encrypt the Cluster Definition with the given passphrase
-    # if passphrase != '':
-    #     encrypted = True
-    #     # TODO
-    # else:
-    #     encrypted = False
+    if passphrase != '':
+
+        # We are encrypting
+        encrypted = True
+
+        # To verify, we calculate the SHA1SUM of the unencrypted JSON blob and store it
+        checksum = hashlib.sha1( data_json_str ).hexdigest()
+
+        # Now, we encrypt
+        data_json_str = base64.b64encode( cvmo_crypt.encrypt(data_json_str, passphrase) )
+
+    else:
+        # Non-encrypted, plain text context
+        encrypted = False
+        checksum = '0'
+
     encrypted = False
 
     cd = ClusterDefinition(
@@ -206,6 +218,7 @@ def save(request):
         ),
         deployable_context=cs,
         data=data_json_str,
+        checksum=checksum,
         encrypted=encrypted
     )
     cd.save()
@@ -375,7 +388,7 @@ def _render_elastiq_plugin(resp):
         if salt_context_key(wcdef.id, wpwd) == wcdef.key:
             wc.decrypt(wpwd)
         else:
-            raise DecryptionError('Wrong password supplied')
+            raise cvmo_crypt.DecryptionError('Wrong password supplied')
 
     plg += "ec2_user_data_b64=%s\n" % base64.b64encode(wc.ec2_user_data)
 
