@@ -328,7 +328,7 @@
                         <button type="button" class="btn btn-warning" id="btn_prefill"><span class="glyphicon glyphicon-pencil"></span> Prefill with dummy data</button>
                     </div>
 
-                    <input type="hidden" name="cluster[id]" id="cluster_id" value="{{cluster.id}}">
+                    <input type="hidden" name="cluster[id]" id="cluster_id" value="{{cluster.id|default_if_none:""}}">
                 </form>
             </div>
         </div>

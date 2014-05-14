@@ -10,6 +10,9 @@ from .forms import ClusterForm, EC2Form, QuotaForm, ElastiqForm
 from .models import ClusterDefinition
 from ..context.models import ContextDefinition, ContextStorage
 from cvmo.core.utils.views import uncache_response
+from cvmo.core.utils.context import salt_context_key
+from cvmo.core.utils.crypt import DecryptionError
+
 
 #
 # Views
@@ -95,8 +98,18 @@ def save(request):
     if isinstance(resp, HttpResponse):
         return resp
 
-    # Prepare context
-    (plg_name, plg_cont) = _render_elastq_plugin(resp)
+    #
+    # Preparing the full Master Context
+    #
+
+    try:
+        (plg_name, plg_cont) = _render_elastiq_plugin(resp)
+    except Exception:
+        messages.error(request, 'Wrong Worker Context password supplied!')
+        return _show_cluster_def(request, resp)
+
+    #return uncache_response(HttpResponse(json.dumps({'plg_name':plg_name, 'plg_cont':plg_cont}, indent=2), content_type="text/plain"))
+
     master_ctx = ContextStorage.objects.get(
         id=resp["cluster"]["master_context_id"]
     )
@@ -233,7 +246,7 @@ def _append_plugin_in_ud(init_ud, plugin_name, plugin_cont):
     return new_ud
 
 
-def _render_elastq_plugin(resp):
+def _render_elastiq_plugin(resp):
     """
     Given the clean data from the cluster form it returns a string, the
     elastiq-setup amiconfig plugin settings.
@@ -299,13 +312,25 @@ def _render_elastq_plugin(resp):
     # EC2: Flavor
     plg += "ec2_flavour=%s\n" % resp["ec2"]["flavour"]
 
-    # EC2: Key-pair
+    # EC2: Keypair
     v = resp["ec2"].get("key_name", None)
     if v:
         plg += "ec2_key_name=%s\n" % v
 
-    # User - data
+    # user-data of the Worker Context
     wc = ContextStorage.objects.get(id=resp["cluster"]["worker_context_id"])
+    if wc.is_encrypted:
+
+        # You *must* handle exceptions in the caller
+        wpwd = resp['cluster']['worker_context_pwd']
+        wcdef = ContextDefinition.objects.get(id=resp["cluster"]["worker_context_id"])
+
+        # Verify password before decrypting
+        if salt_context_key(wcdef.id, wpwd) == wcdef.key:
+            wc.decrypt(wpwd, wcdef.key)
+        else:
+            raise DecryptionError('Wrong password supplied')
+
     plg += "ec2_user_data_b64=%s\n" % base64.b64encode(wc.ec2_user_data)
 
     return ("elastiq-setup", plg)
