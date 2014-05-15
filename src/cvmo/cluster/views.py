@@ -20,8 +20,48 @@ import cvmo.core.utils.crypt as cvmo_crypt
 #
 
 
-def show_new(request):
-    return _show_cluster_def(request, {})
+def show_new(request, cluster_id=None):
+
+    if cluster_id is None:
+        # New context
+        return _show_cluster_def(request, {})
+    else:
+
+        #
+        # Cloning existing context
+        #
+
+        # Try to fetch context from the database. Don't filter on current user.
+        try:
+
+            cluster = ClusterDefinition.objects.get( id=cluster_id )
+
+            # Unmarshal data
+            try:
+                cluster_data_dict = json.loads( cluster.data )
+            except ValueError:
+                messages.error(request, 'Corrupted cluster data: creating a new cluster.')
+                return _show_cluster_def(request, {})
+
+            # Mangle the dictionary to suit form structure
+            cluster_data_dict['cluster'] = {
+                'master_context_id': cluster.master_context_id,
+                'worker_context_id': cluster.worker_context_id,
+                'id': cluster.id,
+                'name': cluster.name,
+                'description': cluster.description
+            }
+            if 'passphrase' in cluster_data_dict:
+                cluster_data_dict['cluster']['passphrase'] = cluster_data_dict['passphrase']
+                del cluster_data_dict['passphrase']
+
+            return _show_cluster_def(request, cluster_data_dict)
+
+        except ClusterDefinition.DoesNotExist, Http404:
+            messages.error(request, 'The specified cluster does not exist: creating a new cluster instead.')
+            return _show_cluster_def(request, {})
+
+        #return uncache_response( HttpResponse(my_text_response, content_type='text/plain' ) )
 
 
 def show_test(request):
