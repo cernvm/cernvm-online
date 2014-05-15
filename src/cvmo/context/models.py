@@ -156,11 +156,7 @@ EC2_USER_DATA=%s""" % (uuid, name, base64.b64encode(ec2_user_data))
     #
 
     def encrypt(self, key):
-        if not self.is_encrypted:
-            return False
-
         self.data = "ENCRYPTED:" + base64.b64encode( crypt.encrypt(self.data, key) )
-
         return True
 
     def decrypt(self, key):

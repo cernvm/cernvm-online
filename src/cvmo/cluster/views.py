@@ -155,12 +155,24 @@ def save(request):
         )
         return _show_cluster_def(request, resp)
 
-    # Store the context
+    # Do we have a passphrase for the cluster?
+    if 'passphrase' in resp['cluster']:
+        passphrase = resp['cluster']['passphrase']
+    else:
+        # Never None
+        passphrase = ''
+
+    #
+    # Store the deployable context (rendered)
+    #
+
     context_id = ContextDefinition.generate_new_id()
     cs = ContextStorage.create(
         context_id, "Cluster %s head node" % resp["cluster"]["name"],
         new_ud, master_ctx.root_ssh_key
     )
+    if passphrase != '':
+        cs.encrypt( passphrase )
     cs.save()
 
     #
@@ -168,7 +180,6 @@ def save(request):
     #
 
     # First create a string representing the input data
-    # TODO: this is where we are encrypting!
     data = {}
     for k in [ 'ec2', 'quota', 'elastiq' ]:
         if k in resp:
@@ -177,11 +188,7 @@ def save(request):
             data[k] = {}
 
     # Let's store some cluster variables here as well
-    if 'passphrase' in resp['cluster']:
-        passphrase = resp['cluster']['passphrase']
-    else:
-        # Never None
-        passphrase = ''
+
     data['passphrase'] = passphrase
 
     data_json_str = json.dumps(data, indent=2)

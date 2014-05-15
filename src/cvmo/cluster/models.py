@@ -7,6 +7,7 @@ from cvmo.context.models import ContextDefinition, ContextStorage
 class ClusterDefinition(models.Model):
 
     #id = models.CharField(max_length=64, primary_key=True)
+    #id = models.AutoField(primary_key=True)
 
     name = models.CharField(max_length=250)
     description = models.TextField(null=True, blank=True)
