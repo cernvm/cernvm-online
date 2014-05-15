@@ -180,24 +180,29 @@
                                 <td class="operations" rowspan="2" style="vertical-align:middle">
 
                                     <!-- Operations are in a form because we want to POST -->
-                                    <form method="GET">
+                                    <form method="POST" action="">
 
-                                        <button type="button" class="cluster-op btn btn-xs btn-default" data-goto-url="/dummy{% url "cluster_new" cluster_id=item.id %}" {% if item.encryption_checksum != '' %}data-needs-password="true"{% endif %}>
+                                        <!-- Clone (might require password) -->
+                                        <button type="button" class="cluster-op btn btn-xs btn-default" data-goto-url="{% url "cluster_new" cluster_id=item.id %}" {% if item.encryption_checksum != '' %}data-needs-password="true"{% endif %}>
                                             <img src="{% static "base/img/brick_add.png" %}">
                                             Clone
                                         </button>
 
-                                        <button type="button" class="cluster-op btn btn-xs btn-danger" data-goto-url="/dummy{% url "cluster_delete" cluster_id=item.id %}">
+                                        <!-- Delete -->
+                                        <button type="button" class="cluster-op btn btn-xs btn-danger" data-goto-url="{% url "cluster_delete" cluster_id=item.id %}">
                                             <img src="{% static "base/img/brick_delete.png" %}">
                                         </button>
 
-                                        <button type="button" class="cluster-op btn btn-xs btn-info" data-goto-url="/dummy{% url "cluster_deploy" cluster_id=item.id %}" {% if item.encryption_checksum != '' %}data-needs-password="true"{% endif %}>
+                                        <!-- Deploy (might require password) -->
+                                        <button type="button" class="cluster-op btn btn-xs btn-info" data-goto-url="{% url "cluster_deploy" cluster_id=item.id %}" data-goto-mode="remote-modal" {% if item.encryption_checksum != '' %}data-needs-password="true"{% endif %}>
                                             <img src="{% static "base/img/vm_contextualize.png" %}">
                                             Deploy
                                         </button>
+                                        <!-- Helper for deploying with a remote modal (hidden) -->
+                                        <span style="display:none" class="deploy-helper"></span>
 
                                         <!-- Password -->
-                                        <input type="text" name="password"/>
+                                        <input type="hidden" name="password"/>
 
                                         <!-- CSRF Token -->
                                         {% csrf_token %}
@@ -325,7 +330,7 @@
 
 
                         <div class="input-group">
-                          <input type="text" class="form-control">
+                          <input type="password" class="form-control" placeholder="Enter password here">
                           <span class="input-group-btn">
                             <button class="btn btn-default" type="button">Proceed</button>
                           </span>
@@ -355,7 +360,26 @@
             .on('click', function() {
 
                 var f = $(this).closest('form');
-                $(f).attr('action', $(this).data('goto-url'));
+                var modal_trigger = undefined;
+
+                if ( $(this).data('goto-mode') == 'remote-modal' ) {
+                    // Modal
+                    $(f).attr('action', '');
+
+                    var h = $(f).find('.deploy-helper');
+                    h.empty();
+
+                    var modal_trigger = $('<span></span>', {
+                        'data-rm-remote': $(this).data('goto-url'),  // TODO
+                        'data-toggle': 'remote-modal',
+                        'data-rm-title': 'Deploy cluster'
+                    });
+                    $(h).append(modal_trigger);
+                }
+                else {
+                    // Standard submit
+                    $(f).attr('action', $(this).data('goto-url'));
+                }
 
                 if (( $(this).data('needs-password') !== undefined ) && ( $(this).data('needs-password').toString() == 'true' )) {
 
@@ -364,22 +388,34 @@
                     // Modal's button will have the same HTML as the button we have just pressed :-)
                     $('#cluster_password_modal .modal-body button').html( $(this).html() );
 
+                    // Reset the password field
+                    $('#cluster_password_modal .modal-body input').val('');
+
                     // Our modal's button will:
                     // - copy the password to the destination
                     // - dismiss the modal
-                    // - submit the original form
+                    // - submit the original form OR open a remote modal (in case we are deploying)
                     var that = $(this);
                     $('#cluster_password_modal .modal-body button')
                         .unbind()
                         .on('click', function() {
-                            // Copy
-                            $(f).find('input[name="password"]').val(
-                                $(this).closest('.modal-body').find('input').val()
-                            );
+
                             // Dismiss
                             $(this).closest('.modal').modal('hide');
-                            // Submit
-                            $(f).submit();
+
+                            // Get password
+                            var password = $(this).closest('.modal-body').find('input').val();
+
+                            if (modal_trigger !== undefined) {
+                                $(modal_trigger).data('rm-remote', $(modal_trigger).data('rm-remote')+'?password='+password );
+                                $(modal_trigger).remoteModal();
+                                $(modal_trigger).trigger('click');
+                            }
+                            else {
+                                $(f).find('input[name="password"]').val( password );
+                                $(f).submit();
+                            }
+
                         });
 
                     // Show the modal
@@ -388,20 +424,19 @@
                     });
 
                 }
+                else {
 
-                //$(f).submit();
-                // console.log()
+                    // No pwd: immediate action
+                    if (modal_trigger !== undefined) {
+                        $(modal_trigger).remoteModal();
+                        $(modal_trigger).trigger('click');
+                    }
+                    else {
+                        $(f).submit();
+                    }
+                }
+
             })
-
-            // .popover({
-            //     'html': true,
-            //     'content': function() {
-            //         return '<b>ciao</b>';
-            //     },
-            //     'title': function() {
-            //         return 'title';
-            //     }
-            // });
 
     });
 
