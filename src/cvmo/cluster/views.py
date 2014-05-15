@@ -197,9 +197,6 @@ def save(request):
     # Encrypt the Cluster Definition with the given passphrase
     if passphrase != '':
 
-        # We are encrypting
-        encrypted = True
-
         # To verify, we calculate the SHA1SUM of the unencrypted JSON blob and store it
         checksum = hashlib.sha1( data_json_str ).hexdigest()
 
@@ -208,10 +205,7 @@ def save(request):
 
     else:
         # Non-encrypted, plain text context
-        encrypted = False
-        checksum = '0'
-
-    encrypted = False
+        checksum = ''
 
     cd = ClusterDefinition(
         name=resp["cluster"]["name"],
@@ -225,8 +219,7 @@ def save(request):
         ),
         deployable_context=cs,
         data=data_json_str,
-        checksum=checksum,
-        encrypted=encrypted
+        encryption_checksum=checksum,
     )
     cd.save()
 
