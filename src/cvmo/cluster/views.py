@@ -38,7 +38,17 @@ def show_new(request, cluster_id=None):
 
             # Unmarshal data
             try:
+
+                if cluster.is_encrypted:
+                    post_dict = parser.parse( unicode(request.POST.urlencode()).encode("utf-8") )
+                    try:
+                        cluster.decrypt( post_dict['password'] )
+                    except ClusterDefinition.CryptographyError:
+                        messages.error(request, 'Wrong password')
+                        return _show_cluster_def(request, {})
+
                 cluster_data_dict = json.loads( cluster.data )
+
             except ValueError:
                 messages.error(request, 'Corrupted cluster data: creating a new cluster.')
                 return _show_cluster_def(request, {})
@@ -55,6 +65,7 @@ def show_new(request, cluster_id=None):
                 cluster_data_dict['cluster']['passphrase'] = cluster_data_dict['passphrase']
                 del cluster_data_dict['passphrase']
 
+            #return uncache_response(HttpResponse(json.dumps(cluster_data_dict, indent=2), content_type="text/plain"))
             return _show_cluster_def(request, cluster_data_dict)
 
         except ClusterDefinition.DoesNotExist, Http404:

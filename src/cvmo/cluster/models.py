@@ -45,7 +45,7 @@ class ClusterDefinition(models.Model):
 
     def decrypt(self, passphrase):
 
-        if self.encryption_checksum == '':
+        if not self.is_encrypted():
             # Not encrypted
             return False
 
@@ -57,3 +57,6 @@ class ClusterDefinition(models.Model):
 
         self.encryption_checksum = ''
         self.data = data_json_str
+
+    def is_encrypted(self):
+        return self.encryption_checksum != ''
