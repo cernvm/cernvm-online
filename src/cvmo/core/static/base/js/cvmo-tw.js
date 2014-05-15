@@ -218,3 +218,25 @@
   };
 
 })(jQuery);
+
+
+//
+// Things to do when document has loaded
+//
+
+(function($) {
+
+  $(document).ready( function() {
+
+    // Create tooltips automatically
+    jQuery('.tooltip-container > span').each(function () {
+        jQuery(this).tooltip({
+            title: jQuery(this).text(),
+            placement: 'top'
+        });
+        jQuery(this).text('');
+    });
+
+  });
+
+})(jQuery);

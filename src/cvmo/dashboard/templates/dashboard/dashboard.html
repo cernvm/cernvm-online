@@ -150,6 +150,7 @@
                 <table class="table" id="cluster_definitions">
                     <thead>
                         <tr>
+                            <th></th>
                             <th class="name">Name</th>
                             <th class="context">Contexts</th>
                             <th class="operations">Operations</th>
@@ -158,7 +159,18 @@
                     <tbody>
                         {% for item in cluster_definition_list %}
                             <tr>
-                                <td class="name" rowspan="2">{{item.name}}</td>
+                                <td class="secure" rowspan="2" style="vertical-align:middle">
+                                    {% if item.encryption_checksum != '' %}
+                                    <span class="tooltip-container">
+                                        <span class="glyphicon glyphicon-lock secure-data-icon">This cluster definition is encrypted</span>
+                                    </span>
+                                    {% else %}
+                                    &nbsp;
+                                    {% endif %}
+                                </td>
+                                <td class="name" rowspan="2">
+                                    {{item.name}}
+                                </td>
                                 <td class="context">
                                     <strong>Master:</strong>
                                     <a href="{% url "context_view" context_id=item.master_context.id %}">
