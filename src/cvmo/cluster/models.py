@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from json_field import JSONField
 from cvmo.context.models import ContextDefinition, ContextStorage
+import cvmo.core.utils.crypt as cvmo_crypt
+import base64
+import hashlib
 
 
 class ClusterDefinition(models.Model):
@@ -33,3 +36,24 @@ class ClusterDefinition(models.Model):
     #quota = JSONField(null=False, blank=False)
     #elastiq = JSONField(null=False, blank=False)
     #additional_params = JSONField(null=False, blank=False, default={})
+
+    class CryptographyError(Exception):
+        pass
+
+    def encrypt(self, key):
+        pass
+
+    def decrypt(self, passphrase):
+
+        if self.encryption_checksum == '':
+            # Not encrypted
+            return False
+
+        data_json_str = cvmo_crypt.decrypt( base64.b64decode(self.data), passphrase )
+        verify_checksum = hashlib.sha1(data_json_str).hexdigest()
+
+        if self.encryption_checksum != verify_checksum:
+            raise self.CryptographyError('Wrong password')
+
+        self.encryption_checksum = ''
+        self.data = data_json_str

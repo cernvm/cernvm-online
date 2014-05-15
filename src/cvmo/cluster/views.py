@@ -99,25 +99,51 @@ def show_edit(request, cluster_id):
 
 
 def show_deploy(request, cluster_id):
+
+
+    #get_dict = parser.parse( unicode(request.GET.urlencode()).encode("utf-8") )
+    #return uncache_response(HttpResponse(json.dumps(get_dict, indent=2), content_type="text/plain"))
+    #return uncache_response(HttpResponse( get_dict['password'] , content_type="text/plain"))
+
     context = {}
+    password = None
 
     try:
-        cluster = ClusterDefinition.objects.get(
-            id=cluster_id,
-            owner=request.user
-        )
-    except ClusterDefinition.DoesNotExist:
-        raise Http404(
-            "Cluster with id `%s` does not exist or it is not yours."
-            % cluster_id
-        )
-    context["cluster"] = cluster
+        cluster = ClusterDefinition.objects.get( id=cluster_id )
 
-    ami_ctx = _render_head_context(
-        cluster.deployable_context
-    )
+        if cluster.encryption_checksum != '':
+            try:
+                get_dict = parser.parse( unicode(request.GET.urlencode()).encode("utf-8") )
+                password = get_dict['password']
+                cluster.decrypt(password)
+            except Exception as e:
+                #messages.error(request, "The password provided is wrong: %s" % e)
+                messages.error(request, "The password provided is wrong")
+                return render(request, "cluster/deploy.html", {})
+
+    except ClusterDefinition.DoesNotExist, Http404:
+        messages.error(request, 'Cluster does not exist')
+        return render(request, "cluster/deploy.html", {})
+
+    # decrypt goes here #
+
+    try:
+        cluster_data_dict = json.loads( cluster.data )
+    except ValueError:
+        messages.error(request, 'Corrupted cluster data!')
+        return render(request, "cluster/deploy.html", {})
+
+    context['ec2'] = {
+        'key_name': cluster_data_dict['ec2']['key_name'],
+        'flavour': cluster_data_dict['ec2']['flavour'],
+        'image_id': cluster_data_dict['ec2']['image_id']
+    }
+
+    ami_ctx = _render_head_context( cluster.deployable_context, password )
     context["dc_user_data"] = ami_ctx
     context["dc_user_data_b64"] = base64.b64encode(ami_ctx)
+
+    #return uncache_response(HttpResponse( json.dumps(context, indent=4) , content_type="text/plain"))
 
     return render(request, "cluster/deploy.html", context)
 
@@ -296,7 +322,11 @@ def delete(request, cluster_id):
 #
 
 
-def _render_head_context(cs_instance):
+def _render_head_context(cs_instance, password=None):
+
+    if cs_instance.is_encrypted and password is not None:
+        cs_instance.decrypt(password)
+
     ud = cs_instance.ec2_user_data
 
     # Get the part between [ucernvm-begin] and [ucernvm-end]
