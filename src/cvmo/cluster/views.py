@@ -335,8 +335,11 @@ def delete(request, cluster_id):
 
 def _render_head_context(cs_instance, password=None):
 
+    contextualization_key = cs_instance.id
+
     if cs_instance.is_encrypted and password is not None:
         cs_instance.decrypt(password)
+        contextualization_key += ':' + password
 
     ud = cs_instance.ec2_user_data
 
@@ -356,7 +359,7 @@ contextualization_key=%s
 [ucernvm-begin]
 %s
 [ucernvm-end]
-""" % (cs_instance.id, ucvm_ctx)
+""" % (contextualization_key, ucvm_ctx)
 
     return ctx
 
