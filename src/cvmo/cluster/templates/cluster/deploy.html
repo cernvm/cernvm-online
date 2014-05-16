@@ -24,7 +24,7 @@
                     <div class="tab-pane active" id="cmd">
                         <div class="panel">
                             <div class="panel-body">
-                                <pre>euca-run-instances -t {{cluster.ec2.flavour}} -k '{{cluster.ec2.key_name}}' -d "$(echo {{dc_user_data_b64}}|base64 --decode)" {{cluster.ec2.image_id}}</pre>
+                                <pre>euca-run-instances -t {{ec2.flavour}} -k '{{ec2.key_name}}' -d "$(echo {{dc_user_data_b64}}|base64 --decode)" {{ec2.image_id}}</pre>
                                 <p class="help-block">Paste this in the command line</p>
                             </div>
                         </div>
@@ -32,7 +32,7 @@
                     <div class="tab-pane" id="ud_field">
                         <div class="panel">
                             <div class="panel-body">
-                                <pre>{{dc_user_data}}</pre>
+                                <pre style="word-break:normal;word-wrap:normal">{{dc_user_data}}</pre>
                                 <p class="help-block">Paste this in the 'user-data' field</p>
                             </div>
                         </div>

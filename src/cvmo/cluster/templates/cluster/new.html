@@ -26,12 +26,19 @@
                             <textarea type="text" class="form-control" id="cluster_decription" name="cluster[description]" rows="4" cols="100">{{cluster.description}}</textarea>
                         </div>
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="cluster_name" class="col-xs-4 control-label required">Encryption pass phrase</label>
+                    <div class="form-group">
+                        <label for="cluster_passphrase" class="col-xs-4 control-label required"><!--<span class="glyphicon glyphicon-lock"></span>-->Encryption password</label>
                         <div class="col-xs-6">
-                            <input type="text" class="form-control" id="cluster_passphrase" name="cluster[passphrase]">
+                            <div style="margin-bottom:10px">
+                                <input type="password" class="form-control" id="cluster_passphrase" name="cluster[passphrase]" value="{{cluster.passphrase}}">
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 50%" data-password-id="cluster_passphrase" id="cluster_passphrase_strength">
+                                    <span>(placeholder)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div> -->
+                    </div>
 
                     <fieldset id="ec2_api">
                         <legend>EC2 credentials for your cloud</legend>
@@ -74,7 +81,7 @@
                             </div>
                             <div class="col-xs-2">
                                 <div class="secure-data-icon tooltip-container">
-                                    <span class="glyphicon glyphicon-lock">Your sensitive data will be stored  encrypted in our database.</span>
+                                    <span class="glyphicon glyphicon-lock">Your sensitive data will be stored encrypted in our database.</span>
                                 </div>
                             </div>
                         </div>
@@ -85,7 +92,7 @@
                             </div>
                             <div class="col-xs-2">
                                 <div class="secure-data-icon tooltip-container">
-                                    <span class="glyphicon glyphicon-lock">Your sensitive data will be stored  encrypted in our database.</span>
+                                    <span class="glyphicon glyphicon-lock">Your sensitive data will be stored encrypted in our database.</span>
                                 </div>
                             </div>
                         </div>
@@ -199,7 +206,27 @@
                                         No context selected
                                     </div>
                                     <div class="panel-footer">
-                                        <input type="text" class="form-control context-selector" name="master_context_ac" value="" placeholder="Enter the name of the master node context...">
+
+                                        <div class="form-group">
+                                            <!-- Context Name -->
+                                            <div class="col-xs-12">
+                                                <input type="text" class="form-control context-selector" name="master_context_ac" value="" placeholder="Enter a few words of the context name to start searching">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group context-selector-password">
+                                            <!-- Context Password -->
+                                            <label for="cluster_master_context_pwd" class="control-label col-xs-3 required">Context password</label>
+                                            <div class="col-xs-9">
+                                                <div class="input-group">
+                                                    <input type="text" name="cluster[master_context_pwd]" id="cluster_master_context_pwd" class="form-control" value="" data-copy-src="cluster_worker_context_pwd"/>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" type="button">Copy from worker context</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -216,7 +243,27 @@
                                         No context selected
                                     </div>
                                     <div class="panel-footer">
-                                        <input type="text" class="form-control context-selector" name="worker_context_ac" value="" placeholder="Enter the name of the worker node context...">
+
+                                        <div class="form-group">
+                                            <!-- Context Name -->
+                                            <div class="col-xs-12">
+                                                <input type="text" class="form-control context-selector" name="worker_context_ac" value="" placeholder="Enter a few words of the context name to start searching">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group context-selector-password">
+                                            <!-- Context Password -->
+                                            <label for="cluster_worker_context_pwd" class="control-label col-xs-3 required">Context password</label>
+                                            <div class="col-xs-9">
+                                                <div class="input-group">
+                                                    <input type="text" name="cluster[worker_context_pwd]" id="cluster_worker_context_pwd" class="form-control" value="" data-copy-src="cluster_master_context_pwd"/>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" type="button">Copy from master context</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -278,9 +325,10 @@
 
                     <div class="form-group well">
                         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-save"></span> Save this Cluster Definition</button>
+                        <button type="button" class="btn btn-warning" id="btn_prefill"><span class="glyphicon glyphicon-pencil"></span> Prefill with dummy data</button>
                     </div>
 
-                    <input type="hidden" name="cluster[id]" id="cluster_id" value="{{cluster.id}}">
+                    <input type="hidden" name="cluster[id]" id="cluster_id" value="{{cluster.id|default_if_none:""}}">
                 </form>
             </div>
         </div>
@@ -291,9 +339,6 @@
     <style>
         div.tooltip-container {
             line-height: 34px;
-        }
-        div.secure-data-icon {
-            color: green;
         }
         .context-info dl.dl-horizontal {
             margin: 0;
@@ -311,7 +356,7 @@
     {% verbatim %}
         <script type="text/html" id="cs_context_info">
             <dl class="dl-horizontal">
-                <dt>Id</dt>
+                <dt>ID</dt>
                 <dd>{{id}}</dd>
                 <dt>Name</dt>
                 <dd>{{name}}</dd>
@@ -321,6 +366,10 @@
                     <dt>Description</dt>
                     <dd>{{description}}</dd>
                 {{/description_not_empty}}
+                {{#is_encrypted}}
+                    <dt><span class="glyphicon glyphicon-lock secure-data-icon"></span></dt>
+                    <dd><span class="secure-data-icon">This context is encrypted</span></dd>
+                {{/is_encrypted}}
             </dl>
         </script>
         <script type="text/html" id="cs_context_suggestion">
@@ -343,12 +392,43 @@
             {
                 // Create tooltips automatically
                 jQuery('.tooltip-container > span').each(function () {
-                    $(this).tooltip({
-                        title: $(this).text(),
+                    jQuery(this).tooltip({
+                        title: jQuery(this).text(),
                         placement: 'top'
                     });
-                    $(this).text('');
+                    jQuery(this).text('');
                 });
+
+                // Prefill with dummy data (for debug)
+                jQuery('#btn_prefill').on('click', function() {
+
+                    var fill_data = {
+
+                        'cluster_name': 'Dummy Cluster',
+                        'cluster_description': 'This is a Dummy Cluster.',
+                        'cluster_passphrase': 'pass_word',
+                        'ec2_api_url': 'http://this.is.so.dummy:8443/ec2/',
+                        'ec2_aws_access_key_id': 'my_access_id',
+                        'ec2_aws_secret_access_key': 'my_secret_key',
+                        'ec2_image_id': 'ami-01010101',
+                        'ec2_flavour': 'm1.dummy'
+
+                    };
+
+                    jQuery.each(fill_data, function(k, v) {
+                        jQuery('#'+k).val(v).trigger('input');
+                    });
+
+                    // ContextSelector is trickier
+                    jQuery('#cluster_master_context input.context-selector').val('Dummy Head').trigger('input');
+                    // jQuery('#cluster_master_context .context-selector-password input').val('asd');
+                    jQuery('#cluster_worker_context input.context-selector').val('Dummy Worker').trigger('input');
+                    // jQuery('#cluster_worker_context .context-selector-password input').val('asd');
+
+                });
+
+                // Password strength meter
+                jQuery('#cluster_passphrase_strength').password_strength_meter();
 
                 jQuery("#cluster_master_context").ContextSelector({
                     remoteURL: "{% url "context_ajax_get_list" %}",
@@ -378,6 +458,16 @@
                         {% endautoescape %}
                     {% endif %}
                 });
+
+                // Add the "copy" functionality in the ContextSelector's password
+                jQuery('.context-selector-password button').on('click', function() {
+
+                    inp = jQuery(this).parent().parent().find('input');
+                    src_name = jQuery(inp).data('copy-src');
+                    jQuery(inp).val( jQuery('#'+src_name).val() );
+
+                });
+
             }
         );
     </script>

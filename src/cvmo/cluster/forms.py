@@ -41,10 +41,13 @@ class ClusterForm(BootstrapForm):
         max_length=64, validators=[validate_context_id],
         label="Master context"
     )
+    master_context_pwd = forms.CharField(required=False)
     worker_context_id = forms.CharField(
         max_length=64, validators=[validate_context_id],
         label="Worker context"
     )
+    worker_context_pwd = forms.CharField(required=False)
+    passphrase = forms.CharField(required=False)
 
 
 class EC2Form(BootstrapForm):
