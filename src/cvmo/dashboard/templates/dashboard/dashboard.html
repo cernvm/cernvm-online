@@ -407,7 +407,7 @@
                             var password = $(this).closest('.modal-body').find('input').val();
 
                             if (modal_trigger !== undefined) {
-                                $(modal_trigger).data('rm-remote', $(modal_trigger).data('rm-remote')+'?password='+password );
+                                $(modal_trigger).data('rm-remote', $(modal_trigger).data('rm-remote')+'?password='+encodeURIComponent(password) );
                                 $(modal_trigger).remoteModal();
                                 $(modal_trigger).trigger('click');
                             }
