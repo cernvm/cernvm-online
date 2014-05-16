@@ -417,6 +417,29 @@
 
 			<div class="accordion-header separator">
 				<h2>
+					EOS
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<table class="plain long-text">
+					<tr>
+						<th width="150"><label for="f_eos_server">EOS server:</label></th>
+						<td><input type="text" id="f_eos_server" maxlength="100" name="values[general][eos_server]" value="{{ values.general.eos_server }}" {{disabled|dis}}/></td>
+					</tr>
+					<tr>
+						<th width="150"><label for="f_x509_user">X.509 local user:</label></th>
+						<td><input type="text" id="f_x509_user" maxlength="100" name="values[general][x509_user]" value="{{ values.general.x509_user }}" {{disabled|dis}}/></td>
+					</tr>
+					<tr>
+						<th><label for="f_x509_cert">Proxy (or X.509 certificate and private key) in PEM format:</label></th>
+						<td><textarea id="f_x509_cert" class="code" name="values[general][x509_cert]" {{disabled|dis}}>{{ values.general.x509_cert }}</textarea></td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
 					CernVM Preferences
 					<span class="error">section has errors!</span>
 				</h2>

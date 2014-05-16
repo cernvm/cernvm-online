@@ -211,6 +211,17 @@ class ContextPlugins(object):
         _ans += "shell=%s\n" % values['general']['shell']
         _ans += "config_url=%s\n" % values['general']['config_url']
 
+        # EOS (TODO: not optimal, work in progress)
+        v = values['general'].get('eos_server')
+        if v is not None and v != '':
+            _ans += 'eos-server=%s\n' % v
+        v = values['general'].get('x509_user')
+        if v is not None and v != '':
+            _ans += 'x509-user=%s\n' % v
+        v = values['general'].get('x509_cert')
+        if v is not None and v != '':
+            _ans += 'x509-cert=%s\n' % base64.b64encode( v )
+
         # Prepare contextualization_command
         if ('context_cmd' in values['general']) and (values['general']['context_cmd'] != ''):
             if 'context_cmd_user' in values['general']:
