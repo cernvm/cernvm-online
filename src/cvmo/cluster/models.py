@@ -29,9 +29,8 @@ class ClusterDefinition(models.Model):
 
     # Settings
     data = models.TextField(null=False, blank=False, default='{}')
-    #encrypted = models.BooleanField(default=False)
-    #checksum = models.CharField(max_length=40, default=0)
     encryption_checksum = models.CharField(max_length=40, default=0)
+    # -=- To Be Removed -=- #
     #ec2 = JSONField(null=False, blank=False)
     #quota = JSONField(null=False, blank=False)
     #elastiq = JSONField(null=False, blank=False)

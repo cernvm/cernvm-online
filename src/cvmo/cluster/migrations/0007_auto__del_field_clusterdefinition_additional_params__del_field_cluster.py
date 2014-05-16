@@ -8,14 +8,40 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Deleting field 'ClusterDefinition.additional_params'
+        db.delete_column(u'cluster_clusterdefinition', 'additional_params')
 
-        # Changing field 'ClusterDefinition.id'
-        db.alter_column(u'cluster_clusterdefinition', u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
+        # Deleting field 'ClusterDefinition.quota'
+        db.delete_column(u'cluster_clusterdefinition', 'quota')
+
+        # Deleting field 'ClusterDefinition.ec2'
+        db.delete_column(u'cluster_clusterdefinition', 'ec2')
+
+        # Deleting field 'ClusterDefinition.elastiq'
+        db.delete_column(u'cluster_clusterdefinition', 'elastiq')
+
 
     def backwards(self, orm):
+        # Adding field 'ClusterDefinition.additional_params'
+        db.add_column(u'cluster_clusterdefinition', 'additional_params',
+                      self.gf('json_field.fields.JSONField')(default={}),
+                      keep_default=False)
 
-        # Changing field 'ClusterDefinition.id'
-        db.alter_column(u'cluster_clusterdefinition', 'id', self.gf('django.db.models.fields.CharField')(max_length=64, primary_key=True))
+        # Adding field 'ClusterDefinition.quota'
+        db.add_column(u'cluster_clusterdefinition', 'quota',
+                      self.gf('json_field.fields.JSONField')(default=u'null'),
+                      keep_default=False)
+
+        # Adding field 'ClusterDefinition.ec2'
+        db.add_column(u'cluster_clusterdefinition', 'ec2',
+                      self.gf('json_field.fields.JSONField')(default=u'null'),
+                      keep_default=False)
+
+        # Adding field 'ClusterDefinition.elastiq'
+        db.add_column(u'cluster_clusterdefinition', 'elastiq',
+                      self.gf('json_field.fields.JSONField')(default=u'null'),
+                      keep_default=False)
+
 
     models = {
         u'auth.group': {
@@ -49,11 +75,10 @@ class Migration(SchemaMigration):
         },
         u'cluster.clusterdefinition': {
             'Meta': {'object_name': 'ClusterDefinition'},
-            'checksum': ('django.db.models.fields.CharField', [], {'default': '0', 'max_length': '40'}),
             'data': ('django.db.models.fields.TextField', [], {'default': "'{}'"}),
             'deployable_context': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['context.ContextStorage']"}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'encrypted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'encryption_checksum': ('django.db.models.fields.CharField', [], {'default': '0', 'max_length': '40'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'master_context': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'master_context'", 'to': u"orm['context.ContextDefinition']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '250'}),

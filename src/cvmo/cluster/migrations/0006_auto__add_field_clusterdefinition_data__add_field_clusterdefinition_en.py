@@ -8,37 +8,23 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'ClusterDefinition.encrypted'
-        db.delete_column(u'cluster_clusterdefinition', 'encrypted')
-
-	# Manually Created: renaming column...
-        db.rename_column('cluster_clusterdefinition', 'checksum', 'encryption_checksum')
-
-        # Deleting field 'ClusterDefinition.checksum'
-        #db.delete_column(u'cluster_clusterdefinition', 'checksum')
+        # Adding field 'ClusterDefinition.data'
+        db.add_column(u'cluster_clusterdefinition', 'data',
+                      self.gf('django.db.models.fields.TextField')(default='{}'),
+                      keep_default=False)
 
         # Adding field 'ClusterDefinition.encryption_checksum'
-        #db.add_column(u'cluster_clusterdefinition', 'encryption_checksum',
-        #              self.gf('django.db.models.fields.CharField')(default=0, max_length=40),
-        #              keep_default=False)
+        db.add_column(u'cluster_clusterdefinition', 'encryption_checksum',
+                      self.gf('django.db.models.fields.CharField')(default=0, max_length=40),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Adding field 'ClusterDefinition.encrypted'
-        db.add_column(u'cluster_clusterdefinition', 'encrypted',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Deleting field 'ClusterDefinition.data'
+        db.delete_column(u'cluster_clusterdefinition', 'data')
 
-        # Renaming column back...
-        db.rename_column('cluster_clusterdefinition', 'encryption_checksum', 'checksum')
-
-        # Adding field 'ClusterDefinition.checksum'
-        #db.add_column(u'cluster_clusterdefinition', 'checksum',
-        #              self.gf('django.db.models.fields.CharField')(default=0, max_length=40),
-        #              keep_default=False)
-
-        ## Deleting field 'ClusterDefinition.encryption_checksum'
-        #db.delete_column(u'cluster_clusterdefinition', 'encryption_checksum')
+        # Deleting field 'ClusterDefinition.encryption_checksum'
+        db.delete_column(u'cluster_clusterdefinition', 'encryption_checksum')
 
 
     models = {
@@ -73,14 +59,18 @@ class Migration(SchemaMigration):
         },
         u'cluster.clusterdefinition': {
             'Meta': {'object_name': 'ClusterDefinition'},
+            'additional_params': ('json_field.fields.JSONField', [], {'default': '{}'}),
             'data': ('django.db.models.fields.TextField', [], {'default': "'{}'"}),
             'deployable_context': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['context.ContextStorage']"}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'ec2': ('json_field.fields.JSONField', [], {'default': "u'null'"}),
+            'elastiq': ('json_field.fields.JSONField', [], {'default': "u'null'"}),
             'encryption_checksum': ('django.db.models.fields.CharField', [], {'default': '0', 'max_length': '40'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'master_context': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'master_context'", 'to': u"orm['context.ContextDefinition']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '250'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
+            'quota': ('json_field.fields.JSONField', [], {'default': "u'null'"}),
             'worker_context': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'worker_context'", 'to': u"orm['context.ContextDefinition']"})
         },
         u'contenttypes.contenttype': {
