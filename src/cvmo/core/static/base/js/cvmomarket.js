@@ -75,7 +75,7 @@
         $("#market_author").html(details.owner);
         $("#market_access").html(details.encrypted ? "<strong>Restricted</strong>" : "Open")
         $("#market_template").attr("href", "/context/clone/" + details.uid);
-        $("#market_pair").attr("href", "/machine/pair/" + details.uid);
+        $("#market_pair").attr("href", "/vm/pair/" + details.uid);
         
         if (details.rank > 0) {
             $("#market_rank").html(details.rank);
