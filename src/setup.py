@@ -4,7 +4,7 @@ if __name__ == "__main__":
     setup(
         # Meta data
         name="CernVM-Online",
-        version="1.2.0",
+        version="1.2.2",
         author="CernVM",
         author_email="cernvm.administrator@cern.ch",
         description="CernVM Online portal",

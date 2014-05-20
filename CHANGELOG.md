@@ -2,6 +2,13 @@
 
 The entries bellow are in reverse chronological order.
 
+## v1.2.2 (20 May 2014)
+
+* Cluster definitions can be encrypted
+* CVMFS snapshot pinning for Long-Term Data Preservation
+* Minor bugfixes
+
+
 ## v1.2.0 (x March 2014)
 
 * Initial clean up of the code base. Former `cvmo` package is now split into:

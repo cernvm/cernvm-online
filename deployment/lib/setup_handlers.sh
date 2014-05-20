@@ -63,9 +63,10 @@ function install_cvmo_do
     ( cd "$BASE_DIR"/tmp/src && \
       managed_exec python setup.py sdist ) || return $?
     managed_exec pip install --install-option="--prefix=$BASE_DIR" \
-      --upgrade "$BASE_DIR"/tmp/src/dist/CernVM-Online-1.2.0.tar.gz || return $?
+      --upgrade "$BASE_DIR"/tmp/src/dist/CernVM-Online-1.2.2.tar.gz || return $?
     # 1.0 --> 1.2.0, this is a temporary fix
     # but will cause problems whenever version changes
+    # 1.2.0 --> 1.2.2 ==> indeed
     managed_exec rm -Rf "$BASE_DIR"/tmp || return $?
     managed_exec mkdir -p "$BASE_DIR"/logs
     return $?

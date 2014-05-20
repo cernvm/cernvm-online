@@ -70,13 +70,13 @@ synchronizing a branch means roughly:
 The repository does not contain the production files. Changed files must be
 deployed by running again the setup script:
 
-    /root/cvmo.git/deployment/setup.sh --quick
+    /root/cvmo.git/deployment/setup.sh [-qq|-q]
 
-or:
+The `-q` parameter runs a minimal number of operations to put in production the
+new files and takes much less time than the full process. The `-qq` switch
+makes the operation even faster.
 
-    /root/cvmo.git/deployment/setup.sh -q
-
-The `--quick` (or `-q`) parameter runs a minimal number of operations to put in
-production the new files and takes much less time than the full process.
+**Note:** the "quick" switches should be used in development only. Use the full
+setup with no switches when promoting to production.
 
 **Enjoy!**
