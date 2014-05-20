@@ -516,11 +516,32 @@
 									}
 								});
 
-								sel = $('#ucvm_cvmfs_tag_selector');
-								tag = $('#ucvm_cvmfs_tag');
+								String.prototype.zeroPad = function(n) {
+									var s = this;
+									while (s.length < n) {
+										s = '0' + s;
+									}
+									return s;
+								};
+
+								Date.prototype.toCustomUTCString = function() {
+									return this.getUTCFullYear()                        + '-' +
+										   (this.getUTCMonth()+1).toString().zeroPad(2) + '-' +
+										   this.getUTCDate().toString().zeroPad(2)      + ' ' +
+										   this.getUTCHours().toString().zeroPad(2)     + ':' +
+										   this.getUTCMinutes().toString().zeroPad(2);
+								};
+
+								var sort_data_by_date = function(i1, i2) {
+									// More recent comes first
+									return ( new Date(i2.t) - new Date(i1.t) );
+								};
+
+								var sel = $('#ucvm_cvmfs_tag_selector');
+								var tag = $('#ucvm_cvmfs_tag');
 
 								// Are we disabled from the very beginning?
-								sel_disabled = sel.prop('disabled');
+								var sel_disabled = sel.prop('disabled');
 
 								$('#cernvmBranch').change( function() {
 									url = "{% url "ajax_get_cvmfs_tags" '__branch__' %}";
@@ -533,6 +554,8 @@
 										.done(function(data) {
 											// data is text/json: already converted to object
 
+											data.sort( sort_data_by_date );
+
 											sel.reset_select();
 
 											for (i=0; i<data.length; i++) {
@@ -542,7 +565,7 @@
 
 												o = $('<option></option>')
 														.val(tag_name)
-														.text( tag_date.toUTCString() + ' (' + tag_name + ')');
+														.text( tag_date.toCustomUTCString() + ' - ' + tag_name );
 												sel.append(o);
 
 											}
