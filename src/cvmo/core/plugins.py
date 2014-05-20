@@ -320,6 +320,8 @@ class ContextPlugins(object):
                 _ucvm += "cvmfs_branch=%s\n" % values['general']['cvmfs_branch']
                 if values['general']['cvmfs_branch'] != 'cernvm-prod.cern.ch':
                     _ucvm += "cvmfs_server=hepvm.cern.ch\n"
+            if 'cvmfs_tag' in values['general'] and values['general']['cvmfs_tag'] != '' and values['general']['cvmfs_tag'] != 'trunk':
+                _ucvm += "cvmfs_tag=%s\n" % values['general']['cvmfs_tag']
             if _ucvm != '':
                 # Write only if necessary
                 _ans += "\n[ucernvm-begin]\n%s[ucernvm-end]\n" % _ucvm

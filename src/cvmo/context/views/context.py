@@ -6,7 +6,7 @@ import base64
 import logging
 import urllib2
 from passlib.hash import sha512_crypt
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.core.urlresolvers import reverse
@@ -18,6 +18,7 @@ from cvmo.core.utils.views import render_confirm, render_password_prompt, \
     uncache_response
 from cvmo.core.utils.context import gen_context_key, salt_context_key, tou
 from cvmo.core.utils import crypt
+from cvmo.core.utils import cvmfs
 
 #
 # Context creation
@@ -546,3 +547,27 @@ def _name_increment_revision(name):
 
 def _cap(s, l):
     return s if len(s) <= l else s[0:l - 3] + "..."
+
+
+def ajax_get_cvmfs_tags(request, branch):
+
+    repo_urls = {
+        'cernvm-devel.cern.ch': 'http://hepvm.cern.ch/cvmfs/cernvm-devel.cern.ch',
+        'cernvm-prod.cern.ch': 'http://cvmfs-stratum-one.cern.ch/cvmfs/cernvm-prod.cern.ch'
+        #'cvm-testing': 'http://cvmfs-stratum-one.cern.ch/cvmfs/cernvm-testing.cern.ch'
+    }
+
+    try:
+        url = repo_urls[branch]
+        repo = cvmfs.RemoteRepository(url);
+        history = repo.retrieve_history()
+        dump = []
+
+        for h in history:
+            if h.name != 'trunk' and h.name != 'trunk-previous' and h.name != 'HEAD':
+                dump.append( { 'n': h.name, 't': h.timestamp.isoformat() } )
+
+        return uncache_response( HttpResponse( json.dumps(dump) , content_type="text/json") )
+    except Exception as e:
+        #return uncache_response( HttpResponse( 'error: %s' % e , content_type="text/plain") )
+        raise Http404('CVMFS tag not found')

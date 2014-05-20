@@ -28,9 +28,13 @@ urlpatterns = patterns(
         {"format": "plain", "askpass": True}, name="context_view_plain"),
     url(r"^view/(?P<context_id>[-\w]+)/raw/*$", "api_get",
         {"format": "raw", "askpass": True}, name="context_view_raw"),
+
     url(r"^ajax/publish/*$", "ajax_publish_context",
         name="context_ajax_publish_context"),
-    url(r"^ajax/list$", "ajax_get_list", name="context_ajax_get_list")
+    url(r"^ajax/list$", "ajax_get_list", name="context_ajax_get_list"),
+
+    # Get CVMFS tags for various branches of CernVM
+    url(r"^ajax/cvmfs_tags/(?P<branch>[\w.-]+)$", "ajax_get_cvmfs_tags", name="ajax_get_cvmfs_tags")
 )
 
 #

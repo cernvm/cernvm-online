@@ -494,6 +494,104 @@
 		                    </select>
 						</td>
 					</tr>
+					<tr class="cvmo-disclose-cvm_version-uCernVM">
+						<th>µCernVM snapshot:</th>
+						<td colspan="2" class="long-text">
+
+							<input type="hidden" name="values[general][cvmfs_tag]" maxlength="100" value="{{ values.general.cvmfs_tag }}" id="ucvm_cvmfs_tag">
+
+							<select {{disabled|dis}} id="ucvm_cvmfs_tag_selector" data-default-val="trunk" data-default-label="Always the latest"></select>
+
+							<script type="text/javascript">
+							(function($) {
+
+								$.fn.extend({
+									reset_select: function(opt) {
+										$(this).empty();
+										$(this).append(
+											$('<option></option>')
+												.val( $(this).data('default-val') )
+												.text( $(this).data('default-label') )
+										);
+									}
+								});
+
+								sel = $('#ucvm_cvmfs_tag_selector');
+								tag = $('#ucvm_cvmfs_tag');
+
+								// Are we disabled from the very beginning?
+								sel_disabled = sel.prop('disabled');
+
+								$('#cernvmBranch').change( function() {
+									url = "{% url "ajax_get_cvmfs_tags" '__branch__' %}";
+									branch = $(this).val();
+									url = url.replace('__branch__', branch);
+
+									$.ajax({
+										url: url
+									})
+										.done(function(data) {
+											// data is text/json: already converted to object
+
+											sel.reset_select();
+
+											for (i=0; i<data.length; i++) {
+
+												tag_name = data[i].n;
+												tag_date = new Date( data[i].t );
+
+												o = $('<option></option>')
+														.val(tag_name)
+														.text( tag_date.toUTCString() + ' (' + tag_name + ')');
+												sel.append(o);
+
+											}
+
+											sel.prop('disabled',  (sel_disabled || data.length == 0));
+
+											// In the dropdown, select the value from the textbox, if possible
+											tag.trigger('change');
+
+										})
+										.fail(function() {
+											// Impossible to obtain the list of tags: revert all to trunk
+											sel.reset_select();
+											sel.prop('disabled', true);
+											tag.trigger('change');
+										});
+
+								});
+
+								sel.change( function() {
+
+									// When the selector changes, put the value into the textbox.
+									// No need to validate: we know it is valid already.
+									tag.val( sel.val() );
+
+								});
+
+								tag.change( function() {
+
+									// When the textbox changes, validate its value and fix it
+									sel.val( tag.val() );
+
+									if (sel.val() != tag.val()) {
+										// Invalid: revert to trunk
+										sel.val('trunk');
+										tag.val('trunk');
+									}
+
+								});
+
+								$('#cernvmBranch').trigger('change');
+
+
+							})(jQuery);
+							</script>
+
+
+						</td>
+					</tr>
 
 					<!-- Warning if using CernVM 2 -->
 					<tr class="cvmo-disclose-cvm_version-CernVM2">
