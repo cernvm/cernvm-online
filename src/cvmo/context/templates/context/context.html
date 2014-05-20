@@ -230,7 +230,12 @@
 
 							</table>
 
-							<div id="cvmfs_extra_to_submit" style='display:none'></div>
+							<div id="cvmfs_extra_to_submit" style="display:none">
+							{% for name,val in values.general.extra_repositories.items %}
+							<input type="text" name="values[general][extra_repositories][{{ name }}][server]" value="{{ val.server }}"/>
+							<textarea name="values[general][extra_repositories][{{ name }}][pubkey]">{{ val.pubkey }}</textarea>
+							{% endfor %}
+							</div>
 
 						</td>
 					</tr>
@@ -271,7 +276,7 @@
 
 							reset_select: function(opt) {
 								$(this).empty();
-								$(this).append( $('<option></option>').val(new_item_val).text( 'New item' ) );
+								$(this).append( $('<option></option>').val(new_item_val).text( 'Define a new repository...' ) );
 								$(this).val(new_item_val);
 								return $(this);
 							},
@@ -288,7 +293,17 @@
 						sel.reset_select();
 						edit.show();
 
-						sel.change(function() {
+						// Fill the select with existing values
+						$(tosubmit).find('input').each(function() {
+							var n = $(this).attr('name');
+							var m = n.match(/\[([^\]]+)\]\[server\]$/);
+							if ( m.length == 2 ) {
+								$(sel).append( $('<option></option>').val(m[1]).text(m[1]) );
+								// console.log( 'restored: ' + m[1] );
+							}
+						});
+
+						$(sel).change(function() {
 
 							if ( $(this).val() == new_item_val ) {
 								var name = '';
@@ -307,7 +322,7 @@
 
 						});
 
-						b_delete.click(function () {
+						$(b_delete).click(function () {
 
 							// Get current value
 							var name = $(sel).val();
