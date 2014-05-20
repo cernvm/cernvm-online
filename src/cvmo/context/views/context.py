@@ -553,8 +553,9 @@ def ajax_get_cvmfs_tags(request, branch):
 
     repo_urls = {
         'cernvm-devel.cern.ch': 'http://hepvm.cern.ch/cvmfs/cernvm-devel.cern.ch',
-        'cernvm-prod.cern.ch': 'http://cvmfs-stratum-one.cern.ch/cvmfs/cernvm-prod.cern.ch'
-        #'cvm-testing': 'http://cvmfs-stratum-one.cern.ch/cvmfs/cernvm-testing.cern.ch'
+        'cernvm-testing.cern.ch': 'http://hepvm.cern.ch/cvmfs/cernvm-testing.cern.ch',
+        'cernvm-prod.cern.ch': 'http://cvmfs-stratum-one.cern.ch/cvmfs/cernvm-prod.cern.ch',
+        'cernvm-slc4.cern.ch': 'http://hepvm.cern.ch/cvmfs/cernvm-slc4.cern.ch'
     }
 
     try:
