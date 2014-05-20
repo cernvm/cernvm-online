@@ -1,0 +1,778 @@
+{% extends "base/class_context.html" %}
+{% load url from future %}
+
+{% block title %}Context Definition{% endblock %}
+{% load formutils %}
+{% load static %}
+{% block head %}
+	<script type="text/javascript" src="{% static "base/js/cvmocontext.js" %}"></script>
+	<script type="text/javascript" src="{% static "base/js/libs/jquery.validate.min.js" %}"></script>
+	<link rel="stylesheet" href="{% static "base/js/libs/codemirror/lib/codemirror.css" %}">
+	<script type="text/javascript" src="{% static "base/js/libs/codemirror/lib/codemirror.js" %}"></script>
+	<script type="text/javascript" src="{% static "base/js/libs/codemirror/mode/shell/shell.js" %}"></script>
+	<style type="text/css">
+		.CodeMirror {
+			border: solid 1px #999;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<form action="{% url "context_create" %}" method="post" id="create_context_form">
+		{% csrf_token %}
+		<h1>Context template</h1>
+		<p>Please fill the following parameters and click create in order to create a new virtual machine context definition</p>
+
+		<div id="content-accordion" {% if disabled %}class="cvmo-context-disabled"{% endif %}>
+
+		{% if raw %}
+		<!-- Begin of the Raw section -->
+		<div class="accordion-header separator"><h2>Raw data</h2></div>
+		<div class="accordion-content"><pre>{{ raw|escape }}</pre></div>
+		<!-- End of the Raw section -->
+		{% endif %}
+
+		{% if abstract_html %}{# Note that when abstract_html is empty, it won't be displayed! #}
+		<!-- Custom HTML code -->
+		<div id="cvmo-custom-plugin">
+		<div class="accordion-header separator"><h2>User configuration</h2></div>
+		<div class="accordion-content">
+
+			<!-- Name is mandatory -->
+			<table class="plain long-text">
+			<tr>
+				<th width="150"><label for="f_name">Context name:</label></th>
+				<td><input type="text" id="f_name" maxlength="100" name="values[name]" value="{{ values.name }}" {{disabled|dis}}/></td>
+			</tr>
+			</table><br/>
+
+			<!-- Dump raw HTML -->
+			{{ abstract_html }}
+
+			<!-- Save raw HTML when submitting -->
+			<textarea name="abstract[html_body]" style="display:none">{{ abstract_html|escape }}</textarea>
+
+		</div>
+		<script language="JavaScript">
+		// All the parameters defined in this section override other form
+		// elements located elsewhere. We thus need to list elements in this
+		// section and disable other elements with the same name
+
+		function CVMO_Disable_Default(doDisable, doDefault) {
+			custom_input_objs = jQuery('#cvmo-custom-plugin :input');
+			values = {{ json_values }};
+
+			for (i=0; i<custom_input_objs.length; i++) {
+
+				input_name = jQuery( custom_input_objs[i] ).attr('name');
+
+				// Skip non-values
+				if (input_name.substring(0, 7) != 'values[')
+					continue;
+
+				name_input_objs =
+					jQuery('form#create_context_form :input[name="' +
+					input_name + '"]');
+
+				if (doDefault) {
+					// Fill custom form with default content, whenever possible
+					json_path = input_name.replace(/\[([^\]]*)\]/g,
+						function(match, $1) {
+						  return '.' + $1;
+						});
+					try {
+						// May walk on paths containing undefined elements
+						jQuery( custom_input_objs[i] ).val(
+							eval('('+json_path+')') ).trigger('change');
+					}
+					catch (e) {};
+				}
+
+				if (doDisable) {
+					// Disable all elements from the second on (the first one is
+					// the custom one)
+					for (j=0; j<name_input_objs.length; j++) {
+						if ( name_input_objs[j] !== custom_input_objs[i] ) {
+							// Not the same custom object: disable it
+							jQuery( name_input_objs[j] ).prop('disabled', true);
+						}
+					}
+				}
+
+			}
+		}
+
+		jQuery(document).ready(function() {
+			// Disable and set to default when loading page
+			CVMO_Disable_Default(true, true);
+		});
+
+		jQuery("form#create_context_form").submit(function() {
+			// Disabling again duplicated values when submitting form
+			CVMO_Disable_Default(true, false);
+		});
+
+		</script>
+		</div>
+		{% endif %}
+
+		<!-- Begin of the Generic CernVM plugin section -->
+		{% if cernvm_plugin.display %}
+		<div>
+			{% if from_abstract %}<input type="hidden" name="abstract[display][generic_cernvm]" value="1"/>{% endif %}
+		{% else %}
+		<div style="display:none">
+		{% endif %}
+
+			<div class="accordion-header separator">
+				<h2>
+					General
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<table class="plain long-text">
+					<tr>
+						<th width="150"><label for="f_name">Context name:</label></th>
+						<td><input type="text" id="f_name" maxlength="100" name="values[name]" value="{{ values.name }}" {{disabled|dis}}/></td>
+					</tr>
+					<tr>
+						<th><label for="f_description">Description:</label></th>
+						<td><textarea id="f_description" class="code" name="values[description]" name="other" {{disabled|dis}}>{{ values.description }}</textarea></td>
+					</tr>
+					<tr>
+						<th>Secret key:</th>
+						<td><input type="text" maxlength="100" class="cvmo-disabling-protect" name="values[secret]" value="{{ values.secret }}" {{disabled|dis}}/></td>
+					</tr>
+					<tr>
+						<th>&nbsp</th>
+						<td><input type="checkbox" class="cvmo-disabling" name="values[protect]" value="1" id="protect" {{values.protect|chk}} {{disabled|dis}}><label for="protect"> Protect this context with a secret key</label></td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
+					CVMFS Configuration
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<p class="description">Select the repositories you want your virtual machine to use.</p>
+
+				<table class="plain">
+					<tr>
+						<th width="150"><label for="organisation">Main group:</label></th>
+						<td colspan="2">
+							<select {{disabled|dis}} id="organisation" name="values[general][organisation]" onchange="javascript:CVMO.ContextUI.UpdateGroups(this.value)">
+								{% for o in cernvm.CERNVM_ORGANISATION_LIST %}
+									<option value="{{ o }}" {{values.general.organisation|sel:o}}>{{ o }}</options>
+								{% endfor %}
+					        </select>
+						</td>
+					</tr>
+					<tr>
+						<th>Additional groups:</th>
+						<td colspan="2">
+
+							<div id="cvmo_proxies">
+
+								<!-- Visual components -->
+								<div class="list-wrapper">
+									<ul id="available_repos">
+										<!-- Populated automatically -->
+									</ul>
+								</div>
+								<div class="list-wrapper">
+									<ul id="active_repos">
+										<!-- Populated automatically -->
+									</ul>
+								</div>
+								<div class="float-clear"></div>
+
+								<!-- INPUT to bind with form -->
+								<input {{disabled|dis}} type="hidden" name="repositories" id="available_repos_text" value="{{ cernvm.CERNVM_REPOSITORY_LIST }}" />
+								<input {{disabled|dis}} type="hidden" name="values[general][repositories]" value="{{ values.general.repositories }}" id="active_repos_text" />
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="3">&nbsp;</td>
+					</tr>
+					<tr>
+						<th>CVMFS HTTP Proxy:</th>
+						<td colspan="2">
+							<select {{disabled|dis}} class="cvmo-disclose" name="values[general][http_proxy_mode]" id="proxy">
+								<option value="auto" {{ values.general.http_proxy_mode|sel:"auto" }}>Auto</option>
+								<option value="direct" {{ values.general.http_proxy_mode|sel:"direct" }}>Do not use proxy (Direct connection)</option>
+								<option value="http" {{ values.general.http_proxy_mode|sel:"http" }}>HTTP Proxy</option>
+								<option value="https" {{ values.general.http_proxy_mode|sel:"https" }}>HTTPS (Secure) Proxy</option>
+							</select>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+						<td>&nbsp;</td>
+						<td width="30">Host:</td>
+						<td>
+							<input {{disabled|dis}} type="text" name="values[general][http_proxy]" value="{{values.general.http_proxy}}" />
+							&nbsp; Port: <input {{disabled|dis}} type="text" style="width: 40px" name="values[general][http_proxy_port]" value="{{values.general.http_proxy_port}}" /></td>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+						<td>&nbsp;</td>
+						<td>Username:</td>
+						<td><input {{disabled|dis}} type="text" style="width: 150px" name="values[general][http_username]" value="{{values.general.http_username}}" class="cvmo-disabling-http_anon" /></td>
+					</tr>
+					<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+						<td>&nbsp;</td>
+						<td><label for="http_password">Password:</label></td>
+						<td><input {{disabled|dis}} id="http_password" type="text" style="width: 150px" name="values[general][http_password]" value="{{values.general.http_password}}" class="cvmo-disabling-http_anon" /></td>
+					</tr>
+					<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+						<td>&nbsp;</td>
+						<td colspan="2">
+							<input {{disabled|dis}} type="checkbox" name="values[general][http_usecredentials]" {{values.general.http_usecredentials|chk}} class="cvmo-disabling" id="http_anon"><label for="http_anon"> Proxy requires authentication</label>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-proxy-http cvmo-disclose-proxy-https">
+						<td>&nbsp;</td>
+						<td colspan="2">
+							<input {{disabled|dis}} type="checkbox" name="values[general][http_fallback]" {{values.general.http_fallback|chk}} class="cvmo-disabling" id="http_fallback"><label for="http_fallback"> Fallback to direct</label>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
+					Users
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<p class="description">Define the users your configuration will have</p>
+
+				<div id="cvmo_users">
+					<table id="table_users" class="pad-5">
+						<tr>
+							<th>Username</th>
+							<th>Group</th>
+							<th>Home</th>
+							<th>Password</th>
+							{% if not disabled %}
+								<th>Operations</th>
+							{% endif %}
+						</tr>
+						{% for uid,u in values.general.users.items %}
+							<tr id="user{{uid}}" class="cvmo-user-entry">
+								<td><input type="hidden" name="values[general][users][{{uid}}][name]" value="{{u.name}}" />{{u.name}}</td>
+								<td><input type="hidden" name="values[general][users][{{uid}}][group]" value="{{u.group}}" />{{u.group}}</td>
+								<td><input type="hidden" name="values[general][users][{{uid}}][home]" value="{{u.home}}" />{{u.home}}</td>
+								<td><input type="hidden" name="values[general][users][{{uid}}][password]" value="{{u.password}}" />****</td>
+								{% if not disabled %}
+								<td><a href="javascript:;" onclick="CVMO.ContextUI.RemoveUser({{uid}});" class="softbutton"><img border="0" src="{% static "context/img/user_delete.png" %}" align="absmiddle"> Remove user</a></td>
+								{% endif %}
+							</tr>
+						{% endfor %}
+						{% if not disabled %}
+							<tr id="newuser_row" class="tr-newuser">
+								<td><input type="text" id="new_user_name" value="user" onkeyup="$('new_user_home').setProperty('value', '/home/'+this.value); $('f_contextcmduser').setProperty('value', this.value);" /></td>
+								<td><input type="text" id="new_user_group" /></td>
+								<td><input type="text" id="new_user_home" value="/home/user" /></td>
+								<td><input type="password" id="new_user_password" value="" /></td>
+								<td><a href="javascript:;" onclick="CVMO.ContextUI.AddUserFromForm()" class="softbutton"><img border="0" src="{% static "context/img/user_add.png" %}" align="absmiddle"> Add user</a></td>
+							</tr>
+						{% endif %}
+					</table>
+					<br />
+					<table class="plain long-text">
+
+						<tr>
+							<th width="150">Default login shell:</th>
+							<td><select {{disabled|dis}} id="new_user_shell" name="values[general][shell]">
+					        	<option value="/bin/bash" {{ values.general.shell|sel:"/bin/bash" }}> /bin/bash </option>
+					        	<option value="/bin/tcsh" {{ values.general.shell|sel:"/bin/tcsh" }}> /bin/tcsh </option>
+					        	<option value="/bin/zsh" {{ values.general.shell|sel:"/bin/zsh" }}> /bin/zsh </option>
+					        	<option value="/bin/false" {{ values.general.shell|sel:"/bin/false" }}> /bin/false </option>
+					        </select></td>
+						</tr>
+
+						<!-- Issue a message to warn when using plain text passwords -->
+						<tr class="cvmo-disclose-cvm_version-CernVM2">
+							<td colspan="3"><span class="red"><b>Beware: passwords are stored in clear text, so don't use any of your conventional passwords here! Create a context for µCernVM for storing salted and hashed passwords instead.</b></span></td>
+						</tr>
+						<!--<tr class="cvmo-disclose-cvm_version-uCernVM">
+							<td colspan="3">uCernVM</td>
+						</tr>-->
+
+					</table>
+
+				</div>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
+					Services
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<p class="description">Here you can select an alternative CernVM configuration server and change autoconfigured proxy server and site name settings. Unless you are sure that you know what are you doing, please leave these default values unchanged.</p>
+				<div id="cvmo_proxy">
+					<table class="plain long-text">
+						<tr>
+							<th width="150">Services to start</th>
+							<td colspan="2">
+								<div id="cvmo_services">
+									<!-- Visual components -->
+									<div class="list-wrapper">
+										<ul id="available_services">
+											<!-- Populated automatically -->
+										</ul>
+									</div>
+									<div class="list-wrapper">
+										<ul id="active_services">
+											<!-- Populated automatically -->
+										</ul>
+									</div>
+									<div class="float-clear"></div>
+
+									<!-- INPUT to bind with form -->
+									<input {{disabled|dis}} type="hidden" name="services" id="available_services_text" value="acpid,amiconfig-cernvm,autofs,avahi-daemon,avahi-dnsconfd,cernvm,cernvm-context,crond,cups,cvmfs,distro-release,functions,gpm,haldaemon,halt,hepix_functions,iptables,irqbalance,killall,krb524,kudzu,lvm2-monitor,mdmonitor,mdmpd,messagebus,netconsole,netfs,netplugd,network,nfs,nfslock,nscd,ntpd,portmap,psacct,raa,raa-restore,rawdevices,rdisc,readahead_early,readahead_later,rpcgssd,rpcidmapd,rpcsvcgssd,saslauthd,single,snmpd,snmptrapd,sshd,svnserve,syslog,vmcontext_epilog,vmcontext_hepix,vmcontext_prolog,xfs,xrdp" />
+									<input {{disabled|dis}} type="hidden" name="values[general][services]" value="{{values.general.services}}" id="active_services_text" />
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="f_customservices">Custom services:</label></th>
+							<td colspan="2"><input type="text" id="f_customservices" name="values[general][custom_services]" value="{{values.general.custom_services}}" /></td>
+						</tr>
+						<tr>
+							<th><label for="f_contextcmd">Contextualization cmd:</label></th>
+							<td colspan="2"><input type="text" id="f_contextcmd" name="values[general][context_cmd]" value="{{values.general.context_cmd}}" /></td>
+						</tr>
+						<tr>
+							<th><label for="f_contextcmduser">Run command as:</label></th>
+							<td colspan="2"><input type="text" id="f_contextcmduser" name="values[general][context_cmd_user]" value="{{values.general.context_cmd_user}}" /></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
+					Environment
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<p class="description">Environment variables that will be exposed globally to your virtual machine.</p>
+				<table id="table_env" class="pad-5">
+					<thead>
+						<tr>
+							{% if not disabled %}
+								<th>Name</th>
+							{% else %}
+								<th width="200">Name</th>
+							{% endif %}
+							<th width="10">&nbsp;</th>
+							<th>Value</th>
+							{% if not disabled %}
+								<th width="150">Operations</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody id="table_env_body">
+						{% for v_name,v_value in values.general.environment.items %}
+							<tr id="env-entry-{{v_name}}" class="cvm-environment-entry">
+								<td align="right"><strong>{{v_name}}</strong></td>
+								<td align="center">=</td>
+								{% if not disabled %}
+									<td><input type="hidden" name="values[general][environment][{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
+									<td class="v-middle" align="center"><a href="javascript:;" onclick="CVMO.ContextUI.RemoveEnv('env-entry-{{v_name}}');" class="softbutton"><img border="0" src="{% static "context/img/page_delete.png" %}" align="absmiddle"> Remove variable</a></td>
+								{% else %}
+									<td><input type="hidden" name="values[general][environment][{{v_name}}]" value="{{v_value}}" />{{v_value}}</td>
+								{% endif %}
+							</tr>
+						{% empty %}
+							{% if disabled %}
+								<tr>
+									<td colspan="3" align="center">No environment variables are defined</tr>
+								</tr>
+							{% endif %}
+						{% endfor %}
+					</tbody>
+					{% if not disabled %}
+						<thead>
+							<tr id="newenv_row" class="tr-newenv">
+								<td><input type="text" id="new_env_var" style="width:98%" /></td>
+								<td align="center">=</td>
+								<td><input type="text" id="new_env_value" style="width:98%" /></td>
+								<td align="center"><a href="javascript:;" onclick="CVMO.ContextUI.AddEnvFromForm()" class="softbutton"><img border="0" src="{% static "context/img/page_add.png" %}" align="absmiddle"> Add variable</a></td>
+							</tr>
+						</thead>
+					{% endif %}
+				</table>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
+					EOS
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<table class="plain long-text">
+					<tr>
+						<th width="150"><label for="f_eos_server">EOS server:</label></th>
+						<td><input type="text" id="f_eos_server" maxlength="100" name="values[general][eos_server]" value="{{ values.general.eos_server }}" {{disabled|dis}}/></td>
+					</tr>
+					<tr>
+						<th width="150"><label for="f_x509_user">X.509 local user:</label></th>
+						<td><input type="text" id="f_x509_user" maxlength="100" name="values[general][x509_user]" value="{{ values.general.x509_user }}" {{disabled|dis}}/></td>
+					</tr>
+					<tr>
+						<th><label for="f_x509_cert">Proxy (or X.509 certificate and private key) in PEM format:</label></th>
+						<td><textarea id="f_x509_cert" class="code" name="values[general][x509_cert]" {{disabled|dis}}>{{ values.general.x509_cert }}</textarea></td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
+					CernVM Preferences
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<p class="description">While Basic CernVM is sufficient to run a typical experiment software framework, you can optionally download or upgrade to Development Edition (which will add extra tools and libraries to support software development) or full Desktop Edition which add a full X desktop environment (suitable for event display applications and platforms where native X is not available).</p>
+				<table class="plain" id='cernvm_config'>
+					<tr>
+						<th width="150">Configuration URL:</th>
+						<td colspan="2">
+							<select {{disabled|dis}} id="cernvmConfigUrl" name="values[general][config_url]">
+		                        <option {{values.general.config_url|sel:"http://cernvm.cern.ch/config"}} value="http://cernvm.cern.ch/config">http://cernvm.cern.ch/config</option>
+								<option {{values.general.config_url|sel:"http://cernvm.cern.ch/config/config-sign.cgi"}} value="http://cernvm.cern.ch/config/config-sign.cgi">http://cernvm.cern.ch/config/config-sign.cgi</option>
+		                    </select>
+						</td>
+					</tr>
+					<tr>
+						<th width="150">CernVM Version:</th>
+						<td colspan="2">
+							<select class="cvmo-disclose" id="cvm_version" name="values[general][cvm_version]">
+								<option value="CernVM2" {{ values.general.cvm_version|sel:"CernVM2" }}>CernVM 2</option>
+		                    	<option value="uCernVM" {{ values.general.cvm_version|sel_default:"uCernVM" }}>µCernVM</option>
+		                    </select>
+						</td>
+					</tr>
+					<tr>
+						<th width="150">CernVM Edition:</th>
+						<td colspan="2">
+							<select class="cvmo-disclose" id="model" name="values[general][cvm_edition]">
+		                    	<option value="Batch" {{ values.general.cvm_edition|sel_default:"Batch" }}>Batch</option>
+		                    	<option value="Basic" {{ values.general.cvm_edition|sel:"Basic" }}>Basic</option>
+								<option value="Desktop" {{ values.general.cvm_edition|sel:"Desktop" }}>Desktop</option>
+		                    </select>
+						</td>
+					</tr>
+
+					<!-- uCernVM-only part -->
+					<tr class="cvmo-disclose-cvm_version-uCernVM">
+						<th>Expand root partition:</th>
+						<td colspan="2">
+							<input {{disabled|dis}} type="checkbox" name="values[general][resize_rootfs]" {{values.general.resize_rootfs|chk}} class="cvmo-disabling" id="resize_rootfs" value="true"><label for="resize_rootfs"> Use full root partition instead of the first 20 GB only</label>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-cvm_version-uCernVM">
+						<th width="150">µCernVM branch:</th>
+						<td colspan="2">
+							<select {{disabled|dis}} id="cernvmBranch" name="values[general][cvmfs_branch]">
+		                        <option {{values.general.cvmfs_branch|sel_default:"cernvm-prod.cern.ch"}} value="cernvm-prod.cern.ch">Production</option>
+		                        <option {{values.general.cvmfs_branch|sel:"cernvm-testing.cern.ch"}} value="cernvm-testing.cern.ch">Testing</option>
+		                        <option {{values.general.cvmfs_branch|sel:"cernvm-devel.cern.ch"}} value="cernvm-devel.cern.ch">Development</option>
+		                        <option {{values.general.cvmfs_branch|sel:"cernvm-slc4.cern.ch"}} value="cernvm-slc4.cern.ch">SLC4 (experimental)</option>
+		                    </select>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-cvm_version-uCernVM">
+						<th>µCernVM snapshot:</th>
+						<td colspan="2" class="long-text">
+
+							<input type="hidden" name="values[general][cvmfs_tag]" maxlength="100" value="{{ values.general.cvmfs_tag }}" id="ucvm_cvmfs_tag">
+
+							<select {{disabled|dis}} id="ucvm_cvmfs_tag_selector" data-default-val="trunk" data-default-label="Always the latest"></select>
+
+							<script type="text/javascript">
+							(function($) {
+
+								$.fn.extend({
+									reset_select: function(opt) {
+										$(this).empty();
+										$(this).append(
+											$('<option></option>')
+												.val( $(this).data('default-val') )
+												.text( $(this).data('default-label') )
+										);
+									}
+								});
+
+								sel = $('#ucvm_cvmfs_tag_selector');
+								tag = $('#ucvm_cvmfs_tag');
+
+								// Are we disabled from the very beginning?
+								sel_disabled = sel.prop('disabled');
+
+								$('#cernvmBranch').change( function() {
+									url = "{% url "ajax_get_cvmfs_tags" '__branch__' %}";
+									branch = $(this).val();
+									url = url.replace('__branch__', branch);
+
+									$.ajax({
+										url: url
+									})
+										.done(function(data) {
+											// data is text/json: already converted to object
+
+											sel.reset_select();
+
+											for (i=0; i<data.length; i++) {
+
+												tag_name = data[i].n;
+												tag_date = new Date( data[i].t );
+
+												o = $('<option></option>')
+														.val(tag_name)
+														.text( tag_date.toUTCString() + ' (' + tag_name + ')');
+												sel.append(o);
+
+											}
+
+											sel.prop('disabled',  (sel_disabled || data.length == 0));
+
+											// In the dropdown, select the value from the textbox, if possible
+											tag.trigger('change');
+
+										})
+										.fail(function() {
+											// Impossible to obtain the list of tags: revert all to trunk
+											sel.reset_select();
+											sel.prop('disabled', true);
+											tag.trigger('change');
+										});
+
+								});
+
+								sel.change( function() {
+
+									// When the selector changes, put the value into the textbox.
+									// No need to validate: we know it is valid already.
+									tag.val( sel.val() );
+
+								});
+
+								tag.change( function() {
+
+									// When the textbox changes, validate its value and fix it
+									sel.val( tag.val() );
+
+									if (sel.val() != tag.val()) {
+										// Invalid: revert to trunk
+										sel.val('trunk');
+										tag.val('trunk');
+									}
+
+								});
+
+								$('#cernvmBranch').trigger('change');
+
+
+							})(jQuery);
+							</script>
+
+
+						</td>
+					</tr>
+
+					<!-- Warning if using CernVM 2 -->
+					<tr class="cvmo-disclose-cvm_version-CernVM2">
+						<td colspan="3"><span class="red"><b>Beware: when creating a context for CernVM 2 with user definitions, their passwords will be stored in clear text. If you use µCernVM instead, a salted and hashed version of each password is saved.</b></span></td>
+					</tr>
+
+					<tr class="cvmo-disclose-model-Desktop">
+						<th>Screen resolution:</th>
+						<td colspan="2">
+							<select name="values[general][cvm_resolution]">
+			                    <option value="640x480" {{ values.general.cvm_resolution|sel:"640x480" }}>640x480</option>
+								<option value="800x600" {{ values.general.cvm_resolution|sel:"800x600" }}>800x600</option>
+								<option value="1024x768" {{ values.general.cvm_resolution|sel_default:"1024x768" }}>1024x768</option>
+								<option value="1280x700" {{ values.general.cvm_resolution|sel:"1280x700" }}>1280x700</option>
+								<option value="1280x800" {{ values.general.cvm_resolution|sel:"1280x800" }}>1280x800</option>
+								<option value="1440x900" {{ values.general.cvm_resolution|sel:"1440x900" }}>1440x900</option>
+								<option value="1280x1024" {{ values.general.cvm_resolution|sel:"1280x1024" }}>1280x1024</option>
+								<option value="1400x1050" {{ values.general.cvm_resolution|sel:"1400x1050" }}>1400x1050</option>
+								<option value="1680x1050" {{ values.general.cvm_resolution|sel:"1680x1050" }}>1680x1050</option>
+								<option value="1600x1200" {{ values.general.cvm_resolution|sel:"1600x1200" }}>1600x1200</option>
+								<option value="1920x1050" {{ values.general.cvm_resolution|sel:"1920x1050" }}>1920x1050</option>
+								<option value="1920x1200" {{ values.general.cvm_resolution|sel:"1920x1200" }}>1920x1200</option>
+		                    </select>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-model-Desktop">
+						<th>Keyboard Type</th>
+						<td colspan="2">
+							<select name="values[general][cvm_keyboard_layout]">
+			                    <option value="ar-azerty" {{ values.general.cvm_keyboard_layout|sel:"ar-azerty" }}>Arabic (azerty)</option>
+								<option value="ar-azerty-digits" {{ values.general.cvm_keyboard_layout|sel:"ar-azerty-digits" }}>Arabic (azerty/digits)</option>
+								<option value="ar-digits" {{ values.general.cvm_keyboard_layout|sel:"ar-digits" }}>Arabic (digits)</option>
+								<option value="ar-qwerty" {{ values.general.cvm_keyboard_layout|sel:"ar-qwerty" }}>Arabic (qwerty)</option>
+								<option value="ar-qwerty-digits" {{ values.general.cvm_keyboard_layout|sel:"ar-qwerty-digits" }}>Arabic (qwerty/digits)</option>
+								<option value="be-latin1" {{ values.general.cvm_keyboard_layout|sel:"be-latin1" }}>Belgian (be-latin1)</option>
+								<option value="ben" {{ values.general.cvm_keyboard_layout|sel:"ben" }}>Bengali (Inscript)</option>
+								<option value="ben-probhat" {{ values.general.cvm_keyboard_layout|sel:"ben-probhat" }}>Bengali (Probhat)</option>
+								<option value="br-abnt2" {{ values.general.cvm_keyboard_layout|sel:"br-abnt2" }}>Brazilian (ABNT2)</option>
+								<option value="bg" {{ values.general.cvm_keyboard_layout|sel:"bg" }}>Bulgarian</option>
+								<option value="croat" {{ values.general.cvm_keyboard_layout|sel:"croat" }}>Croatian</option>
+								<option value="cz-lat2" {{ values.general.cvm_keyboard_layout|sel:"cz-lat2" }}>Czechoslovakian</option>
+								<option value="cz-us-qwertz" {{ values.general.cvm_keyboard_layout|sel:"cz-us-qwertz" }}>Czechoslovakian (qwertz)</option>
+								<option value="dk" {{ values.general.cvm_keyboard_layout|sel:"dk" }}>Danish</option>
+								<option value="dk-latin1" {{ values.general.cvm_keyboard_layout|sel:"dk-latin1" }}>Danish (latin1)</option>
+								<option value="dev" {{ values.general.cvm_keyboard_layout|sel:"dev" }}>Devanagari (Inscript)</option>
+								<option value="nl" {{ values.general.cvm_keyboard_layout|sel:"nl" }}>Dutch</option>
+								<option value="dvorak" {{ values.general.cvm_keyboard_layout|sel:"dvorak" }}>Dvorak</option>
+								<option value="et" {{ values.general.cvm_keyboard_layout|sel:"et" }}>Estonian</option>
+								<option value="fi" {{ values.general.cvm_keyboard_layout|sel:"fi" }}>Finnish</option>
+								<option value="fi-latin1" {{ values.general.cvm_keyboard_layout|sel:"fi-latin1" }}>Finnish (latin1)</option>
+								<option value="fr" {{ values.general.cvm_keyboard_layout|sel:"fr" }}>French</option>
+								<option value="fr-latin1" {{ values.general.cvm_keyboard_layout|sel:"fr-latin1" }}>French (latin1)</option>
+								<option value="fr-latin9" {{ values.general.cvm_keyboard_layout|sel:"fr-latin9" }}>French (latin9)</option>
+								<option value="fr-pc" {{ values.general.cvm_keyboard_layout|sel:"fr-pc" }}>French (pc)</option>
+								<option value="cf" {{ values.general.cvm_keyboard_layout|sel:"cf" }}>French Canadian</option>
+								<option value="de" {{ values.general.cvm_keyboard_layout|sel:"de" }}>German</option>
+								<option value="de-latin1-nodeadkeys" {{ values.general.cvm_keyboard_layout|sel:"de-latin1-nodeadkeys" }}>German (latin1 w/ no deadkeys)</option>
+								<option value="de-latin1" {{ values.general.cvm_keyboard_layout|sel:"de-latin1" }}>German (latin1)</option>
+								<option value="gr" {{ values.general.cvm_keyboard_layout|sel:"gr" }}>Greek</option>
+								<option value="guj" {{ values.general.cvm_keyboard_layout|sel:"guj" }}>Gujarati (Inscript)</option>
+								<option value="hu" {{ values.general.cvm_keyboard_layout|sel:"hu" }}>Hungarian</option>
+								<option value="hu101" {{ values.general.cvm_keyboard_layout|sel:"hu101" }}>Hungarian (101 key)</option>
+								<option value="is-latin1" {{ values.general.cvm_keyboard_layout|sel:"is-latin1" }}>Icelandic</option>
+								<option value="it" {{ values.general.cvm_keyboard_layout|sel:"it" }}>Italian</option>
+								<option value="it-ibm" {{ values.general.cvm_keyboard_layout|sel:"it-ibm" }}>Italian (IBM)</option>
+								<option value="it2" {{ values.general.cvm_keyboard_layout|sel:"it2" }}>Italian (it2)</option>
+								<option value="jp106" {{ values.general.cvm_keyboard_layout|sel:"jp106" }}>Japanese</option>
+								<option value="la-latin1" {{ values.general.cvm_keyboard_layout|sel:"la-latin1" }}>Latin American</option>
+								<option value="mk-utf" {{ values.general.cvm_keyboard_layout|sel:"mk-utf" }}>Macedonian</option>
+								<option value="no" {{ values.general.cvm_keyboard_layout|sel:"no" }}>Norwegian</option>
+								<option value="pl2" {{ values.general.cvm_keyboard_layout|sel:"pl2" }}>Polish</option>
+								<option value="pt-latin1" {{ values.general.cvm_keyboard_layout|sel:"pt-latin1" }}>Portuguese</option>
+								<option value="gur" {{ values.general.cvm_keyboard_layout|sel:"gur" }}>Punjabi (Inscript)</option>
+								<option value="ro_win" {{ values.general.cvm_keyboard_layout|sel:"ro_win" }}>Romanian</option>
+								<option value="ru" {{ values.general.cvm_keyboard_layout|sel:"ru" }}>Russian</option>
+								<option value="ru-ms" {{ values.general.cvm_keyboard_layout|sel:"ru-ms" }}>Russian (Microsoft)</option>
+								<option value="ru-cp1251" {{ values.general.cvm_keyboard_layout|sel:"ru-cp1251" }}>Russian (cp1251)</option>
+								<option value="ru1" {{ values.general.cvm_keyboard_layout|sel:"ru1" }}>Russian (ru1)</option>
+								<option value="ru2" {{ values.general.cvm_keyboard_layout|sel:"ru2" }}>Russian (ru2)</option>
+								<option value="ru.map.utf8ru" {{ values.general.cvm_keyboard_layout|sel:"ru.map.utf8ru" }}>Russian (utf8ru)</option>
+								<option value="ru_win" {{ values.general.cvm_keyboard_layout|sel:"ru_win" }}>Russian (win)</option>
+								<option value="sr-cy" {{ values.general.cvm_keyboard_layout|sel:"sr-cy" }}>Serbian</option>
+								<option value="sk-qwerty" {{ values.general.cvm_keyboard_layout|sel:"sk-qwerty" }}>Slovakian</option>
+								<option value="slovene" {{ values.general.cvm_keyboard_layout|sel:"slovene" }}>Slovenian</option>
+								<option value="es" {{ values.general.cvm_keyboard_layout|sel:"es" }}>Spanish</option>
+								<option value="sv-latin1" {{ values.general.cvm_keyboard_layout|sel:"sv-latin1" }}>Swedish</option>
+								<option value="fr_CH" {{ values.general.cvm_keyboard_layout|sel:"fr_CH" }}>Swiss French</option>
+								<option value="fr_CH-latin1" {{ values.general.cvm_keyboard_layout|sel:"fr_CH-latin1" }}>Swiss French (latin1)</option>
+								<option value="sg" {{ values.general.cvm_keyboard_layout|sel:"sg" }}>Swiss German</option>
+								<option value="sg-latin1" {{ values.general.cvm_keyboard_layout|sel:"sg-latin1" }}>Swiss German (latin1)</option>
+								<option value="tml-inscript" {{ values.general.cvm_keyboard_layout|sel:"tml-inscript" }}>Tamil (Inscript)</option>
+								<option value="tml-uni" {{ values.general.cvm_keyboard_layout|sel:"tml-uni" }}>Tamil (Typewriter)</option>
+								<option value="trq" {{ values.general.cvm_keyboard_layout|sel:"trq" }}>Turkish</option>
+								<option value="us" {{ values.general.cvm_keyboard_layout|sel:"us" }}>U.S. English</option>
+								<option value="us-acentos" {{ values.general.cvm_keyboard_layout|sel_default:"us-acentos" }}>U.S. International</option>
+								<option value="ua-utf" {{ values.general.cvm_keyboard_layout|sel:"ua-utf" }}>Ukrainian</option>
+								<option value="uk" {{ values.general.cvm_keyboard_layout|sel:"uk" }}>United Kingdom</option>
+		                    </select>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-model-Desktop">
+						<th>&nbsp;</th>
+						<td colspan="2">
+							<input id="startx" type="checkbox" name="values[general][cvm_startx]" value="1" {{values.general.cvm_startx|chk}}><label for="startx"> Start X on startup</label>
+						</td>
+					</tr>
+					<tr class="cvmo-disclose-model-Desktop cvmo-disclose-model-Basic long-text">
+						<th class="cvmo-disclose-cvm_version-CernVM2" width="150">Admin password:</th>
+						<td class="cvmo-disclose-cvm_version-CernVM2" colspan="2"><input type="password" name="values[general][cvm_wa_password]" value="{{ values.general.cvm_wa_password }}" /></td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
+					Root SSH Key
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<p class="description">Here you can paste the contents of the public ssh key that will be used to authenticate the root user.</p>
+				<table class="plain long-text">
+					<tr>
+						<th>Root SSH Key:</th>
+						<td><textarea class="code" name="values[root_ssh_key]">{{ values.root_ssh_key }}</textarea></td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="accordion-header separator">
+				<h2>
+					Startup script
+					<span class="error">section has errors!</span>
+				</h2>
+			</div>
+			<div class="accordion-content">
+				<p class="description">Here you can write a shell script that will be executed as root during contextualization phase.</p>
+				{% if disabled %}
+				<pre>{{ values.general.startup_script }}</pre>
+				{% else %}
+				<textarea id="code" style="width: 99%" name="values[general][startup_script]" rows="20">{{values.general.startup_script}}</textarea>
+				{% endif %}
+			</div>
+
+		</div>
+		<!-- End of the Generic CernVM plugin section -->
+
+			{% for p in plugins %}
+				<div class="separator cvmo-module" {% if not p.display %}style="display:none"{% endif %}>
+					<h2>
+						{{ p.title }}&nbsp;
+						<label title="Turn on to enable this module" class="cvmo-headcontrol">
+						 	<input {{disabled|dis}} name="enabled[{{ p.id }}]" value="1" {% if p.enabled %}checked="checked"{% endif %} type="checkbox" />
+						 	<span> Enable </span>
+						 </label>
+					</h2>
+				</div>
+				<div class="" {% if not p.display %}style="display:none"{% endif %}>
+					{% if p.description != '' %}<p class="description">{{ p.description }}.</p>{% endif %}
+					{% if p.display and abstract_html %}
+					<input type="hidden" name="abstract[display][{{ p.id }}]" value="1"/>
+					{% endif %}
+					{{ p.body }}
+				</div>
+			{% endfor %}
+
+		</div>
+
+		{% if not disabled %}
+			<p><input type="submit" value="{{ submit_label|default:'Create context' }}" /></p>
+		{% endif %}
+	</form>
+
+	{% autoescape off %}
+		<script type="text/javascript">
+		CVMO.ContextUI.Init({{ cernvm.CERNVM_REPOSITORY_MAP }});
+		CodeMirror.fromTextArea(document.getElementById('code'), {
+			mode: 'shell',
+			lineNumbers: true,
+			matchBrackets: true
+		});
+		</script>
+	{% endautoescape %}
+{% endblock %}

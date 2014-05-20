@@ -1,0 +1,15 @@
+{% extends "base/main_wosidebar_tw.html" %}
+{% load static %}
+{% load url from future %}
+
+{% block title %}Invalid request{% endblock %}
+
+{% block body %}
+    <div class="jumbotron" id="error">
+        <div class="container">
+            <h1>Invalid request</h1>
+            <p>Something does not look right here...</p>
+            <p><a class="btn btn-primary btn-lg" href="{% url "dashboard" %}">Go home</a></p>
+        </div>
+    </div>
+{% endblock %}

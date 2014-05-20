@@ -2,6 +2,7 @@
 # CernVM Online Configuration file
 # Modify the config.py file for the current deployment
 #
+import os
 from cvmo import config
 
 #
@@ -24,12 +25,6 @@ URL_PREFIX = config.URL_PREFIX
 
 ENABLE_CSC = False
 CSC_USER_CONFIG_FILE = "students.conf"
-
-#
-# Cloud
-#
-
-ENABLE_CLOUD = config.ENABLE_CLOUD
 
 #
 # WebAPI
@@ -78,27 +73,27 @@ SHIBBOLETH_SSO = {
     ],
 
     # Where to redirect if the user is not authenticated
-    "redirect_login": "/" + config.URL_PREFIX + "login",
+    "redirect_login": "/%suser/login" % config.URL_PREFIX,
 
     # Which website paths are publicly accessible
     "public_path": [
+        # Admin
+        r"/%sadmin[/]{0,1}.*$" % config.URL_PREFIX,
         # Login
-        r"/" + config.URL_PREFIX + "login$",
-        r"/" + config.URL_PREFIX + "login_action$",
+        r"/%suser/login$" % config.URL_PREFIX,
+        r"/%suser/login_action$" % config.URL_PREFIX,
         # Registration
-        r"/" + config.URL_PREFIX + "register$",
-        r"/" + config.URL_PREFIX + "register_action$",
-        r"/" + config.URL_PREFIX + "account_activation$",
+        r"/%suser/register$" % config.URL_PREFIX,
+        r"/%suser/register_action$" % config.URL_PREFIX,
+        r"/%suser/account_activation$" % config.URL_PREFIX,
+        # API
+        r"/%sapi/.*$" % config.URL_PREFIX
+
         # API - context
-        r"/" + config.URL_PREFIX + "api/context/?$",
-        r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/?$",
-        r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/plain/?$",
-        r"/" + config.URL_PREFIX + "api/fetch/?$",
-        # API - cluster
-        r"/" + config.URL_PREFIX + "api/cluster/.*$",
-        # API - marketplace
-        r"/" + config.URL_PREFIX + "api/market/search.clusters/?$",
-        r"/" + config.URL_PREFIX + "api/market/groups/?$"
+        # r"/" + config.URL_PREFIX + "api/context/?$",
+        # r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/?$",
+        # r"/" + config.URL_PREFIX + "api/context/[0-9a-f]+/plain/?$",
+        # r"/" + config.URL_PREFIX + "api/fetch/?$",
     ]
 }
 
@@ -107,14 +102,14 @@ SHIBBOLETH_SSO = {
 #
 
 CONTEXT_PLUGINS = (
-    "cvmo.context.plugin.condor.Condor",
-    "cvmo.context.plugin.vafsetup.VAFSetup",
-    "cvmo.context.plugin.hostname.Hostname",
-    "cvmo.context.plugin.noip.NoIP",
-    "cvmo.context.plugin.storage.Storage",
-    "cvmo.context.plugin.openvpn.OpenVPN",
-    "cvmo.context.plugin.ganglia.Ganglia",
-    "cvmo.context.plugin.puppet.Puppet",
+    "cvmo.core.plugin.condor.Condor",
+    "cvmo.core.plugin.hostname.Hostname",
+    "cvmo.core.plugin.vafsetup.VAFSetup",
+    "cvmo.core.plugin.noip.NoIP",
+    "cvmo.core.plugin.storage.Storage",
+    "cvmo.core.plugin.openvpn.OpenVPN",
+    "cvmo.core.plugin.ganglia.Ganglia",
+    "cvmo.core.plugin.puppet.Puppet",
 )
 
 #
@@ -126,12 +121,23 @@ INSTALLED_APPS = (
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.sites",
-    "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Django messages
+    "django.contrib.messages",
+    # JSON field
+    "json_field",
+    # South
+    "south",
     # Admin
     "django.contrib.admin",
-    # CernVM Contextualization
-    "cvmo.context"
+    # CernVM-Online
+    "cvmo.core",
+    "cvmo.user",
+    "cvmo.dashboard",
+    "cvmo.context",
+    "cvmo.vm",
+    "cvmo.cluster",
+    "cvmo.market"
 )
 
 #
@@ -145,9 +151,9 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     # Shibboleth SSO
-    "cvmo.context.middleware.shibsync.ShibbolethUserSync",
+    "cvmo.core.middleware.shibsync.ShibbolethUserSync",
     # CORS fix
-    "corsheaders.middleware.CorsMiddleware"
+    "corsheaders.middleware.CorsMiddleware",
 )
 
 # Time and language
@@ -164,10 +170,10 @@ USE_TZ = True
 DATABASES = {
     "default": {
         "ENGINE":   "django.db.backends." + config.DB.get("backend", "mysql"),
-        "HOST":     config.DB.get("host", ""),
-        "USER":     config.DB.get("user", None),
-        "PASSWORD": config.DB.get("password", None),
-        "NAME":     config.DB.get("name", None),
+        "HOST":     config.DB.get("host", "localhost"),
+        "USER":     config.DB.get("user", "root"),
+        "PASSWORD": config.DB.get("password", ""),
+        "NAME":     config.DB.get("name", "cvmo"),
         "PORT":     config.DB.get("port", 3306)
     }
 }
@@ -184,16 +190,29 @@ LOGGING = {
             "()": "django.utils.log.RequireDebugFalse"
         }
     },
+    "formatters": {
+        "verbose": {
+            "format": "[%(asctime)s] %(levelname)s %(module)s %(message)s"
+        },
+        "simple": {
+            "format": "%(levelname)s %(message)s"
+        }
+    },
     "handlers": {
         "mail_admins": {
             "level": "ERROR",
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler"
         },
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose"
+        },
         "file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": config.LOG_PATH + "/django.log",
+            "filename": os.path.join(config.LOG_PATH, "django.log"),
         },
     },
     "loggers": {
@@ -202,6 +221,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
+        "cvmo": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": True,
+        }
     }
 }
 
@@ -236,8 +260,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
+    # Messages
     "django.contrib.messages.context_processors.messages",
-    "cvmo.context.utils.views.global_context"
+    # CernVM Online
+    "cvmo.core.context_processors.version",
+    "cvmo.core.context_processors.custom_messages",
+    "cvmo.core.context_processors.flags",
+    "cvmo.core.context_processors.sidebar"
 )
 
 #

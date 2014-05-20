@@ -1,0 +1,68 @@
+{% load static %}
+{% load url from future %}
+{% load bootstrap %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{% block title %}Home{% endblock %} | CernVM Online</title>
+
+        <!-- Bootstrap -->
+        <link rel="shortcut icon" href="{% static "base/img/sky_favicon_4.ico" %}" type="image/x-icon">
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-3.1.1.min.css" %}">
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-theme-3.1.1.min.css" %}">
+
+        <!-- CernVM Online -->
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/cvmo-tw.css" %}">
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans:400,300,600" rel="stylesheet" type="text/css">
+
+        <!-- Custom styling -->
+        {% block styles %}{% endblock %}
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div id="main" class="container">
+            <div clas="row">
+                <div class="col-xs-12">
+                    {% if messages %}
+                        <div id="messages">
+                            {% for message in messages %}
+                                <div class="alert {{message.tags|mttb}}">
+                                    {{message}}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if body_header %}
+                        {% block body_header %}{% endblock %}
+                        <div class="clearfix"></div>
+                    {% endif %}
+                    {% block body %}{% endblock %}
+                    <div class="clearfix"></div>
+                    {% if body_header %}
+                        {% block body_footer %}{% endblock %}
+                        <div class="clearfix"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap scripts -->
+        <script type="text/javascript" src="{% static "base/js/libs/jquery-1.11.0.min.js" %}"></script>
+        <script type="text/javascript" src="{% static "base/js/libs/bootstrap-3.1.1.min.js" %}"></script>
+
+        <!-- CernVM Online -->
+        <script type="text/javascript" src="{% static "base/js/cvmo-tw.js" %}"></script>
+
+        <!-- Custom scripts -->
+        {% block scripts %}{% endblock %}
+    </body>
+</html>

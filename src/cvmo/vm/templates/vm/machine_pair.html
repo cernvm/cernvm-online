@@ -1,0 +1,53 @@
+{% extends "base/class_context.html" %}
+{% load static %}
+{% block head %}<script type="text/javascript" src="{% static "base/js/cvmoclaim.js" %}"></script>{% endblock %}
+{% block title %}Claim instance{% endblock %}
+
+{% block body %}
+{% load static %}{% load url from future %}
+<h1>Pair instance - Step 1</h1>
+<p>Please select the contextualization template you want to use for your VM:</p>
+<table class="pad-5">
+	<tr>
+		<th width="4%">&nbsp;</th>
+		<th width="65%">Name</th>
+		<th width="31%">Operations</th>
+	</tr>
+	{% for item in context_list %}
+		<tr>
+			<td class="buttons-container">{% if item.public %}
+				<img alt="Public" title="Definition visible in public listings" src="{% if item.key %}{% static "base/img/world_key.png" %}{% else %}{% static "base/img/world.png" %}{% endif %}" /></td>
+				{% else %}
+				<img alt="Private" title="Private definition" src="{% if item.key %}{% static "base/img/user_key.png" %}{% else %}{% static "base/img/user.png" %}{% endif %}" /></td>
+				{% endif %}
+			<td><strong>{{ item.name|escape }}</strong><br />{{ item.description|escape }}</td>
+			<td class="buttons-container">
+				<a href="{% url "vm_pair_request" context_id=item.id %}" class="softbutton" title="Use this contextualization information to pair a VM"><img border="0" align="absmiddle" src="{% static "base/img/vm_contextualize.png" %}" /> Pair with this context</a>
+			</td>
+		</tr>
+	{% empty %}
+		<tr>
+			<td colspan="3" align="center">You haven't defined any context yet</tr>
+		</tr>
+	{% endfor %}
+	<!-- Future version =====
+	{% if context_public %}
+		<tr>
+			<td colspan="3" class="split"></tr>
+		</tr>
+	{% endif %}
+	{% for item in context_public %}
+	<tr>
+		<td><img alt="Public" title="Third party definition visible in public listings" src="{% if item.key %}{% static "base/img/public_key.png" %}{% else %}{% static "base/img/public.png" %}{% endif %}" /></td>
+		<td><strong>{{ item.name }}</strong><br />{{ item.description }}</td>
+		<td class="v-middle" align="center">
+			<a href="{% url "vm_pair_request" context_id=item.id %}" class="softbutton" title="Use this contextualization information to pair a VM"><img border="0" align="absmiddle" src="{% static "base/img/vm_contextualize.png" %}" /> Pair with this context</a>
+		</td>
+	</tr>
+	{% endfor %}
+	-->
+</table>
+<br />
+<p><a href="{% url "context_new" %}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/brick_add.png" %}" /> Create new context</a></p>
+
+{% endblock %}

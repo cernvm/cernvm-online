@@ -1,0 +1,299 @@
+/******************************************************************************
+ * Header section and header line
+ ******************************************************************************/
+div#header {
+    background: url("../img/bg-header.jpg") no-repeat top center;
+    height: 96px;
+}
+div#h_logo {
+    background: url("../img/logo-bg.png") no-repeat left top;
+    width: 219px;
+    height: 64px;
+    margin-top: 20px;
+    margin-left: -18px;
+}
+img#hl_cvmo_logo {
+    margin-top: 6px;
+    margin-left: 36px;
+    float: left;
+}
+img#hl_home {
+    float: left;
+    margin-top: 15px;
+    margin-left: 21px;
+}
+div#header_line {
+    width: 960px;
+    margin: 0 auto;
+    background: #f09d27;
+    height: 3px;
+    padding: 0px;
+    font-size: 0px;
+}
+
+/******************************************************************************
+ * Navigation bar
+ ******************************************************************************/
+div#navbar {
+    background: #fff url("../img/bg-shade-light.png") repeat-x bottom left;
+    border-bottom: solid 1px #ddd;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    -moz-border-radius-bottomright: 20px;
+    -moz-border-radius-bottomleft: 20px;
+    -webkit-border-bottom-left-radius: 0px;
+    height: 30px;
+}
+div#navbar div.col-xs-12 {
+    margin-left: 0;
+    padding-left: 0;
+}
+div#navbar ul {
+    line-height: 30px;
+    text-align:left;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 998;
+    opacity: 0.9999;
+}
+div#navbar ul li {
+    border-right: solid 1px #ddd;
+    float: left;
+    list-style: none;
+    list-style-image: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    z-index: 999;
+}
+div#navbar ul li.last {
+    border-right: none;
+}
+div#navbar ul a,
+div#navbar ul a:visited {
+    border: none;
+    color: #000;
+    display: block;
+    font-size: 12px;
+    font-weight: normal;
+    margin: 0;
+    overflow: hidden;
+    padding: 0 14.4px;
+    text-decoration: none;
+}
+div#navbar ul a:hover,
+div#navbar ul a:visited:hover,
+div#navbar .active .active-trail a.active:hover,
+div#navbar .active .active-trail a:hover {
+    background: url("../img/bg-menu-arrow-cernvm.png") no-repeat top;
+    color: #000; text-shadow: none;
+}
+
+/******************************************************************************
+ * Main section: Headers
+ ******************************************************************************/
+div#main h1,
+div#main h2,
+div#main h3,
+div#main h4,
+div#main h5,
+div#main h6
+div#main legend {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: lighter;
+    letter-spacing: normal;
+    /*
+        line-height: 1.4em;
+        margin-bottom: 5px;
+        margin-top: 5px;
+    */
+}
+div#main h1,
+div#main h2,
+div#main h3,
+div#main legend {
+    font-family: "Open Sans","Lato", Helvetica, Arial, sans-serif;
+}
+div#main h1 {
+    /*
+        font-size: 24px;
+        margin-bottom: 20px;
+        line-height: 140%;
+        margin: 0;
+    */
+    color: #4e422c;
+}
+div#main h2 {
+    /*font-size: 20px;*/
+    color: #cd891e;
+}
+div#main h2 a,
+div#main h2 a:visited,
+div#main h2 a:hover {
+    color: #cd891e;
+}
+div#main h3,
+div#main legend {
+    /*font-size: 18px;*/
+    color: #da9a3c;
+}
+div#main h4,
+div#main h5 {
+    font-family: Tahoma, Verdana, Arial;
+}
+div#main h4 {
+    /*font-size: 16px;*/
+}
+div#main h5 {
+    /*font-size: 12px;*/
+}
+div#main div.page-header {
+    /*border-color: #4e422c;*/
+    border: none;
+    margin-top: 5px;
+}
+div#main div.page-header h1 {
+    /*font-size: 30px;*/
+}
+div#main legend {
+    font-weight: lighter;
+    border-color: #da9a3c;
+}
+div#main div.form-group label.control-label {
+    font-weight: normal;
+    color: #4e422c;
+}
+div#main div.form-group.required label.control-label,
+div#main div.form-group label.control-label.required {
+    font-weight: bold;
+}
+
+/******************************************************************************
+ * Main section: Messages
+ ******************************************************************************/
+div#main div#messages {
+    margin-top: 10px;
+}
+div#main div#messages div.alert {
+    margin-bottom: 5px;
+}
+
+/******************************************************************************
+ * Main section: Sidebar
+ ******************************************************************************/
+div#sidebar {
+    padding-left: 0;
+    margin-left: -15px;
+    padding-top: 5px;
+}
+div#sidebar div.block {
+    border: 1px solid #e7e7e7;
+    background: #f7f7f7;
+    margin: 5px 0 15px 0;
+    padding-bottom: 10px;
+    border-top-left-radius: 0px;
+    -webkit-border-top-left-radius: 0px;
+    -moz-border-radius-topleft: 0px;
+    border-top-right-radius: 20px;
+    -webkit-border-top-right-radius: 20px;
+    -moz-border-radius-topright: 20px;
+    border-bottom-right-radius: 20px;
+    -webkit-border-bottom-right-radius: 20px;
+    -moz-border-radius-bottomright: 20px;
+    border-bottom-left-radius: 20px;
+    -webkit-border-bottom-left-radius: 20px;
+    -moz-border-radius-bottomleft: 20px;
+}
+div#sidebar div.block h3.title {
+    background: #eeeeee url("../img/menu-border.gif") repeat-y left top;
+    color: #000;
+    display: block;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-align: left;
+    font-size: 12px;
+    margin: 0;
+    border: none;
+    border-bottom: 0;
+    line-height: 16px;
+    text-shadow: none;
+    padding: 0.25em 1.5em;
+    border-top-right-radius: 20px;
+    -webkit-border-top-right-radius: 20px;
+    -moz-border-radius-topright: 20px;
+}
+div#sidebar div.block div.sidenav ul,
+div#sidebar div.block div.sidenav li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+div#sidebar div.block div.sidenav li a {
+    padding: 2px 8px 2px 8px;
+    color: black;
+    font-size: 13px;
+    height: 28px;
+    white-space: nowrap;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+div#sidebar div.block div.sidenav li a:hover {
+    background-color: #efefef;
+    text-decoration: none;
+}
+
+/******************************************************************************
+ * Main section: Error pages
+ ******************************************************************************/
+div.jumbotron#error {
+    margin: 0;
+}
+
+/******************************************************************************
+ * Footer section
+ ******************************************************************************/
+div#footer {
+    margin-top:20px;
+    font-size: 12px;
+    text-align: center;
+    border-radius:10px;
+    padding: 5px;
+    color: white;
+    background: #395e78;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    -ms--border-radius:10px;
+    margin-bottom: 20px;
+}
+div#footer p {
+    margin: 2px 0;
+}
+#footer a,
+#footer a:hover,
+#footer a:visited,
+#footer a:active {
+    color: #fff;
+}
+#footer a:hover,
+#footer a:visited,
+#footer a:active {
+    text-decoration: underline;
+}
+
+/******************************************************************************
+ * jQuery.remoteModal
+ ******************************************************************************/
+div.remote-modal iframe {
+    margin: 0 auto;
+}
+
+/******************************************************************************
+ * Misc
+ ******************************************************************************/
+.secure-data-icon {
+    color: green;
+}

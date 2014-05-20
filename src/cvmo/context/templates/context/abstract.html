@@ -1,0 +1,109 @@
+{% extends "base/class_context.html" %}
+{% block title %}Context Definition{% endblock %}
+{% load formutils %}
+{% load static %}
+{% load url from future %}
+{% block head %}
+	<script type="text/javascript" src="{% static "base/js/cvmocontext.js" %}"></script>
+	<script type="text/javascript" src="{% static "base/js/libs/jquery.validate.min.js" %}"></script>
+	<link rel="stylesheet" href="{% static "base/js/libs/codemirror/lib/codemirror.css" %}">
+	<script type="text/javascript" src="{% static "base/js/libs/codemirror/lib/codemirror.js" %}"></script>
+    <script type="text/javascript" src="{% static "base/js/libs/codemirror/mode/xml/xml.js" %}"></script>
+    <script type="text/javascript" src="{% static "base/js/libs/codemirror/mode/javascript/javascript.js" %}"></script>
+    <script type="text/javascript" src="{% static "base/js/libs/codemirror/mode/css/css.js" %}"></script>
+    <script type="text/javascript" src="{% static "base/js/libs/codemirror/mode/htmlmixed/htmlmixed.js" %}"></script>
+    <script type="text/javascript" src="{% static "base/js/libs/codemirror/mode/htmlembedded/htmlembedded.js" %}"></script>
+	<style type="text/css">
+    	.CodeMirror {
+    		border: solid 1px #999;
+    	}
+	</style>
+	<script type="text/javascript">
+    	// Accordion
+        window.addEvent('domready', function() {
+        	CVMO.ContextUI.Accordion = new Fx.Accordion(
+        		$('content-accordion'),
+        		'#content-accordion .accordion-header',
+        		'#content-accordion .accordion-content',
+        		{ alwaysHide: false }
+        	);
+    	});
+	</script>
+{% endblock %}
+
+{% block body %}
+
+<h1>Abstract context template</h1>
+<p>Here you can define a new abstract context.</p>
+
+<form action="{% url "context_abstract_create" %}" method="post" id="create_abstract_form">
+{% csrf_token %}
+
+<!-- Begin of Accordion -->
+<div id="content-accordion">
+
+<!-- General section -->
+<div class="accordion-header separator"><h2>General</h2></div>
+<div class="accordion-content">
+	<table class="plain long-text">
+	<tbody>
+		<tr>
+			<th width="140"><label for="f_name">Abstract context name:</label></th>
+			<td><input type="text" id="f_name" name="values[name]" value="{{ values.name }}"/></td>
+		</tr>
+	</tbody>
+	</table>
+</div>
+
+<!-- Enable section -->
+<div class="accordion-header separator"><h2>Plugins to enable</h2></div>
+<div class="accordion-content">
+	<p>Select the contextualization plugins you wish to enable from the list below:</p>
+	<ul>
+	{% for p in plugins %}
+	 	<li><input type="checkbox" name="enabled[{{ p.name }}]" value="1" {% if p.enabled %}checked="checked"{% endif %}{% if p.name == 'generic_cernvm' %}disabled{% endif %}/>{{ p.title }}</li>
+	{% endfor %}
+	</ul>
+</div>
+
+<!-- Display section -->
+<div class="accordion-header separator"><h2>Plugins to display</h2></div>
+<div class="accordion-content">
+	<p>Select the contextualization plugins you wish to display as-is to the end user:</p>
+	<ul>
+	{% for p in plugins %}
+	 	<li><input type="checkbox" name="abstract[display][{{ p.name }}]" value="1" {% if p.display %}checked="checked"{% endif %}/>{{ p.title }}</li>
+	{% endfor %}
+	</ul>
+</div>
+
+<!-- Custom HTML section -->
+<div class="accordion-header separator"><h2>Custom HTML for visualization</h2></div>
+<div class="accordion-content">
+	<textarea id="f_html_body" class="code" name="abstract[html_body]" style="width:99%" rows="80">{{ abstract.html_body|escape }}</textarea>
+</div>
+<script language="JavaScript">
+jQuery(document).ready(function() {
+	CodeMirror.fromTextArea(
+		jQuery(':input[name="abstract[html_body]"]').get(0),
+		{
+			mode: 'application/x-ejs',
+			enterMode: 'keep',
+			lineNumbers: true,
+			tabMode: 'shift',
+			indentUnit: 4,
+			indentWithTabs: false,
+			matchBrackets: true
+		}
+	);
+});
+</script>
+
+</div>
+<!-- End of Accordion -->
+
+<p><input type="submit" value="Create abstract context"></p>
+
+</form>
+
+{% endblock %}

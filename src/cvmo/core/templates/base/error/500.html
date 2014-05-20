@@ -1,0 +1,16 @@
+{% extends "base/main_tw.html" %}
+{% load url from future %}
+{% block title %}Server error{% endblock %}
+
+{% block main %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Server error!</h1>
+            <p>An unexpected error occurred. The event had been logged and the administrator is informed!</p>
+            <p>
+                In case this is a severe problem, you might as well poke him by sending a mail at {{admin_email}}
+            </p>
+            <p><a class="btn btn-primary btn-lg" href="{% url "dashboard" %}">Go home</a></p>
+        </div>
+    </div>
+{% endblock %}

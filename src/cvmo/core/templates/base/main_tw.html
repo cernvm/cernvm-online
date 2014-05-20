@@ -1,0 +1,163 @@
+{% load static %}
+{% load url from future %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{% block title %}Home{% endblock %} | CernVM Online</title>
+
+        <!-- Bootstrap -->
+        <link rel="shortcut icon" href="{% static "base/img/sky_favicon_4.ico" %}" type="image/x-icon">
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-3.1.1.min.css" %}">
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-theme-3.1.1.min.css" %}">
+
+        <!-- Bootstrap-select -->
+        <!-- https://github.com/silviomoreto/bootstrap-select -->
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-select.min.css" %}">        
+
+        <!-- CernVM Online -->
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/cvmo-tw.css" %}">
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans:400,300,600" rel="stylesheet" type="text/css">
+
+        <!-- Custom styling -->
+        {% block styles %}{% endblock %}
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="container" id="header" style="width:960px!important">
+            <div class="row">
+                <div class="col-xs-4">
+                    <div id="h_logo">
+                        <a href="{% url "dashboard" %}" title="">
+                            <img alt="CernVM Online" id="hl_cvmo_logo" src="{% static "base/img/online_logo.png" %}">
+                        </a>
+                        <a href="http://cernvm.cern.ch/portal" title="home">
+                            <img alt="Home" id="hl_home" src="{% static "base/img/logo-home.png" %}">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4" id="col_search">
+                    <!--
+                        <div class="login">
+                            {% if user.username %}
+                                <font color="#FFFFFF"> Logged in as {{ user.username|default:"anonymous" }} |</font>
+                                {% if user.password %}
+                                    <a class="profile-link" href="{% url "user_profile" %}">Profile</a>
+                                    <font color="#FFFFFF"> |</font>
+                                {% endif %}
+                                    <a class="logout-link" href="{% url "user_logout" %}">Log out</a>
+                                {% else %}
+                                <a class="login-link" href="{% url "user_login" %}">Login</a>
+                            {% endif %}
+                        </div>
+                        <form action="https://cernvm.cern.ch/portal/?q=search" method="post">
+                            <input class="form-text" type="text" size="15" value="" name="keys">
+                            <input class="form-submit" type="submit" value="">
+                        </form>
+                    -->
+                </div>
+            </div>
+        </div>
+        <div id="header_line"></div>
+        <div id="navbar" class="container" style="width:960px!important">
+            <div class="row">
+                <div class="col-xs-12">
+                    <ul>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online" title="Home">About</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="{% url "market_list" %}" title="Marketplace">Marketplace</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/documentation" title="Documentation">Documentation</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/downloads" title="Downloads">Downloads</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/publications" title="Publications">Publications</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="main" class="container" style="width:960px!important">
+            <div clas="row">{% block main %}{% endblock %}</div>
+        </div>
+
+        <div id="footer" class="container" style="width:960px!important">
+            <div class="row">
+                <div class="col-xs-12">
+                    <p>
+                        CernVM Online version: <strong>v{{ cvmo_version }}</strong>
+                        &copy; <a href="http://cern.ch/" target="_blank">CERN</a> 2012 - 2014
+                    </p>
+                    <p>
+                        <a href="http://cernvm.cern.ch/" target="_blank">CernVM Software appliance</a>
+                         | <a href="http://cern.ch/ph-dep" target="_blank">PH Department</a>
+                         - <a href="http://sftweb.cern.ch/" target="_blank">SFT</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap scripts -->
+        <script type="text/javascript" src="{% static "base/js/libs/jquery-1.11.0.min.js" %}"></script>
+        <script type="text/javascript" src="{% static "base/js/libs/bootstrap-3.1.1.min.js" %}"></script>
+
+        <!-- Bootstrap-select script -->
+        <!-- https://github.com/silviomoreto/bootstrap-select -->
+        <script type="text/javascript" src="{% static "base/js/libs/bootstrap-select.min.js" %}"></script>
+
+        <!-- CernVM Combobox and Bootstrap-select -->
+        <script type="text/javascript">
+
+        $(document).ready( function() {
+
+          $('select.selectpicker').selectpicker();
+
+          $('.input-group.cvm-combobox').each( function() {
+
+            input_text = $(this).find('input[type=text]').first();
+            list_vals = $(this).find('ul.dropdown-menu').first();
+
+            if ((list_vals.length != 0) && (input_text.length != 0)) {
+
+              list_vals.find('li > a').each( function() {
+
+                $(this).click( function(evt) {
+                  v = $(this).attr('data-combo-value');
+                  if (v === undefined) v = $(this).text();
+                  $(input_text).val( v );
+                  evt.preventDefault();  // prevent following href
+                });
+
+              });
+
+            }
+
+          });
+
+        });
+
+        </script>
+
+        <!-- CernVM Online -->
+        <script type="text/javascript" src="{% static "base/js/cvmo-tw.js" %}"></script>
+
+        <!-- Custom scripts -->
+        {% block scripts %}{% endblock %}
+    </body>
+</html>

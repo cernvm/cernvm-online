@@ -1,0 +1,451 @@
+{% extends "base/main_wsidebar_tw.html" %}
+{% load static %}
+{% load url from future %}
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+    <div class="inner-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                </div>
+
+                <h2>Your context definitions</h2>
+                <table class="table table-hover table-striped" id="context_definitions">
+                    <thead>
+                        <tr>
+                            <th class="icon">&nbsp;</th>
+                            <th class="name">Name</th>
+                            <th class="operations">Operations</th>
+                            <th class="webapi">WebAPI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in context_definition_list %}
+                            <tr>
+                                <td class="icon">
+                                    {% if item.public %}
+                                        <img alt="Public" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Definition visible in market listings"
+                                            src="{% if item.key %}{% static "base/img/cart_key.png" %}{% else %}{% static "base/img/cart.png" %}{% endif %}">
+                                    {% else %}
+                                        <img alt="Private" data-toggle="tooltip" data-placement="top"
+                                            title="Private definition"
+                                            src="{% if item.key %}{% static "base/img/user_key.png" %}{% else %}{% static "base/img/user.png" %}{% endif %}">
+                                    {% endif %}
+                                </td>
+                                <td class="name">
+                                    <a href="{% url "context_view" context_id=item.id %}">
+                                        {{item.name}}
+                                    </a>
+                                </td>
+                                <td class="operations">
+                                    <a href="{% if item.from_abstract %}{% url "context_abstract_contextualize" context_id=item.id %}{% else %}{% url "context_clone" context_id=item.id %}{% endif %}"
+                                        class="btn btn-xs btn-default">
+                                        <img src="{% static "base/img/brick_add.png" %}">
+                                         Clone
+                                    </a>
+
+                                    {% if item.public %}
+                                        <a href="{% url "market_revoke" context_id=item.id %}"
+                                            class="btn btn-xs btn-default">
+                                            <img src="{% static "base/img/cart_delete.png" %}">
+                                             Withdraw
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url "market_publish" context_id=item.id %}"
+                                            class="btn btn-xs btn-default">
+                                            <img src="{% static "base/img/cart_add.png" %}">
+                                             Publish
+                                        </a>
+                                        <a href="{% url "context_delete" context_id=item.id %}"
+                                            class="btn btn-xs btn-danger">
+                                            <img src="{% static "base/img/brick_delete.png" %}">
+                                        </a>
+                                    {% endif %}
+
+                                    <div class="btn-group">
+                                        <button type="button"
+                                            class="btn btn-xs btn-default dropdown-toggle"
+                                            data-toggle="dropdown">
+                                            <img src="{% static "base/img/brick_go.png" %}">
+                                             <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            {% if item.from_abstract %}
+                                                <li><a href="{% url "context_clone" context_id=item.id %}">Clone with full options</a></li>
+                                            {% endif %}
+                                            <li><a href="{% url "context_view_plain" context_id=item.id %}">Get rendered context</b></a></li>
+                                            <li><a href="{% url "context_view_raw" context_id=item.id %}">Get raw user data</b></a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td class="webapi">
+                                    <div class="btn-group">
+                                        <button type="button"
+                                            class="btn btn-xs btn-info dropdown-toggle"
+                                            data-toggle="dropdown">
+                                            <img src="{% static "base/img/vm_add.png" %}">
+                                             Launch now
+                                             <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            {% for conf in webapi_configurations %}
+                                                <li>
+                                                    <a class="webapi-deploy-handle"
+                                                        data-context-id="{{item.id}}"
+                                                        data-name="{{item.name}} VM"
+                                                        data-cpus="{{conf.cpus}}"
+                                                        data-memory="{{conf.memory}}"
+                                                        data-disk-size="{{conf.disk_size}}" href="#">
+                                                        {{conf.label}}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" align="center">No context defined yet</tr>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">
+                                <a class="btn btn-sm btn-success" href="{% url "context_new" %}">
+                                    <img src="{% static "base/img/brick_add.png" %}">
+                                     Create new context
+                                </a>
+                                {% if full_abstract_list|length > 0 %}
+                                    <div class="btn-group">
+                                        <button type="button"
+                                            class="btn btn-sm btn-success dropdown-toggle"
+                                            data-toggle="dropdown">
+                                            <img src="{% static "base/img/brick_add.png" %}">
+                                             New context based on abstract
+                                             <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            {% for item in full_abstract_list %}
+                                                <li>
+                                                    <a href="{% url "context_abstract_contextualize" context_id=item.id %}">
+                                                        {{item.name}}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <h2>Your cluster definitions</h2>
+                <table class="table" id="cluster_definitions">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th class="name">Name</th>
+                            <th class="context">Contexts</th>
+                            <th class="operations">Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cluster_definition_list %}
+                            <tr>
+                                <td class="secure" rowspan="2" style="vertical-align:middle">
+                                    {% if item.encryption_checksum != '' %}
+                                    <span class="tooltip-container">
+                                        <span class="glyphicon glyphicon-lock secure-data-icon">This cluster definition is encrypted</span>
+                                    </span>
+                                    {% else %}
+                                    &nbsp;
+                                    {% endif %}
+                                </td>
+                                <td class="name" rowspan="2">
+                                    {{item.name}}
+                                </td>
+                                <td class="context">
+                                    <strong>Master:</strong>
+                                    <a href="{% url "context_view" context_id=item.master_context.id %}">
+                                        {{item.master_context.name}}
+                                    </a>
+                                </td>
+                                <td class="operations" rowspan="2" style="vertical-align:middle">
+
+                                    <!-- Operations are in a form because we want to POST -->
+                                    <form method="POST" action="">
+
+                                        <!-- Clone (might require password) -->
+                                        <button type="button" class="cluster-op btn btn-xs btn-default" data-goto-url="{% url "cluster_new" cluster_id=item.id %}" {% if item.encryption_checksum != '' %}data-needs-password="true"{% endif %}>
+                                            <img src="{% static "base/img/brick_add.png" %}">
+                                            Clone
+                                        </button>
+
+                                        <!-- Delete -->
+                                        <button type="button" class="cluster-op btn btn-xs btn-danger" data-goto-url="{% url "cluster_delete" cluster_id=item.id %}">
+                                            <img src="{% static "base/img/brick_delete.png" %}">
+                                        </button>
+
+                                        <!-- Deploy (might require password) -->
+                                        <button type="button" class="cluster-op btn btn-xs btn-info" data-goto-url="{% url "cluster_deploy" cluster_id=item.id %}" data-goto-mode="remote-modal" {% if item.encryption_checksum != '' %}data-needs-password="true"{% endif %}>
+                                            <img src="{% static "base/img/vm_contextualize.png" %}">
+                                            Deploy
+                                        </button>
+                                        <!-- Helper for deploying with a remote modal (hidden) -->
+                                        <span style="display:none" class="deploy-helper"></span>
+
+                                        <!-- Password -->
+                                        <input type="hidden" name="password"/>
+
+                                        <!-- CSRF Token -->
+                                        {% csrf_token %}
+
+                                    </form>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="context">
+                                    <strong>Worker:</strong>
+                                    <a href="{% url "context_view" context_id=item.worker_context.id %}">
+                                        {{item.worker_context.name}}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" align="center">No cluster definition created yet</tr>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <td colspan="5">
+                                <a href="{% url "cluster_new" %}"
+                                    class="btn btn-sm btn-success">
+                                    <img src="{% static "base/img/brick_add.png" %}">
+                                     Create new cluster
+                                </a>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <h2>Your virtual machines</h2>
+                <table class="table table-hover table-striped" id="vms">
+                    <thead>
+                        <tr>
+                            <th class="icon">&nbsp;</th>
+                            <th class="ip">Machine</th>
+                            <th class="cvm_version">CernVM</th>
+                            <th class="context">Context</th>
+                            <th class="operations">Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in machine_list %}
+                            <tr>
+                                <td class="icon">
+                                    {% if item.status == "C" %}
+                                        <img alt="VM Cloud" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Instance contextualized on the cloud"
+                                            src="{% static "base/img/vm_contextualize.png" %}">
+                                    {% elif item.status == "E" %}
+                                        <img alt="Cluster master node"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Elastiq cluster master node"
+                                            src="{% static "base/img/vm_cloud.png" %}">
+                                    {% elif item.status == "P" %}
+                                        <img alt="VM" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Instance contextualized via pairing"
+                                            src="{% static "base/img/vm_user.png" %}">
+                                    {% else %}
+                                        <img alt="VM" src="{% static "base/img/vm.png" %}">
+                                    {% endif %}
+                                </td>
+                                <td class="ip">{{item.ip}} <small>({{item.uuid}})</small></td>
+                                <td class="cvm_cersion">{{item.version}}</td>
+                                <td class="context">{{item.context.name}}</td>
+                                <td  class="operations">
+                                    <a href="{% url "vm_delete" machine_uuid=item.uuid %}"
+                                        class="btn btn-xs btn-danger">
+                                        <img src="{% static "base/img/vm_remove.png" %}">
+                                         Unmanage
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" align="center">No instances paired yet</tr>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <td colspan="5">
+                            <a href="{% url "vm_pair_begin" %}"
+                                class="btn btn-sm btn-success">
+                                <img src="{% static "base/img/vm_contextualize.png" %}">
+                                 Pair an instance of CernVM
+                            </a>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block styles %}
+    <link type="text/css" rel="stylesheet" media="all" href="{% static "dashboard/css/dashboard.css" %}">
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static "cluster/js/libs/handlebars-1.3.0.js" %}"></script>
+    <script type="text/javascript"
+        src="http://cernvm.cern.ch/releases/webapi/js/cvmwebapi-latest.js">
+    </script>
+    <script type="text/javascript" src="{% static "dashboard/js/dashboard.js" %}"></script>
+    <script type="text/javascript" src="{% static "base/js/jquery.remote-modal.js" %}"></script>
+
+
+
+
+                <!-- Password Modal -->
+                <div class="modal fade" id="cluster_password_modal" tabindex="-1" role="dialog" aria-labelledby="cluster_password_modal_label" aria-hidden="true">
+
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="cluster_password_modal_label">Enter cluster password</h4>
+                      </div>
+                      <div class="modal-body">
+
+
+                        <div class="input-group">
+                          <input type="password" class="form-control" placeholder="Enter password here">
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Proceed</button>
+                          </span>
+                        </div>
+
+                      </div>
+                      <!--<div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                      </div>-->
+                    </div>
+                  </div>
+                </div>
+
+
+
+<script type="text/javascript">
+
+(function($) {
+
+    $(document).ready( function() {
+
+        // $('#cluster_password_modal_label').modal({ 'show': false });
+
+        $('.cluster-op')
+
+            .on('click', function() {
+
+                var f = $(this).closest('form');
+                var modal_trigger = undefined;
+
+                if ( $(this).data('goto-mode') == 'remote-modal' ) {
+                    // Modal
+                    $(f).attr('action', '');
+
+                    var h = $(f).find('.deploy-helper');
+                    h.empty();
+
+                    var modal_trigger = $('<span></span>', {
+                        'data-rm-remote': $(this).data('goto-url'),  // TODO
+                        'data-toggle': 'remote-modal',
+                        'data-rm-title': 'Deploy cluster'
+                    });
+                    $(h).append(modal_trigger);
+                }
+                else {
+                    // Standard submit
+                    $(f).attr('action', $(this).data('goto-url'));
+                }
+
+                if (( $(this).data('needs-password') !== undefined ) && ( $(this).data('needs-password').toString() == 'true' )) {
+
+                    // Context is encrypted: we have to prompt for a password first
+
+                    // Modal's button will have the same HTML as the button we have just pressed :-)
+                    $('#cluster_password_modal .modal-body button').html( $(this).html() );
+
+                    // Reset the password field
+                    $('#cluster_password_modal .modal-body input').val('');
+
+                    // Our modal's button will:
+                    // - copy the password to the destination
+                    // - dismiss the modal
+                    // - submit the original form OR open a remote modal (in case we are deploying)
+                    var that = $(this);
+                    $('#cluster_password_modal .modal-body button')
+                        .unbind()
+                        .on('click', function() {
+
+                            // Dismiss
+                            $(this).closest('.modal').modal('hide');
+
+                            // Get password
+                            var password = $(this).closest('.modal-body').find('input').val();
+
+                            if (modal_trigger !== undefined) {
+                                $(modal_trigger).data('rm-remote', $(modal_trigger).data('rm-remote')+'?password='+encodeURIComponent(password) );
+                                $(modal_trigger).remoteModal();
+                                $(modal_trigger).trigger('click');
+                            }
+                            else {
+                                $(f).find('input[name="password"]').val( password );
+                                $(f).submit();
+                            }
+
+                        });
+
+                    // Show the modal
+                    $('#cluster_password_modal').modal({
+                        show: true
+                    });
+
+                }
+                else {
+
+                    // No pwd: immediate action
+                    if (modal_trigger !== undefined) {
+                        $(modal_trigger).remoteModal();
+                        $(modal_trigger).trigger('click');
+                    }
+                    else {
+                        $(f).submit();
+                    }
+                }
+
+            })
+
+    });
+
+})(jQuery);
+
+
+
+
+</script>
+
+
+{% endblock %}

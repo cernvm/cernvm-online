@@ -1,0 +1,474 @@
+{% extends "base/main_wsidebar_tw.html" %}
+{% load static %}
+{% load url from future %}
+{% load formutils %}
+{% block title %}New cluster definition{% endblock %}
+
+{% block body %}
+    <div class="inner-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-header">
+                    <h1>Define a Virtual Cluster</h1>
+                </div>
+                <form class="form-horizontal" role="form" method="POST" action="{% url "cluster_save" %}">
+                    {% csrf_token %}
+
+                    <div class="form-group required">
+                        <label for="cluster_name" class="col-xs-4 control-label">Cluster name</label>
+                        <div class="col-xs-6">
+                            <input type="text" class="form-control" id="cluster_name" name="cluster[name]" value="{{cluster.name}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cluster_decription" class="col-xs-4 control-label">Description</label>
+                        <div class="col-xs-6">
+                            <textarea type="text" class="form-control" id="cluster_decription" name="cluster[description]" rows="4" cols="100">{{cluster.description}}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cluster_passphrase" class="col-xs-4 control-label required"><!--<span class="glyphicon glyphicon-lock"></span>-->Encryption password</label>
+                        <div class="col-xs-6">
+                            <div style="margin-bottom:10px">
+                                <input type="password" class="form-control" id="cluster_passphrase" name="cluster[passphrase]" value="{{cluster.passphrase}}">
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 50%" data-password-id="cluster_passphrase" id="cluster_passphrase_strength">
+                                    <span>(placeholder)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <fieldset id="ec2_api">
+                        <legend>EC2 credentials for your cloud</legend>
+
+                        <div class="form-group required">
+                            <label for="ec2_api_url" class="col-xs-4 control-label">Access URL</label>
+                            <div class="col-xs-6">
+                                <!-- the cvm-combobox class activates the combobox behavior -->
+                                <div class="input-group cvm-combobox">
+                                    <input type="text" name="ec2[api_url]" id="ec2_api_url" class="form-control" placeholder="https://dummy.ec2.server/ec2/" value="{{ec2.api_url}}">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                          <li class="dropdown-header">Known clouds</li>
+                                          <!-- <li class="divider"></li> -->
+                                          <li><a href="#" data-combo-value="http://openstack.cern.ch:8773/services/Cloud">CERN OpenStack</a></li>
+                                          <li><a href="#" data-combo-value="https://one-master.to.infn.it/ec2api/">INFN Torino OpenNebula</a></li>
+                                        </ul>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Icon with tooltip -->
+                            <div class="col-xs-2">
+                                <div class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign">HTTP or HTTPS URL used to access your cloud's EC2 API: you can type your own or select one from a list of known clouds.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ec2_api_version" class="col-xs-4 control-label">API Version</label>
+                            <div class="col-xs-3">
+                                <input type="text" class="form-control" id="ec2_api_version" name="ec2[api_version]" placeholder="2013-02-01" value="{{ec2.api_version}}">
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="ec2_aws_access_key_id" class="col-xs-4 control-label">Access Key</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_aws_access_key_id" name="ec2[aws_access_key_id]" value="{{ec2.aws_access_key_id}}">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="secure-data-icon tooltip-container">
+                                    <span class="glyphicon glyphicon-lock">Your sensitive data will be stored encrypted in our database.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="ec2_aws_secret_access_key" class="col-xs-4 control-label">Secret Key</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_aws_secret_access_key" name="ec2[aws_secret_access_key]" value="{{ec2.aws_secret_access_key}}">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="secure-data-icon tooltip-container">
+                                    <span class="glyphicon glyphicon-lock">Your sensitive data will be stored encrypted in our database.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="ec2_instantiation">
+                        <legend>Configuration of the CernVM Virtual Machines</legend>
+                        <div class="form-group required">
+                            <label for="ec2_image_id" class="col-xs-4 control-label">CernVM image ID</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_image_id" name="ec2[image_id]" placeholder="ami-01234567" value="{{ec2.image_id}}">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign">Unique ID of the CernVM image on your cloud.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label for="ec2_flavour" class="col-xs-4 control-label">Flavour</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_flavour" name="ec2[flavour]" placeholder="m1.large" value="{{ec2.flavour}}">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign">Flavours represent the assigned resources (CPU, RAM, disk): their definition might differ from cloud to cloud.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ec2_key_name" class="col-xs-4 control-label">SSH key name</label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" id="ec2_key_name" name="ec2[key_name]" value="{{ec2.key_name}}">
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="tooltip-container">
+                                    <span class="glyphicon glyphicon-question-sign">If you have registered a SSH public key in your cloud, type its name here: you will be able to connect as root via SSH without password using the corresponding private key.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    <fieldset id="elastiq">
+                        <legend>Automatic elasticity configuration</legend>
+
+                        <div class="alert alert-info">The CernVM Virtual Cluster will shrink and expand automatically based on the running jobs.</div>
+
+                        <div class="form-group">
+                            <label for="elastiq_check_queue_every_s" class="col-xs-4 control-label">Check queue every (seconds)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_check_queue_every_s" name="elastiq[check_queue_every_s]" value="{{elastiq.check_queue_every_s|default:15}}">
+                            </div>
+                            <label for="elastiq_check_vms_every_s" class="col-xs-4 control-label">Check VMs every (seconds)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_check_vms_every_s" name="elastiq[check_vms_every_s]" value="{{elastiq.check_vms_every_s|default:45}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="elastiq_waiting_jobs_time_s" class="col-xs-4 control-label">Min job waiting time (seconds)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_waiting_jobs_time_s" name="elastiq[waiting_jobs_time_s]" value="{{elastiq.waiting_jobs_time_s|default:100}}">
+                            </div>
+                            <label for="elastiq_idle_for_time_s" class="col-xs-4 control-label">Kill inactive VMs after (seconds)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_idle_for_time_s" name="elastiq[idle_for_time_s]" value="{{elastiq.idle_for_time_s|default:3600}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="elastiq_n_jobs_per_vm" class="col-xs-4 control-label">Number of jobs per VM</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_n_jobs_per_vm" name="elastiq[n_jobs_per_vm]" value="{{elastiq.n_jobs_per_vm|default:4}}">
+                            </div>
+                            <label for="elastiq_estimated_vm_deploy_time_s" class="col-xs-4 control-label">VM deployment time (seconds)</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="elastiq_estimated_vm_deploy_time_s" name="elastiq[estimated_vm_deploy_time_s]" value="{{elastiq.estimated_vm_deploy_time_s|default:600}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="elastiq_batch_plugin" class="col-xs-4 control-label">Workload management system</label>
+                            <div class="col-xs-4">
+                                <select class="form-control selectpicker" id="elastiq_batch_plugin" name="elastiq[batch_plugin]">
+                                    <option value="htcondor" {{elastiq.batch_plugin|sel:"htcondor"}}>HTCondor</option>
+<!--                                     <option value="workqueue" {{elastiq.batch_plugin|sel:"workqueue"}}>WorkQueue</option> -->
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="quota">
+                        <legend>Cluster size limits</legend>
+
+                        <div class="form-group">
+                            <label for="quota_min_vms" class="col-xs-4 control-label">Minimum number of workers</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="quota_min_vms" name="quota[min_vms]" value="{{quota.min_vms|default:0}}">
+                            </div>
+                            <label for="quota_max_vms" class="col-xs-4 control-label">Maximum number of workers</label>
+                            <div class="col-xs-2">
+                                <input type="text" class="form-control" id="quota_max_vms" name="quota[max_vms]" value="{{quota.max_vms|default:2}}">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="cluster_master_context">
+                        <legend>Context for the Head Node</legend>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body context-info">
+                                        No context selected
+                                    </div>
+                                    <div class="panel-footer">
+
+                                        <div class="form-group">
+                                            <!-- Context Name -->
+                                            <div class="col-xs-12">
+                                                <input type="text" class="form-control context-selector" name="master_context_ac" value="" placeholder="Enter a few words of the context name to start searching">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group context-selector-password">
+                                            <!-- Context Password -->
+                                            <label for="cluster_master_context_pwd" class="control-label col-xs-3 required">Context password</label>
+                                            <div class="col-xs-9">
+                                                <div class="input-group">
+                                                    <input type="text" name="cluster[master_context_pwd]" id="cluster_master_context_pwd" class="form-control" value="" data-copy-src="cluster_worker_context_pwd"/>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" type="button">Copy from worker context</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="cluster[master_context_id]" id="cluster_master_context_id" class="context-value">
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="cluster_worker_context">
+                        <legend>Context for the Worker Nodes</legend>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body context-info">
+                                        No context selected
+                                    </div>
+                                    <div class="panel-footer">
+
+                                        <div class="form-group">
+                                            <!-- Context Name -->
+                                            <div class="col-xs-12">
+                                                <input type="text" class="form-control context-selector" name="worker_context_ac" value="" placeholder="Enter a few words of the context name to start searching">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group context-selector-password">
+                                            <!-- Context Password -->
+                                            <label for="cluster_worker_context_pwd" class="control-label col-xs-3 required">Context password</label>
+                                            <div class="col-xs-9">
+                                                <div class="input-group">
+                                                    <input type="text" name="cluster[worker_context_pwd]" id="cluster_worker_context_pwd" class="form-control" value="" data-copy-src="cluster_master_context_pwd"/>
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" type="button">Copy from master context</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="cluster[worker_context_id]" id="cluster_worker_context_id" class="context-value">
+                        </div>
+                    </fieldset>
+
+                    <!--
+                        <fieldset>
+                            <legend>
+                                Additional configuration file parameters
+                                <a class="btn" data-toggle="collapse" href="#advanced_panel">
+                                    <span class="glyphicon glyphicon-collapse-down"></span>
+                                </a>
+                            </legend>
+                            <div class="collapse out" id="advanced_panel">
+                                <div class="form-group">
+                                    <div class="col-xs-12">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="section">Section</th>
+                                                    <th class="parameter">Parameter</th>
+                                                    <th class="value">Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="section">
+                                                        <select name="additional_params[0][section]" class="form-control">
+                                                            <option value="elastiq">elastiq</option>
+                                                            <option value="ec2">ec2</option>
+                                                            <option value="quota">quota</option>
+                                                            <option value="substitute">substitute</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="parameter">
+                                                        <input name="additional_params[0][parameter]" value="" class="form-control">
+                                                    </td>
+                                                    <td class="value">
+                                                        <input name="additional_params[0][value]" value="" class="form-control">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <td colspan="2"></td>
+                                                <td style="text-align:right">
+                                                    <div class="btn btn-default">
+                                                        <span class="glyphicon glyphicon-plus"></span>
+                                                    </div>
+                                            </tfoot>
+                                        </table>
+                                        <p class="help-block">Set elastiq configuration file parameters, that were not provided by the UI above. If parameter is set by the UI, this section overrides it's value.
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    -->
+
+                    <div class="form-group well">
+                        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-save"></span> Save this Cluster Definition</button>
+                        <!--<button type="button" class="btn btn-warning" id="btn_prefill"><span class="glyphicon glyphicon-pencil"></span> Prefill with dummy data</button>-->
+                    </div>
+
+                    <input type="hidden" name="cluster[id]" id="cluster_id" value="{{cluster.id|default_if_none:""}}">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block styles %}
+    <link type="text/css" rel="stylesheet" media="all" href="{% static "cluster/css/libs/typeahead.js-bootstrap.css" %}" />
+    <style>
+        div.tooltip-container {
+            line-height: 34px;
+        }
+        .context-info dl.dl-horizontal {
+            margin: 0;
+        }
+        .suggestion {
+            border-bottom: 1px solid #ccc;
+        }
+        .suggestion p.description {
+            margin: 0;
+            margin-bottom: 5px;
+        }
+    </style>
+{% endblock %}
+{% block scripts %}
+    {% verbatim %}
+        <script type="text/html" id="cs_context_info">
+            <dl class="dl-horizontal">
+                <dt>ID</dt>
+                <dd>{{id}}</dd>
+                <dt>Name</dt>
+                <dd>{{name}}</dd>
+                <dt>Owner</dt>
+                <dd>{{owner}}</dd>
+                {{#description_not_empty}}
+                    <dt>Description</dt>
+                    <dd>{{description}}</dd>
+                {{/description_not_empty}}
+                {{#is_encrypted}}
+                    <dt><span class="glyphicon glyphicon-lock secure-data-icon"></span></dt>
+                    <dd><span class="secure-data-icon">This context is encrypted</span></dd>
+                {{/is_encrypted}}
+            </dl>
+        </script>
+        <script type="text/html" id="cs_context_suggestion">
+            <div class="suggestion">
+                <h5>
+                    {{name}} <small>{{owner}}</small>
+                </h5>
+                {{#description_not_empty}}
+                    <p class="description">{{description}}</p>
+                {{/description_not_empty}}
+            </div>
+        </script>
+    {% endverbatim %}
+    <script type="text/javascript" src="{% static "cluster/js/libs/typeahead.bundle.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "cluster/js/libs/handlebars-1.3.0.js" %}"></script>
+    <script type="text/javascript" src="{% static "cluster/js/jquery.context-sel.js" %}"></script>
+    <script type="text/javascript">
+        jQuery(
+            function()
+            {
+                // Create tooltips automatically
+                jQuery('.tooltip-container > span').each(function () {
+                    jQuery(this).tooltip({
+                        title: jQuery(this).text(),
+                        placement: 'top'
+                    });
+                    jQuery(this).text('');
+                });
+
+                // Prefill with dummy data (for debug)
+                jQuery('#btn_prefill').on('click', function() {
+
+                    var fill_data = {
+
+                        'cluster_name': 'Dummy Cluster',
+                        'cluster_description': 'This is a Dummy Cluster.',
+                        'cluster_passphrase': 'pass_word',
+                        'ec2_api_url': 'http://this.is.so.dummy:8443/ec2/',
+                        'ec2_aws_access_key_id': 'my_access_id',
+                        'ec2_aws_secret_access_key': 'my_secret_key',
+                        'ec2_image_id': 'ami-01010101',
+                        'ec2_flavour': 'm1.dummy'
+
+                    };
+
+                    jQuery.each(fill_data, function(k, v) {
+                        jQuery('#'+k).val(v).trigger('input');
+                    });
+
+                    // ContextSelector is trickier
+                    jQuery('#cluster_master_context input.context-selector').val('Dummy Head').trigger('input');
+                    // jQuery('#cluster_master_context .context-selector-password input').val('asd');
+                    jQuery('#cluster_worker_context input.context-selector').val('Dummy Worker').trigger('input');
+                    // jQuery('#cluster_worker_context .context-selector-password input').val('asd');
+
+                });
+
+                // Password strength meter
+                jQuery('#cluster_passphrase_strength').password_strength_meter();
+
+                jQuery("#cluster_master_context").ContextSelector({
+                    remoteURL: "{% url "context_ajax_get_list" %}",
+                    infoTmpl: Handlebars.compile(
+                        jQuery("#cs_context_info").html()
+                    ),
+                    suggestionTmpl: Handlebars.compile(
+                        jQuery("#cs_context_suggestion").html()
+                    ),
+                    {% if cluster.master_context_json %}
+                        {% autoescape off %}
+                            context: {{cluster.master_context_json}}
+                        {% endautoescape %}
+                    {% endif %}
+                });
+                jQuery("#cluster_worker_context").ContextSelector({
+                    remoteURL: "{% url "context_ajax_get_list" %}",
+                    infoTmpl: Handlebars.compile(
+                        jQuery("#cs_context_info").html()
+                    ),
+                    suggestionTmpl: Handlebars.compile(
+                        jQuery("#cs_context_suggestion").html()
+                    ),
+                    {% if cluster.worker_context_json %}
+                        {% autoescape off %}
+                            context: {{cluster.worker_context_json}}
+                        {% endautoescape %}
+                    {% endif %}
+                });
+
+                // Add the "copy" functionality in the ContextSelector's password
+                jQuery('.context-selector-password button').on('click', function() {
+
+                    inp = jQuery(this).parent().parent().find('input');
+                    src_name = jQuery(inp).data('copy-src');
+                    jQuery(inp).val( jQuery('#'+src_name).val() );
+
+                });
+
+            }
+        );
+    </script>
+{% endblock %}

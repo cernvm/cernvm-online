@@ -1,0 +1,130 @@
+{% load static %}
+{% load url from future %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>{% block title %}Home{% endblock %} | CernVM Online</title>
+        <link rel="shortcut icon" href="{% static "base/img/sky_favicon_4.ico" %}" type="image/x-icon" />
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/layout.css" %}" />
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/style.css" %}" />
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/custom.css" %}" />
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/cvmo.css" %}" />
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/jquery-ui-1.9.0.custom.css" %}" />
+        <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans:400,300,600' rel='stylesheet' type='text/css' />
+        <script type="text/javascript" src="{% static "base/js/libs/mootools-core-1.4.5.js" %}"></script>
+        <script type="text/javascript" src="{% static "base/js/libs/mootools-more-1.4.0.1.js" %}"></script>
+        <script type="text/javascript" src="{% static "base/js/libs/jquery-1.8.2.min.js" %}"></script>
+        <script type="text/javascript" src="{% static "base/js/libs/jquery-ui-1.9.0.custom.min.js" %}"></script>
+        <script type="text/javascript">jQuery.noConflict();</script>
+        <script type="text/javascript" src="{% static "base/js/cvmo.js" %}"></script>
+        {% block head %}{% endblock %}
+    </head>
+    <body class="page-node page-cernvmonlinepages page-node-view anonymous-user left {% block body_class %}{% endblock %}" id="page-node-180">
+        <div id="wrapper">
+            <div id="header" class="layout-region">
+                <div id="header-inner">
+                    <a href="{% url "dashboard" %}" title="" id="logo-inner"><img class="online" alt="CernVM Online Logo" src="{% static "base/img/online_logo.png" %}" /></a>
+                    <a href="http://cernvm.cern.ch/portal" title="home"><img class="logo-home" alt="Home" src="{% static "base/img/logo-home.png" %}" /></a>
+                    <div class="header-fl-right">
+                        <!--
+                            <div class="login">
+                                {% if user.username %}
+                                    <font color="#FFFFFF"> Logged in as {{ user.username|default:"anonymous" }} |</font>
+                                    {% if user.password %}
+                                        <a class="profile-link" href="{% url "user_profile" %}">Profile</a>
+                                        <font color="#FFFFFF"> |</font>
+                                    {% endif %}
+                                    <a class="logout-link" href="{% url "user_logout" %}">Log out</a>
+                                {% else %}
+                                    <a class="login-link" href="{% url "user_login" %}">Login</a>
+                                {% endif %}
+                            </div>
+                            <div style="clear:both;margin:0;padding:0;"></div>
+                            <div id="search">
+                                <form action="https://cernvm.cern.ch/portal/?q=search" method="post">
+                                    <div class="form">
+                                        <input class="form-text" type="text" size="15" value="" name="keys" /> <input class="form-submit" type="submit" value=""/>
+                                    </div>
+                                </form>
+                            </div>
+                        -->
+                    </div>
+                </div>
+            </div>
+            <div class="header-line-cernvm"></div>
+            <div id="navigation">
+                <ul>
+                    {% block navbar %}
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online" title="Home">About</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="{% url "dashboard" %}" title="Home" class="active">Dashboard</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="{% url "market_list" %}" title="Marketplace">Marketplace</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/documentation" title="Documentation">Documentation</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/downloads" title="Downloads">Downloads</a>
+                        </li>
+                        <li class="leaf first">
+                            <a href="http://cernvm.cern.ch/portal/online/publications" title="Publications">Publications</a>
+                        </li>
+                    {% endblock %}
+                </ul>
+            </div>
+            <div id="container" class="layout-region">
+                <div id="sidebar-left" class="sidebar">
+                    <div class="inner">
+                        {% block sidebar %}{% endblock %}
+                    </div>
+                </div>
+                <div id="main">
+                    <div class="main-inner">
+                        <div id="content" class="clearfix">
+                            {% autoescape off %}
+                                {% if msg_error %}<div class="header-error">{{ msg_error }}</div>{% endif %}
+                                {% if msg_info %}<div class="header-message">{{ msg_info }}</div>{% endif %}
+                                {% if msg_warning %}<div class="header-warning">{{ msg_warning }}</div>{% endif %}
+                                {% if msg_confirm %}<div class="header-confirm">{{ msg_confirm }}</div>{% endif %}
+                                {% block body %}{% endblock %}
+                            {% endautoescape %}
+                        </div>
+                        <div class="clearfix">
+                            <div id="node-180" class="node clearfix node-cernvmonlinepages node-full published not-promoted not-sticky without-photo">
+                                <div class="meta">
+                                    {% block bodyfooter %}{% endblock %}
+                                </div>
+                                <div class="content clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="push">&nbsp;</div>
+            <div id="footer" class="layout-region">
+                <div id="footer-inner">
+                    <div id="block-block-4" class="block block-block block-even region-odd clearfix">
+                        <div class="content">
+                            {% block footer %}
+                                <p>
+                                    CernVM Online version: <strong>v{{ cvmo_version }}</strong>
+                                    &copy; <a href="http://cern.ch/" target="_blank">CERN</a> 2012 - 2014
+                                </p>
+                                <p>
+                                    <a href="http://cernvm.cern.ch/" target="_blank">CernVM Software appliance</a>
+                                     | <a href="http://cern.ch/ph-dep" target="_blank">PH Department</a>
+                                     - <a href="http://sftweb.cern.ch/" target="_blank">SFT</a>
+                                </p>
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

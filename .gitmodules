@@ -1,0 +1,3 @@
+[submodule "extras/cvmfs"]
+	path = extras/cvmfs
+	url = https://github.com/reneme/cvmfs

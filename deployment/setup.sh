@@ -25,14 +25,20 @@ declare -a STEPS=( make_dirs export_source \
                    install_cvmo configure_cvmo \
                    make_public install_apache \
                    run_apache )
-declare -a QUICK_STEPS=( install_cvmo configure_cvmo run_apache )
+declare -a QUICK_STEPS=( install_cvmo configure_cvmo make_public run_apache )
+declare -a QUICKER_STEPS=( rsync_to_dest configure_cvmo make_public run_apache )
 declare -a STEPS_BACKTRACE=()
 
 # Parse command-line arguments
 for (( I=0 ; I<=$# ; I++ )) ; do
-  if [ "${!I}" == '-q' ] || [ "${!I}" == '--quick' ] ; then
-    STEPS=( "${QUICK_STEPS[@]}" )
-  fi
+
+  case "${!I}" in
+
+    -q)  STEPS=( "${QUICK_STEPS[@]}" ) ;;
+    -qq) STEPS=( "${QUICKER_STEPS[@]}" ) ;;
+
+  esac
+
 done
 
 # Load setup handlers
@@ -40,4 +46,3 @@ source "$SCRIPT_PATH"/lib/setup_handlers.sh
 
 # Main
 main
-

@@ -1,0 +1,77 @@
+/******************************************************************************
+ * Context definitions
+ ******************************************************************************/
+table#context_definitions td.icon,
+table#context_definitions th.icon {
+    width: 15px;
+}
+table#context_definitions td.name,
+table#context_definitions th.name {
+}
+table#context_definitions td.operations,
+table#context_definitions th.operations {
+    width: 250px;
+    text-align: center;
+}
+table#context_definitions td.webapi,
+table#context_definitions th.webapi {
+    width: 120px;
+    text-align: center;
+}
+table#context_definitions td.webapi li {
+    text-align: left;
+}
+table#context_definitions tfoot td {
+    text-align: right;
+}
+table#context_definitions tfoot td li {
+    text-align: left;
+}
+
+/******************************************************************************
+ * Cluster definitions
+ ******************************************************************************/
+table#cluster_definitions th.name,
+table#cluster_definitions td.name {
+    vertical-align: middle;
+}
+table#cluster_definitions th.context,
+table#cluster_definitions td.context {
+    width: 250px;
+}
+table#cluster_definitions th.operations,
+table#cluster_definitions td.operations {
+    width: 200px;
+    text-align: center;
+}
+table#cluster_definitions tfoot td {
+    text-align: right;
+}
+
+
+/******************************************************************************
+ * Virtual machines
+ ******************************************************************************/
+table#vms th.icon,
+table#vms td.icon {
+    width: 15px;
+}
+table#vms th.ip,
+table#vms td.ip {
+}
+table#vms th.cvm_version,
+table#vms td.cvm_version {
+    width: 40px;
+}
+table#vms th.context,
+table#vms td.context {
+    width: 200px;
+}
+table#vms th.operations,
+table#vms td.operations {
+    width: 120px;
+    text-align: center;
+}
+table#vms tfoot td {
+    text-align: right;
+}

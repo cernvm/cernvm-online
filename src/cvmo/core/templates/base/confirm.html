@@ -1,0 +1,27 @@
+{% extends "base/main.html" %}
+{% block body_class %}single_column{% endblock %}
+{% block title %}Confirmation - {{ action }}{% endblock %}
+
+{% block body %}
+{% load static %}
+<div class="center">
+	<div class="dialog dialog-confirm">
+		<table width="100%">
+			<tr>
+				<td colspan="2">
+					<h1>Confirmation - {{ action }}</h1>
+					<p>{{ message }}</p>
+				</td>
+			</tr>
+			<tr>
+				<td align="center">
+					<a href="{{ url_ok }}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/accept.png" %}" /> Accept</a>
+				</td>
+				<td align="center">
+					<a href="{{ url_cancel }}" class="softbutton"><img border="0" align="absmiddle" src="{% static "base/img/cancel.png" %}" /> Cancel</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+{% endblock %}
