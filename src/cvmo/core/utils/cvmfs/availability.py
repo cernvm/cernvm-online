@@ -5,8 +5,6 @@ Created by René Meusel
 This file is part of the CernVM File System auxiliary tools.
 """
 
-import cvmfs
-
 class WrongRepositoryType(Exception):
     def __init__(self, repo, expected_type):
         assert repo.type != expected_type

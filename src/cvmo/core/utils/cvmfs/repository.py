@@ -15,7 +15,6 @@ import dateutil.parser
 from dateutil.tz import tzutc
 
 import _common
-import cvmfs
 from manifest import Manifest
 from catalog import Catalog
 from history import History
