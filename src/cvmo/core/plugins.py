@@ -2,6 +2,7 @@ import base64
 from django.conf import settings
 from django.template import RequestContext, loader
 from cvmo.core.utils.context import sanitize_env, sanitize
+from cvmo.settings import CVMFS_UCVM_SERVERS, CVMFS_UCVM_DEFAULT_SERVER
 
 #
 #
@@ -316,10 +317,20 @@ class ContextPlugins(object):
                 _ucvm += "cvmfs_http_proxy=\"%s\"\n" % _proxy
             if 'resize_rootfs' in values['general'] and values['general']['resize_rootfs'] == 'true':
                 _ucvm += "resize_rootfs=true\n"
+
             if 'cvmfs_branch' in values['general'] and values['general']['cvmfs_branch'] != '':
                 _ucvm += "cvmfs_branch=%s\n" % values['general']['cvmfs_branch']
-                if values['general']['cvmfs_branch'] != 'cernvm-prod.cern.ch':
-                    _ucvm += "cvmfs_server=hepvm.cern.ch\n"
+
+                # Where do we get this branch from?
+                try:
+                    cvm_server = CVMFS_UCVM_SERVERS[ values['general']['cvmfs_branch'] ]
+                    if cvm_server != CVMFS_UCVM_DEFAULT_SERVER:
+                        # don't write useless defaults
+                        _ucvm += 'cvmfs_server=%s\n' % (cvm_server)
+                except KeyError:
+                    # ignore if not found
+                    pass
+
             if 'cvmfs_tag' in values['general'] and values['general']['cvmfs_tag'] != '' and values['general']['cvmfs_tag'] != 'trunk':
                 _ucvm += "cvmfs_tag=%s\n" % values['general']['cvmfs_tag']
             if _ucvm != '':

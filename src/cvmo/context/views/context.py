@@ -19,6 +19,7 @@ from cvmo.core.utils.views import render_confirm, render_password_prompt, \
 from cvmo.core.utils.context import gen_context_key, salt_context_key, tou
 from cvmo.core.utils import crypt
 from cvmo.core.utils import cvmfs
+from cvmo.settings import CVMFS_UCVM_SERVERS, CVMFS_UCVM_DEFAULT_SERVER
 
 #
 # Context creation
@@ -551,15 +552,8 @@ def _cap(s, l):
 
 def ajax_get_cvmfs_tags(request, branch):
 
-    repo_urls = {
-        'cernvm-devel.cern.ch': 'http://hepvm.cern.ch/cvmfs/cernvm-devel.cern.ch',
-        'cernvm-testing.cern.ch': 'http://hepvm.cern.ch/cvmfs/cernvm-testing.cern.ch',
-        'cernvm-prod.cern.ch': 'http://cvmfs-stratum-one.cern.ch/cvmfs/cernvm-prod.cern.ch',
-        'cernvm-slc4.cern.ch': 'http://hepvm.cern.ch/cvmfs/cernvm-slc4.cern.ch'
-    }
-
     try:
-        url = repo_urls[branch]
+        url = 'http://%s/cvmfs/%s' % (CVMFS_UCVM_SERVERS[branch], branch)
         repo = cvmfs.RemoteRepository(url);
         history = repo.retrieve_history()
         dump = []

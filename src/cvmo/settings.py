@@ -274,3 +274,18 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #
 
 CORS_ORIGIN_REGEX_WHITELIST = config.CORS_ORIGIN_REGEX_WHITELIST
+
+#
+# CernVM-FS URLs for uCernVM
+#
+
+# The default server
+CVMFS_UCVM_DEFAULT_SERVER = 'cvmfs-stratum-one.cern.ch'
+
+# Branches --> Servers
+CVMFS_UCVM_SERVERS = {
+    'cernvm-devel.cern.ch':   'hepvm.cern.ch',
+    'cernvm-testing.cern.ch': 'hepvm.cern.ch',
+    'cernvm-prod.cern.ch':    CVMFS_UCVM_DEFAULT_SERVER,
+    'cernvm-slc4.cern.ch':    'hepvm.cern.ch'
+}
