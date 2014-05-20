@@ -199,7 +199,7 @@
 
 					<!-- Custom Repositories -->
 					<tr>
-						<th>CernVM-FS custom repositories:</th>
+						<th>Custom repositories:</th>
 						<td colspan="2">
 
 							<table style="border:0 !important" class="long-text">
@@ -218,7 +218,7 @@
 								</tr>
 								<tr>
 									<th>Public Key:</th>
-									<td><textarea id="cvmfs_extra_repo_pubkey"></textarea></td>
+									<td><textarea class="code" id="cvmfs_extra_repo_pubkey"></textarea></td>
 								</tr>
 								<tr>
 									<td colspan="2">
@@ -256,6 +256,7 @@
 						var b_delete = $('#cvmfs_extra_repo_delete');
 
 						var new_item_val = '__new_item__';
+						var no_item_val = '__no_item__';
 						var form_base_array = [ 'values', 'general', 'extra_repositories' ];
 
 						var create_form_selector = function(ary) {
@@ -272,12 +273,18 @@
 							return sel;
 						};
 
+						var repo_label = function(n) {
+							return '* ' + n;
+						};
+
 						$.fn.extend({
 
 							reset_select: function(opt) {
 								$(this).empty();
-								$(this).append( $('<option></option>').val(new_item_val).text( 'Define a new repository...' ) );
-								$(this).val(new_item_val);
+								$(this).append( $('<option></option>').val(no_item_val).text( 'Select an option...' ) );
+								$(this).append( $('<option></option>').val(new_item_val).text( 'Define a new repository' ) );
+								$(this).val(no_item_val);
+								$(this).trigger('change');
 								return $(this);
 							},
 
@@ -290,30 +297,27 @@
 
 						});
 
-						sel.reset_select();
-						edit.show();
-
-						// Fill the select with existing values
-						$(tosubmit).find('input').each(function() {
-							var n = $(this).attr('name');
-							var m = n.match(/\[([^\]]+)\]\[server\]$/);
-							if ( m.length == 2 ) {
-								$(sel).append( $('<option></option>').val(m[1]).text(m[1]) );
-								// console.log( 'restored: ' + m[1] );
-							}
-						});
-
 						$(sel).change(function() {
 
-							if ( $(this).val() == new_item_val ) {
-								var name = '';
-								var server = '';
-								var pubkey = '';
+							var name, server, pubkey;
+
+							if ( $(this).val() == no_item_val ) {
+								name = '';
+								server = '';
+								pubkey = '';
+								$(edit).hide();
+							}
+							else if ( $(this).val() == new_item_val ) {
+								name = '';
+								server = '';
+								pubkey = '';
+								$(edit).show()
 							}
 							else {
-								var name = $(this).val();
-								var server = $(tosubmit).find_form_array( form_base_array.concat( name, 'server' ) ).val();
-								var pubkey = $(tosubmit).find_form_array( form_base_array.concat( name, 'pubkey' ) ).val();
+								name = $(this).val();
+								server = $(tosubmit).find_form_array( form_base_array.concat( name, 'server' ) ).val();
+								pubkey = $(tosubmit).find_form_array( form_base_array.concat( name, 'pubkey' ) ).val();
+								$(edit).show();
 							}
 
 							$(f_name).val(name);
@@ -322,11 +326,25 @@
 
 						});
 
+						// Init
+						$(sel).reset_select();
+
+						// Fill the select with existing values
+						$(tosubmit).find('input').each(function() {
+							var n = $(this).attr('name');
+							var m = n.match(/\[([^\]]+)\]\[server\]$/);
+							if ( m.length == 2 ) {
+								$(sel).append( $('<option></option>').val(m[1]).text( repo_label(m[1]) ) );
+								// console.log( 'restored: ' + m[1] );
+							}
+						});
+
+
 						$(b_delete).click(function () {
 
 							// Get current value
 							var name = $(sel).val();
-							if (name != new_item_val) {
+							if ((name != new_item_val) && (name != no_item_val)) {
 								// removing all
 								$(tosubmit).find_form_array( form_base_array.concat(name) ).remove();
 								$(sel).find("option[value='"+name+"']").remove();
@@ -359,7 +377,7 @@
 								if ( $(sel).find("option[value='"+name+"']").length == 0 ) {
 									// new item: add it
 									// console.log('adding a new item: ' + name);
-									$(sel).append( $('<option></option>').val(name).text(name) );
+									$(sel).append( $('<option></option>').val(name).text( repo_label(name) ) );
 								}
 								$(sel).val(name);
 							}
@@ -370,11 +388,10 @@
 								$(sel).find("option[value='"+name+"']").remove();
 								$(sel).find("option[value='"+old_name+"']")
 									.val(name)
-									.text(name);
+									.text( repo_label(name) );
 								$(sel).val(name);
 							}
 
-							// Test Me
 							var to_form_name = function(bit) {
 								return form_base_array[0] + '[' + form_base_array.slice(1).concat(name, bit).join('][') + ']';
 							}
