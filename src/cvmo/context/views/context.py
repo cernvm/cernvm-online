@@ -58,6 +58,9 @@ def create(request):
     post_dict = parser.parse(
         unicode(request.POST.urlencode()).encode("utf-8"))
 
+    # Just for debug
+    # return uncache_response( HttpResponse( json.dumps(post_dict, indent=2), content_type='text/plain' ) )
+
     # The values of all the plugins and the enabled plugins
     values = post_dict.get("values")
     enabled = post_dict.get("enabled")

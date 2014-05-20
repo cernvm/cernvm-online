@@ -223,6 +223,17 @@ class ContextPlugins(object):
         if v is not None and v != '':
             _ans += 'x509-cert=%s\n' % base64.b64encode( v )
 
+        # Extra CernVM-FS repositories
+        # Format will be a single line: extra_repositories=<name1>|<server1>|<pubkey_b64_1>,<name2>|<server2>|<pubkey_b64_2>,...
+        extra_repositories = ''
+        if 'extra_repositories' in values['general']:
+            for k,v in values['general']['extra_repositories'].iteritems():
+                if extra_repositories != '':
+                    extra_repositories += ','
+                extra_repositories += '%s|%s|%s' % ( k, v.get('server'), base64.b64encode(v.get('pubkey')) )
+            if extra_repositories != '':
+                _ans += 'extra_repositories=%s\n' % (extra_repositories)
+
         # Prepare contextualization_command
         if ('context_cmd' in values['general']) and (values['general']['context_cmd'] != ''):
             if 'context_cmd_user' in values['general']:
