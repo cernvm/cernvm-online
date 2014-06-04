@@ -645,8 +645,81 @@
 						<td><input type="text" id="f_eos_server" maxlength="100" name="values[general][eos_server]" value="{{ values.general.eos_server }}" {{disabled|dis}}/></td>
 					</tr>
 					<tr>
-						<th width="150"><label for="f_x509_user">X.509 local user:</label></th>
-						<td><input type="text" id="f_x509_user" maxlength="100" name="values[general][x509_user]" value="{{ values.general.x509_user }}" {{disabled|dis}}/></td>
+						<th width="150"><label for="f_x509_user">X.509 local user owning the proxy <i>(note: local users are created under the "Users" section above)</i>:</label></th>
+						<td>
+							<select id="x509_list_current_users" {{disabled|dis}}></select><br/>
+							<input type="text" id="f_x509_user" maxlength="100" name="values[general][x509_user]" value="{{ values.general.x509_user }}" {{disabled|dis}}/>
+						</td>
+
+							<script type="text/javascript">
+
+							(function($) {
+
+								var selListUsers = '#x509_list_current_users';
+								var selUser = '#f_x509_user';
+								var defCustomUser = { 'text': 'Custom user name...', 'val': '__custom_user__' };
+
+								var appendUser = function(user) {
+									if (user instanceof Object) {
+										opt = $('<option></option>').text( user.text ).val( user.val );									}
+									else {
+										opt = $('<option></option>').text( user ).val( user );
+									}
+									$(selListUsers).append(opt);
+								};
+
+								var updateListOfUsers = function() {
+									$(selListUsers).empty();
+									appendUser( defCustomUser );
+									$('[name^="values[general][users]["]').filter('[name$="[name]"]').each( function() {
+										appendUser( $(this).val() );
+									});
+								};
+
+								var toggleInput = function(enable) {
+									if (enable === true) $(selUser).show();
+									else $(selUser).hide();
+									// $(selUser).prop('disabled', !enable);
+								};
+
+								var selectUser = function(user) {
+									$(selUser).val(user);
+									$(selListUsers).val(user);
+
+									if ( user == defCustomUser.val ) {
+										// Custom user selected from dropdown
+										toggleInput(true);
+										$(selUser).val('');
+									}
+									else if ( $(selListUsers).val() != user ) {
+										// Inited externally from a value not in the list
+										toggleInput(true);
+									}
+									else {
+										// Selected value is a user from the list
+										toggleInput(false);
+									}
+								};
+
+								// Events
+								$('#newuser_row a.softbutton').click( updateListOfUsers );
+								$(selUser).change( function() {
+									// Textbox
+									selectUser($(this).val());
+								});
+								$(selListUsers).change( function() {
+									// Dropdown
+									selectUser($(this).val());
+								});
+
+								// Init
+								updateListOfUsers();
+								selectUser( $(selUser).val() );
+
+							})(jQuery);
+
+							</script>
+
 					</tr>
 					<tr>
 						<th><label for="f_x509_cert">Proxy (or X.509 certificate and private key) in PEM format:</label></th>
@@ -787,7 +860,7 @@
 
 											}
 
-											sel.prop('disabled',  (sel_disabled || data.length == 0));
+											sel.prop('disabled', (sel_disabled || data.length == 0));
 
 											// In the dropdown, select the value from the textbox, if possible
 											tag.trigger('change');
