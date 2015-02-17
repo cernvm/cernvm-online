@@ -12,7 +12,7 @@ import os
 
 
 from _common import _split_md5, DatabaseObject
-from dirent  import DirectoryEntry
+from dirent  import DirectoryEntry, Chunk
 
 
 class CatalogIterator:
@@ -122,6 +122,12 @@ class CatalogStatistics:
     def subtree_data_size(self):
         return self._get_stat('all_file_size')
 
+    def get_all_fields(self):
+        return self._get_stat('all_regular') , self._get_stat('all_dir') ,          \
+               self._get_stat('all_symlink') , self._get_stat('all_file_size') ,    \
+               self._get_stat('all_chunked') , self._get_stat('all_chunked_size') , \
+               self._get_stat('all_chunks')  , self._get_stat('all_nested')
+
 
     def _read_statistics(self, catalog):
         stats = catalog.run_sql("SELECT * FROM statistics ORDER BY counter;")
@@ -142,10 +148,18 @@ class CatalogStatistics:
 class Catalog(DatabaseObject):
     """ Wraps the basic functionality of CernVM-FS Catalogs """
 
-    def __init__(self, catalog_file):
+    @staticmethod
+    def open(catalog_path):
+        """ Initializes a Catalog from a local file path """
+        f = open(catalog_path)
+        return Catalog(f)
+
+    def __init__(self, catalog_file, catalog_hash = ""):
         DatabaseObject.__init__(self, catalog_file)
+        self.hash = catalog_hash
         self._read_properties()
         self._guess_root_prefix_if_needed()
+        self._guess_last_modified_if_needed()
         self._check_validity()
 
 
@@ -159,6 +173,16 @@ class Catalog(DatabaseObject):
 
     def __iter__(self):
         return CatalogIterator(self)
+
+
+    def has_nested(self):
+        return self.nested_count() > 0
+
+
+    def nested_count(self):
+        """ Returns the number of nested catalogs in this catalog """
+        num_catalogs = self.run_sql("SELECT count(*) FROM nested_catalogs;")
+        return num_catalogs[0][0]
 
 
     def list_nested(self):
@@ -208,7 +232,7 @@ class Catalog(DatabaseObject):
                             WHERE parent_1 = " + str(parent_1) + " AND         \
                                   parent_2 = " + str(parent_2) + "             \
                             ORDER BY name ASC;")
-        return [ DirectoryEntry(result) for result in res ]
+        return [ self._make_directory_entry(result) for result in res ]
 
 
     def find_directory_entry(self, path):
@@ -231,12 +255,22 @@ class Catalog(DatabaseObject):
                             WHERE md5path_1 = " + str(md5path_1) + " AND       \
                                   md5path_2 = " + str(md5path_2) + "           \
                             LIMIT 1;")
-        return DirectoryEntry(res[0]) if len(res) == 1 else None
+        return self._make_directory_entry(res[0]) if len(res) == 1 else None
 
 
     def is_root(self):
         """ Checks if this is the root catalog (based on the root prefix) """
         return self.root_prefix == "/"
+
+
+    def has_predecessor(self):
+        return hasattr(self, "previous_revision")
+
+
+    def get_predecessor(self):
+        if not self.has_predecessor():
+            return None
+        return CatalogReference(self.root_prefix, self.previous_revision)
 
 
     def _read_properties(self):
@@ -261,10 +295,34 @@ class Catalog(DatabaseObject):
             self.root_prefix       = prop_value
 
 
+    def _make_directory_entry(self, result_set):
+        dirent = DirectoryEntry(result_set)
+        self._read_chunks(dirent)
+        return dirent
+
+
+    def _read_chunks(self, dirent):
+        """ Finds and adds the file chunk of a DirectoryEntry """
+        if self.schema < 2.4:
+            return
+        res = self.run_sql("SELECT " + Chunk._catalog_db_fields() + "           \
+                            FROM chunks                                         \
+                            WHERE md5path_1 = " + str(dirent.md5path_1) + " AND \
+                                  md5path_2 = " + str(dirent.md5path_2) + "     \
+                            ORDER BY offset ASC;")
+        dirent._add_chunks(res)
+
+
     def _guess_root_prefix_if_needed(self):
         """ Root catalogs don't have a root prefix property (fixed here) """
         if not hasattr(self, 'root_prefix'):
             self.root_prefix = "/"
+
+
+    def _guess_last_modified_if_needed(self):
+        """ Catalog w/o a last_modified field, we set it to 0 """
+        if not hasattr(self, 'last_modified'):
+            self.last_modified = datetime.datetime.min
 
 
     def _canonicalize_path(self, path):
@@ -275,6 +333,8 @@ class Catalog(DatabaseObject):
 
     def _check_validity(self):
         """ Check that all crucial properties have been found in the database """
+        if not hasattr(self, 'revision'):
+          raise Exception("Catalog lacks a revision entry")
         if not hasattr(self, 'schema'):
           raise Exception("Catalog lacks a schema entry")
         if not hasattr(self, 'root_prefix'):
