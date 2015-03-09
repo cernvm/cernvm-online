@@ -9,4 +9,4 @@ recursive-include cvmo *.ico
 recursive-include cvmo *.woff
 recursive-include cvmo *.otf
 recursive-include cvmo *.svg
-
+recursive-include cvmo *.txt
