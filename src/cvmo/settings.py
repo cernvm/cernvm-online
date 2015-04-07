@@ -282,10 +282,15 @@ CORS_ORIGIN_REGEX_WHITELIST = config.CORS_ORIGIN_REGEX_WHITELIST
 # The default server
 CVMFS_UCVM_DEFAULT_SERVER = 'cvmfs-stratum-one.cern.ch'
 
+# The development server
+CVMFS_UCVM_EXPERIMENTAL_SERVER = 'hepvm.cern.ch'
+
 # Branches --> Servers
 CVMFS_UCVM_SERVERS = {
-    'cernvm-devel.cern.ch':   'hepvm.cern.ch',
-    'cernvm-testing.cern.ch': 'hepvm.cern.ch',
+    'cernvm-devel.cern.ch':   CVMFS_UCVM_EXPERIMENTAL_SERVER,
+    'cernvm-testing.cern.ch': CVMFS_UCVM_EXPERIMENTAL_SERVER,
     'cernvm-prod.cern.ch':    CVMFS_UCVM_DEFAULT_SERVER,
-    'cernvm-slc4.cern.ch':    'hepvm.cern.ch'
+    'cernvm-slc4.cern.ch':    CVMFS_UCVM_EXPERIMENTAL_SERVER,
+    'cernvm-slc5.cern.ch':    CVMFS_UCVM_EXPERIMENTAL_SERVER,
+    'cernvm-sl7.cern.ch':     CVMFS_UCVM_EXPERIMENTAL_SERVER
 }
