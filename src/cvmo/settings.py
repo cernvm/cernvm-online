@@ -32,7 +32,7 @@ CSC_USER_CONFIG_FILE = "students.conf"
 
 WEBAPI_UCERNVM_VERSION = config.WEBAPI_UCERNVM_VERSION
 WEBAPI_CONFIGURATIONS = config.WEBAPI_CONFIGURATIONS
-
+WEBAPI_VMCP_RSA_PRIVATEKEY = config.WEBAPI_VMCP_RSA_PRIVATEKEY
 
 #
 # User registration
@@ -87,7 +87,10 @@ SHIBBOLETH_SSO = {
         r"/%suser/register_action$" % config.URL_PREFIX,
         r"/%suser/account_activation$" % config.URL_PREFIX,
         # API
-        r"/%sapi/.*$" % config.URL_PREFIX
+        r"/%sapi/.*$" % config.URL_PREFIX,
+        # WebAPI
+        r"/%swebapi/start/[-\w]+$" % config.URL_PREFIX,
+        r"/%swebapi/vmcp$" % config.URL_PREFIX
 
         # API - context
         # r"/" + config.URL_PREFIX + "api/context/?$",
@@ -137,7 +140,8 @@ INSTALLED_APPS = (
     "cvmo.context",
     "cvmo.vm",
     "cvmo.cluster",
-    "cvmo.market"
+    "cvmo.market",
+    "cvmo.webapi"
 )
 
 #

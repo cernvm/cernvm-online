@@ -66,7 +66,8 @@ CORS_ORIGIN_REGEX_WHITELIST = ("^http?://(\w+\.)?cern\.ch$")
 # WebAPI configurations
 #
 
-WEBAPI_UCERNVM_VERSION = "1.16"
+WEBAPI_VMCP_RSA_PRIVATEKEY = ""
+WEBAPI_UCERNVM_VERSION = "latest"
 WEBAPI_CONFIGURATIONS = [
     {
         "cpus": 1, "memory": 1024, "disk_size": 10000,
