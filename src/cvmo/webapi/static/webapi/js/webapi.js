@@ -29,6 +29,7 @@
 		$("#webapi-frame").addClass("color-error");
 		$("#lbl-header").text("An error occured");
 		$("#lbl-status").text(message);
+		update_progress_value(0.0);
 	}
 
 	/**

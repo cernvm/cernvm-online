@@ -4,8 +4,11 @@ body {
   overflow: hidden;
 }
 #webapi-frame {
+  display: block;
   width: 100%;
+  left: 0;
   height: 100%;
+  top: 0;
   background-repeat: no-repeat;
   background-position: center center;
 }
