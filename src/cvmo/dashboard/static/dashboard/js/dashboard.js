@@ -18,7 +18,7 @@ jQuery(
                     config_index = jQuery(this).data("config-index");
 
                 /* Prepare the URL to query */
-                var url = 'http://cernvm-online.cern.ch';
+                var url = 'https://cernvm-online.cern.ch';
                 if (String(window.location).indexOf("devel") != -1)
                     url += "/devel";
                 url += "/webapi/req?context="+ context_id +"&config=" + config_index;
