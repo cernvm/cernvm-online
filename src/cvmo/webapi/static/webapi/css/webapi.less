@@ -3,3 +3,63 @@
 // Planned dimentions for the WebAPI Window : 700x500 pixels
 //
 
+body {
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+}
+
+#webapi-frame {
+	width: 100%;
+	height: 100%;
+	background-repeat: no-repeat;
+	background-position: center center;
+
+	&.color-running {
+		background-image: url(../img/loading.gif);
+
+		.header, .footer-label {
+			background-color: #3498DB;
+		}
+
+	}
+	&.color-error {
+		background-image: url(../img/warning.png);
+
+		.header, .footer-label {
+			background-color: #E74C3C;
+		}
+	}
+
+	.header {
+		padding: 28px;
+		width: 100%;
+		font-size: 24px;
+		color: #fff;
+	}
+
+	.footer {
+		position: absolute;
+		width: 100%;
+		bottom: 0;
+		left: 0;
+
+		.progress-container {
+			width: 100%;
+			height: 16px;
+			background-color: #7F8C8D;
+			.progress-bar {
+				height: 16px;
+				background-color: #BDC3C7;
+			}
+		}
+
+		.footer-label {
+			width: 100%;
+			font-size: 14px;
+			padding: 10px;
+			color: #fff;
+		}
+	}
+
+}

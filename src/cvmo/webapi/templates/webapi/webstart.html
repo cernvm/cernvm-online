@@ -24,8 +24,17 @@
 	</head>
 	<body>
 
-        <!-- Debug status label -->
-        <div id="lbl-status">Initializing</div>
+        <div id="webapi-frame" class="color-running">
+
+            <div class="header" id="lbl-header">Launching Instance</div>
+            <div class="footer">
+                <div class="progress-container">
+                    <div class="progress-bar" id="p-bar"></div>
+                </div>
+                <div class="footer-label" id="lbl-status">Initializing CernVM WebAPI...</div>
+            </div>
+
+        </div>
 
         <!-- Initialize WebAPI Launching -->
         <script type="text/javascript">launchMachine('{{vmcp}}');</script>

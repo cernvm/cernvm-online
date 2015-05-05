@@ -1,12 +1,3 @@
-function makeRandomString(length)
-{
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for( var i=0; i < length; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
-}
-
 jQuery(
     function()
     {
@@ -21,46 +12,33 @@ jQuery(
             function(e)
             {
                 e.preventDefault();
-                /* Parse the request */
-                var request = {
-                    "contextId": jQuery(this).data("context-id"),
-                    "name": jQuery(this).data("name"),
-                    "memory": jQuery(this).data("memory"),
-                    "CPUs": jQuery(this).data("cpus"),
-                    "diskSize": jQuery(this).data("disk-size")
-                };
-                console.log(request);
 
-                /* Validate the request */
-                // TODO
+                /* Get config index */
+                var context_id = jQuery(this).data("context-id"),
+                    config_index = jQuery(this).data("config-index");
 
-                /* Start the VM with the CernVM Web API */
-                CVM.startCVMWebAPI(
-                    function(plugin)
-                    {
-                        var randomString = makeRandomString(5);
-                        var url = "https://cernvm-online.cern.ch/vmcp/sign.php?contextualization_key="
-                            + encodeURIComponent(request["contextId"])
-                            + "&name=" + encodeURIComponent(request["name"]
-                                            + " " + randomString)
-                            + "&cpus=" + encodeURIComponent(request["CPUs"])
-                            + "&ram=" + encodeURIComponent(request["memory"])
-                            + "&disk=" + encodeURIComponent(request["diskSize"]);
-                        plugin.requestSession(
-                            url,
-                            function(session)
-                            {
-                                session.start();
-                            },
-                            function(failure)
-                            {
-                                alert("Failed to create session: "
-                                      + failure);
-                            }
-                        );
-                    },
-                    true // Let the plugin initialize the environment
-                );
+                /* Prepare the URL to query */
+                var url = 'http://cernvm-online.cern.ch';
+                if (String(window.location).indexOf("devel") != -1)
+                    url += "/devel";
+                url += "/webapi/run?context="+ context_id +"&config=" + config_index;
+
+                /* Open an [HTTP] window to handle this request */
+                var win_w = 700,
+                    win_h = 500,
+                    win = window.open(url, "webapi_popup", 
+                         "width=" + win_w
+                      + ",height=" + win_h
+                      + ",left=" + ((window.screen.width - win_w) / 2)
+                      + ",top=" + ((window.screen.height - win_h) / 2)
+                      + ",location=no"
+                      + ",menubar=no"
+                      + ",resizable=no"
+                      + ",scrollbars=no"
+                      + ",titlebar=no"
+                      + ",toolbar=no"
+                    );
+
             }
         );
     }
