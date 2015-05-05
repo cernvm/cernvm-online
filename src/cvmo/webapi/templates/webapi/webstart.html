@@ -1,3 +1,5 @@
+{% load static %}
+{% load url from future %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -26,7 +28,7 @@
         <div id="lbl-status">Initializing</div>
 
         <!-- Initialize WebAPI Launching -->
-        <script type="text/javascript">launchMachine( '{% %}' );</script>
+        <script type="text/javascript">launchMachine( '{% url "webapi_vmcp" %}?tag={{tag}}' );</script>
 
 	</body>
 </html>
