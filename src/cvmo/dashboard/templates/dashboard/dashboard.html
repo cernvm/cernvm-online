@@ -95,6 +95,7 @@
                                             {% for conf in webapi_configurations %}
                                                 <li>
                                                     <a class="webapi-deploy-handle"
+                                                        data-context-id="{{item.id}}"
                                                         data-config-index="{{forloop.counter0}}"
                                                         href="#">
                                                         {{conf.label}}
