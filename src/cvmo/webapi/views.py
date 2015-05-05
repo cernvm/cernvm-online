@@ -18,7 +18,7 @@ from cvmo.webapi.models import WebAPIOneTimeTag
 from cvmo.webapi.util.vmcp import VMCPSigner
 from cvmo.core.utils import crypt
 
-def vmcp(reqeust):
+def vmcp(request):
 	"""
 	VMCP Response for starting a particular VM
 	"""
@@ -28,8 +28,8 @@ def vmcp(reqeust):
 
 	# Validate request
 	if not "tag" in request.GET:
-		log.log(logging.ERROR, "`id` is required")
-		raise SuspiciousOperation("`id` is required")
+		log.log(logging.ERROR, "`tag` is required")
+		raise SuspiciousOperation("`tag` is required")
 	if not "cvm_salt" in request.GET:
 		log.log(logging.ERROR, "`cvm_salt` is required")
 		raise SuspiciousOperation("`cvm_salt` is required")
