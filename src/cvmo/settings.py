@@ -89,7 +89,7 @@ SHIBBOLETH_SSO = {
         # API
         r"/%sapi/.*$" % config.URL_PREFIX,
         # WebAPI
-        r"/%swebapi/start/[-\w]+$" % config.URL_PREFIX,
+        r"/%swebapi/run$" % config.URL_PREFIX,
         r"/%swebapi/vmcp$" % config.URL_PREFIX
 
         # API - context
