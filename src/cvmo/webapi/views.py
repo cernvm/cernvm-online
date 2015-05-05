@@ -80,7 +80,8 @@ def webstart_run(request):
 		request,
 		"webapi/webstart.html",
 		{
-			"tag": request.GET['tag']
+			"tag": request.GET['tag'],
+			"vmcp": "%s?tag=%s" % ( request.build_absolute_uri( reverse("webapi_vmcp") ), request.GET['tag'] )
 		}
 	)
 
