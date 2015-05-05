@@ -4,6 +4,7 @@ body {
   overflow: hidden;
 }
 #webapi-frame {
+  position: absolute;
   display: block;
   width: 100%;
   left: 0;
