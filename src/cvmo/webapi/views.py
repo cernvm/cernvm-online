@@ -102,7 +102,7 @@ def webstart_init(request):
 
 	# Load the rendered context
 	try:
-		ctx_storage = ContextStorage.objects.get(id=context_id)
+		ctx_storage = ContextStorage.objects.get(id=request.GET['context'])
 		ctx_storage_data = ctx_storage.data
 	except ContextStorage.DoesNotExist:
 		return HttpResponse("not-found-rendered",
