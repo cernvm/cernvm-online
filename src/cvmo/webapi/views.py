@@ -4,6 +4,8 @@ import logging
 import base64
 import json
 import uuid
+import random
+import string
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
@@ -60,23 +62,31 @@ def vmcp(request):
 	return HttpResponse(json.dumps(signed_settings),
 						content_type="text/plain")
 
-def webstart_run(request, tag_id):
+def webstart_run(request):
 	"""
 	Webstart run phase
 	"""
+
+	# Get a logger
+	log = logging.getLogger("cvmo.webapi")
+
+	# Validate request
+	if not "tag" in request.GET:
+		log.log(logging.ERROR, "`tag` is required")
+		raise SuspiciousOperation("`tag` is required")
 
 	# Render the webstart page
 	return render(
 		request,
 		"webapi/webstart.html",
 		{
-			"tag": tag_id
+			"tag": request.GET['tag']
 		}
 	)
 
-def webstart_init(request):
+def webstart_req(request):
 	"""
-	Webstart init phase
+	Request a webstart of a context/config pair
 	"""
 
 	# Get a logger
@@ -191,7 +201,7 @@ def webstart_init(request):
 		'userData' 		: user_data,
 		'memory'  		: vm_config['memory'],
 		'cpus' 			: vm_config['cpus'],
-		'disk' 			: vm_config['disk'],
+		'disk' 			: vm_config['disk_size'],
 		'cernvmVersion'	: settings.WEBAPI_UCERNVM_VERSION,
 		'flags'			: 0x39
 	}
@@ -205,5 +215,5 @@ def webstart_init(request):
 
 	# Redirect to the HTTP version of webstart_run
 	return redirect(
-		reverse("webapi_webstart_run", kwargs={"tag_id": tag.uuid})
+		"%s?tag=%s" % (reverse("webapi_webstart_run"), tag.uuid )
 		)
