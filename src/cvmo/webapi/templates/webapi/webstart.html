@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>CernVM WebAPI Launcher | CernVM Online</title>
+
+        <!-- Bootstrap -->
+        <link rel="shortcut icon" href="{% static "base/img/sky_favicon_4.ico" %}" type="image/x-icon">
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-3.1.1.min.css" %}">
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "base/css/libs/bootstrap-theme-3.1.1.min.css" %}">
+
+		<!-- Javascript Libraries -->
+        <script type="text/javascript" src="{% static "base/js/libs/jquery-1.11.0.min.js" %}"></script>
+        <script type="text/javascript" src="{% static "base/js/libs/bootstrap-3.1.1.min.js" %}"></script>
+        <script type="text/javascript" src="//cernvm.cern.ch/releases/webapi/js/cvmwebapi-latest.js"></script>
+
+		<!-- WebAPI Launcher -->
+        <link type="text/css" rel="stylesheet" media="all" href="{% static "webapi/css/webapi.css" %}">
+        <script type="text/javascript" src="{% static "webapi/js/webapi.js" %}"></script>
+
+	</head>
+	<body>
+
+        <!-- Debug status label -->
+        <div id="lbl-status">Initializing</div>
+
+        <!-- Initialize WebAPI Launching -->
+        <script type="text/javascript">launchMachine( '{% %}' );</script>
+
+	</body>
+</html>
