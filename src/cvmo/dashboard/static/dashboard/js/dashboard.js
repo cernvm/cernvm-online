@@ -21,7 +21,7 @@ jQuery(
                 var url = 'http://cernvm-online.cern.ch';
                 if (String(window.location).indexOf("devel") != -1)
                     url += "/devel";
-                url += "/webapi/run?context="+ context_id +"&config=" + config_index;
+                url += "/webapi/req?context="+ context_id +"&config=" + config_index;
 
                 /* Open an [HTTP] window to handle this request */
                 var win_w = 700,
