@@ -131,7 +131,7 @@ def webstart_req(request):
 			if salt_context_key(ctx.id, pwd) == ctx.key:
 
 				# Descript and un-base64
-				m = re.search(r"^ENCRYPTED:(.*)$", ctx_storage_data.data)
+				m = re.search(r"^ENCRYPTED:(.*)$", ctx_storage_data)
 				if m is None:
 					return HttpResponse("render-format-error",
 										content_type="text/plain")
