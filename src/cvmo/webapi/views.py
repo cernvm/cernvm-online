@@ -204,7 +204,7 @@ def webstart_req(request):
 		'cpus' 			: vm_config['cpus'],
 		'disk' 			: vm_config['disk_size'],
 		'cernvmVersion'	: settings.WEBAPI_UCERNVM_VERSION,
-		'flags'			: 0x39
+		'flags'			: 0x35
 	}
 
 	# Store json config on tag
