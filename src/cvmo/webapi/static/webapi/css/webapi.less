@@ -17,13 +17,21 @@ body {
 	background-repeat: no-repeat;
 	background-position: center center;
 
+	.password {
+		margin-top: 10px;
+	}
+
+	&.color-password {
+		.header, .footer-label {
+			background-color: #3498DB;
+		}
+	}
 	&.color-running {
 		background-image: url(../img/loading.gif);
 
 		.header, .footer-label {
 			background-color: #3498DB;
 		}
-
 	}
 	&.color-error {
 		background-image: url(../img/warning.png);

@@ -13,6 +13,13 @@ body {
   background-repeat: no-repeat;
   background-position: center center;
 }
+#webapi-frame .password {
+  margin-top: 10px;
+}
+#webapi-frame.color-password .header,
+#webapi-frame.color-password .footer-label {
+  background-color: #3498DB;
+}
 #webapi-frame.color-running {
   background-image: url(../img/loading.gif);
 }
@@ -26,6 +33,12 @@ body {
 #webapi-frame.color-error .header,
 #webapi-frame.color-error .footer-label {
   background-color: #E74C3C;
+}
+#webapi-frame.color-disconnected {
+  background-image: url(../img/warning.png);
+}
+#webapi-frame.color-disconnected .header {
+  background-color: #7F8C8D;
 }
 #webapi-frame .header {
   padding: 28px;
