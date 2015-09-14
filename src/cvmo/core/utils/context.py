@@ -147,6 +147,24 @@ def sanitize(s):
     s = re.sub(r'(^[_\s]+|[_\s]+$)', '', s) # trailing/leading invalid/spaces
     return s
 
+def sanitize_sshkey(s)
+    """
+    Sanitizes an ssh public key.
+
+    Takes str or unicode, returns str. Assumes that input str is utf-8. To see
+    what characters are kept, look at the regexp.
+    """
+    if isinstance(s, str):
+        s = s.decode('utf-8')  # to unicode
+    elif not isinstance(s, unicode):
+        s = unicode(s)  # to unicode (tries)
+        #raise TypeError('str or unicode expected (%s provided)' % \
+        #    type(s).__name__)
+    s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore') # accents
+    s = re.sub(r'[^=+/@\.A-Za-z0-9-\ _]+', '_', s) # invalid chars
+    s = re.sub(r'(^[_\s]+|[_\s]+$)', '', s) # trailing/leading invalid/spaces
+    return s
+
 def tou(s):
     """
     Converts input object to Unicode, where applicable.

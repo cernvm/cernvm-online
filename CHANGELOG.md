@@ -2,6 +2,10 @@
 
 The entries bellow are in reverse chronological order.
 
+## v1.2.3 (14 September 2015)
+
+* Fix santizizer for root ssh key
+
 ## v1.2.2 (20 May 2014)
 
 * Cluster definitions can be encrypted
