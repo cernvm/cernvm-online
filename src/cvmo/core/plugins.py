@@ -1,7 +1,7 @@
 import base64
 from django.conf import settings
 from django.template import RequestContext, loader
-from cvmo.core.utils.context import sanitize_env, sanitize, sanitize_ssh
+from cvmo.core.utils.context import sanitize_env, sanitize, sanitize_sshkey
 from cvmo.settings import CVMFS_UCVM_SERVERS, CVMFS_UCVM_DEFAULT_SERVER
 
 #
@@ -401,7 +401,7 @@ class ContextPlugins(object):
         # If we have a private key, add it too
         if ('root_ssh_key' in values) and (values['root_ssh_key'] != ""):
             _script += "ROOT_PUBKEY=%s\n" % base64.b64encode(
-                sanitize_ssh(values['root_ssh_key']))
+                sanitize_sshkey(values['root_ssh_key']))
 
         # Return script
         return _script

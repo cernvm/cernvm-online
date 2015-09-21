@@ -147,7 +147,7 @@ def sanitize(s):
     s = re.sub(r'(^[_\s]+|[_\s]+$)', '', s) # trailing/leading invalid/spaces
     return s
 
-def sanitize_sshkey(s)
+def sanitize_sshkey(s):
     """
     Sanitizes an ssh public key.
 
