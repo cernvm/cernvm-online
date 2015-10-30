@@ -20,6 +20,9 @@ from cvmo.webapi.models import WebAPIOneTimeTag
 from cvmo.webapi.util.vmcp import VMCPSigner
 from cvmo.core.utils import crypt
 
+#: Regex that matches all the webapi-safe characters
+UNSAFE_CHARS = re.compile(r"[^abcdefghijklmnopqrstuvwxyz+ABCDEFGHIJKLMNOPQRSTUVWXYZ\-0123456789_~]")
+
 def vmcp(request):
 	"""
 	VMCP Response for starting a particular VM
@@ -198,7 +201,7 @@ def webstart_req(request):
 
 	# Create VMCP settings
 	vmcp_settings = {
-		'name'  		: '%s-%s' % ( ctx.name.replace(" ","_"), "".join([random.choice(string.digits + string.letters) for x in range(0,10)]) ),
+		'name'  		: '%s-%s' % ( UNSAFE_CHARS.sub("_", ctx.name), "".join([random.choice(string.digits + string.letters) for x in range(0,10)]) ),
 		'userData' 		: user_data,
 		'memory'  		: vm_config['memory'],
 		'cpus' 			: vm_config['cpus'],
