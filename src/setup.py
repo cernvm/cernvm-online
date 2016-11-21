@@ -22,9 +22,11 @@ if __name__ == "__main__":
             "MySQL-python>=1.2.0",
             "Pillow>=2.0.0",
             "PyCrypto>=2.6",
-            "django-cors-headers>=0.10",
+            "django-cors-headers==0.10",
             "passlib>=1.6.0",
             "South>=0.8",
-            "django-json-field>=0.5"
+            "django-json-field>=0.5",
+            "requests>=2.11.1",
+            "djangorestframework==3.2.5"
         ]
     )

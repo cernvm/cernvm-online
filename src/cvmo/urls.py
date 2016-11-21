@@ -13,6 +13,7 @@ urlpatterns = patterns(
     url(r"^%smarket/" % URL_PREFIX, include("cvmo.market.urls")),
     url(r"^%scluster/" % URL_PREFIX, include("cvmo.cluster.urls")),
     url(r"^%swebapi/" % URL_PREFIX, include("cvmo.webapi.urls")),
+    url(r"^%sapi/" % URL_PREFIX, include("cvmo.rest_api.urls")),
     # Index
     url(
         r"^%s[/]?$" % URL_PREFIX,
