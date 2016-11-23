@@ -1,0 +1,64 @@
+{% extends "base/main_wsidebar_tw.html" %}
+{% load static %}
+{% load url from future %}
+{% block title %}Cluster pairing{% endblock %}
+
+{% block body %}
+    <div class="inner-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-title">
+                    <h1>Cluster Pairing Point</h1>
+                </div>
+                <p>
+                Here you can create a cluster pairing key (<em>Cluster PIN</em>) for
+                your CernVM cluster contextualization. The generated key is to be put
+                into your context files (both master and worker). For further details
+                please refer to the documentation.
+                </p>
+
+                <h2>Generate cluster pairing key</h2>
+                <p>
+                You have to save the generated key, as it cannot be
+                retrieved later. This key also expires after 24 hours, so you
+                have to create and contextualize your cluster before.
+                </p>
+                <form id="cluster-pin-form" action="" class="text-center">
+                    {% csrf_token %}
+                    <button type="submit" id="submit-form" class="btn btn-sm btn-success">
+                        <img src="{% static "base/img/brick_add.png" %}">
+                        Create new cluster pairing key
+                    </button>
+                </form>
+                <div id="received-cluster-pin-wrap" class="text-center">
+                    <h3>Your new cluster pairing key</h3>
+                    <b><span id="received-cluster-pin"></span></b>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+    (function($) {
+        $(document).ready( function() {
+            $("#received-cluster-pin-wrap").toggle(false); // hide element
+
+            $("#cluster-pin-form").submit(function(event) {
+                event.preventDefault(); // stop form from normal submit
+
+                var url = "{% url 'rest_api:cluster-create' %}";
+                var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+                var posting = $.post(url, {csrfmiddlewaretoken: csrf_token});
+                posting.done(function (data) {
+                    $("#received-cluster-pin").empty().append(data['pin']);
+                    $("#received-cluster-pin-wrap").toggle(true); // show element
+                });
+            });
+        });
+    })(jQuery);
+</script>
+
+{% endblock %}
