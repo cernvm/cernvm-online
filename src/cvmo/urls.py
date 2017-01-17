@@ -15,7 +15,7 @@ urlpatterns = patterns(
     url(r"^%smarket/" % URL_PREFIX, include("cvmo.market.urls")),
     url(r"^%scluster/" % URL_PREFIX, include("cvmo.cluster.urls")),
     url(r"^%swebapi/" % URL_PREFIX, include("cvmo.webapi.urls")),
-    url(r"^%sapi/" % URL_PREFIX, include("cvmo.rest_api.urls", namespace='rest_api')),
+    url(r"^%sapi/v1/" % URL_PREFIX, include("cvmo.rest_api.urls", namespace='rest_api')),
     url(r"^%scluster_pairing$" % URL_PREFIX, ClusterPairingPage.as_view(), name='cluster_pairing'),
     # Index
     url(
