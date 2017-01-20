@@ -9,6 +9,7 @@ class ClusterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cluster
         fields = ('pin', 'creation_time')
+        read_only_fields = fields
 
 
 class ClusterKeyValueSerializer(serializers.ModelSerializer):

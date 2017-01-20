@@ -142,7 +142,8 @@ INSTALLED_APPS = (
     "cvmo.cluster",
     "cvmo.market",
     "cvmo.webapi",
-    "cvmo.rest_api"
+    "cvmo.rest_api",
+    "rest_framework"
 )
 
 #

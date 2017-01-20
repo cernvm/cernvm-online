@@ -41,8 +41,8 @@ class ClusterCreate(generics.CreateAPIView):
         super(ClusterCreate, self).initial(request, *args, **kwargs)
 
 
-class ClusterDetail(generics.RetrieveUpdateDestroyAPIView):
-    """ Retrieve, update or destroy a cluster """
+class ClusterDetail(generics.RetrieveDestroyAPIView):
+    """ Retrieve or destroy a cluster """
 
     lookup_field = 'pin'
     queryset = Cluster.objects.all()
