@@ -1,4 +1,3 @@
-
 import re
 import logging
 import base64
@@ -92,6 +91,8 @@ def webstart_req(request):
 	"""
 	Request a webstart of a context/config pair
 	"""
+
+	return HttpResponse(reverse("webapi_webstart_run"))
 
 	# Get a logger
 	log = logging.getLogger("cvmo.webapi")
@@ -216,7 +217,6 @@ def webstart_req(request):
 			uuid=uuid.uuid4().hex
 			)
 	tag.save()
-
 	# Redirect to the HTTP version of webstart_run
 	return redirect(
 		"%s?tag=%s" % (reverse("webapi_webstart_run"), tag.uuid )
