@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.views.generic.base import RedirectView
 from cvmo.settings import URL_PREFIX
 
+from cvmo.rest_api.views import ClusterPairingPage
+
 urlpatterns = patterns(
     "",
     url(r"^%suser/" % URL_PREFIX, include("cvmo.user.urls")),
@@ -13,6 +15,8 @@ urlpatterns = patterns(
     url(r"^%smarket/" % URL_PREFIX, include("cvmo.market.urls")),
     url(r"^%scluster/" % URL_PREFIX, include("cvmo.cluster.urls")),
     url(r"^%swebapi/" % URL_PREFIX, include("cvmo.webapi.urls")),
+    url(r"^%sapi/v1/" % URL_PREFIX, include("cvmo.rest_api.urls", namespace='rest_api')),
+    url(r"^%scluster_pairing$" % URL_PREFIX, ClusterPairingPage.as_view(), name='cluster_pairing'),
     # Index
     url(
         r"^%s[/]?$" % URL_PREFIX,
