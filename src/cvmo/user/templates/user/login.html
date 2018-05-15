@@ -5,11 +5,11 @@
 
 {% block body %}{% load url from future %}
 <h1>Welcome to CernVM Online</h1>
-<p class="gray">Please login using your CERN credentials or your CernVM Online account in order to use the infrastructure. If you don't have neither, you can register using the link below.</p>
+<p class="gray">Please login using your CERN credentials or CERN lightweight account in order to use this service.</p>
 
 <div class="clearfix" id="login_form">
 	<div class="option">
-		<h2>Using CernVM Online Account</h2>
+		<h2>Using CernVM Online Account<br />(deprecated)</h2>
 		<form action="{% url "user_do_login" %}" method="POST">
 			{% csrf_token %}
 			<table class="plain long-text login-table">
@@ -28,7 +28,7 @@
 				</tr>
 			</table>
 			<p>
-				If you don't have an account you can <a href="{% url "user_register" %}">register</a>.
+				If you don't have an account you can <a href="https://account.cern.ch/account/Externals/">register a CERN Lightweight account</a> to be used with the button on the right panel.
 			</p>
 		</form>
 	</div>
