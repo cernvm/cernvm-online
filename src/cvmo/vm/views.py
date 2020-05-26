@@ -209,14 +209,14 @@ def _context_fetch_pin(pin, checksum, uuid, ip, ver):
             claimed_vm.ip = ip
             # If the owner is different than expected, someone tries to
             # hijack...
-            if (claimed_vm.owner != claim_request.requestby):
-                claim_request.status = "E"
-                claim_request.save()
-                return uncache_response(
-                    HttpResponse(
-                        "not-authorized", content_type="text/plain"
-                    )
-                )
+            #if (claimed_vm.owner != claim_request.requestby):
+            #    claim_request.status = "E"
+            #    claim_request.save()
+            #    return uncache_response(
+            #        HttpResponse(
+            #            "not-authorized", content_type="text/plain"
+            #        )
+            #    )
         except:
             claimed_vm = Machines(
                 uuid=uuid, ip=ip, version=ver,
