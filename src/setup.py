@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
         # Dependencies
         install_requires=[
-            "Django==1.11.28",
+            "Django==1.11.29",
             "MySQL-python>=1.2.0",
             "Pillow==2.0.0",
             "PyCrypto>=2.6",
