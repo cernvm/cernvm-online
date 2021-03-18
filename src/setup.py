@@ -20,7 +20,7 @@ if __name__ == "__main__":
         install_requires=[
             "Django==1.11.28",
             "MySQL-python>=1.2.0",
-            "Pillow==2.0.0",
+            "Pillow==8.1.1",
             "PyCrypto>=2.6",
             "django-cors-headers==0.10",
             "passlib>=1.6.0",
