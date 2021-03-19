@@ -27,6 +27,6 @@ if __name__ == "__main__":
             "South>=0.8",
             "django-json-field>=0.5",
             "requests>=2.11.1",
-            "djangorestframework==3.9.1"
+            "djangorestframework==3.11.2"
         ]
     )
